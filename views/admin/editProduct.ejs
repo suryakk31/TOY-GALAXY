@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/admin/editProduct.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet">
+  <title>Edit Product</title>
+  <style>
+    .preview-images {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .preview-images img {
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      object-fit: cover;
+    }
+    .crop-container {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      z-index: 1000;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .crop-container img {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header and Navigation -->
+  <header>
+    <div class="top-nav">
+      <div class="logo">
+        <h1>Kids Kastle</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+        <i class='bx bx-search'></i>
+      </div>
+      <div class="profile-logout">
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
+      <li><a href="/admin/userManagement"><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
+      <li><a href="/admin/products" class='active'><i class="bx bx-box"></i> Products</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/admin/banner"><i class='bx bx-image'></i> Banner</a></li>
+      <li><a href="/admin/chat"><i class='bx bx-chat'></i> Chat</a></li>
+      <li><a href="/admin/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
+      <li><a href="/admin/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
+      <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
+    </ul>
+  </nav>
+  <!-- Form Container -->
+  <div class="form-container">
+    <form id="edit-product-form">
+      <div class="form-group">
+        <label for="item">Product Name:</label>
+        <input type="text" id="item" name="item" value="<%= product.name %>" >
+      </div>
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select id="category" name="category" >
+          <% categories.forEach(category => { %>
+            <option value="<%= category._id %>" <%= category._id.equals(product.category) ? 'selected' : '' %>><%= category.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" value="<%= product.price %>" >
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" ><%= product.description %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" name="stock" value="<%= product.stock %>" >
+      </div>
+      <div class="form-group">
+        <label for="discount">Discount:</label>
+        <input type="number" id="discount" name="discount" value="<%= product.discount %>">
+      </div>
+      <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" multiple>
+        <div class="preview-images" id="preview-images">
+          <% if (product.image) { %>
+            <% product.image.forEach(image => { %>
+              <img src="<%= image %>" alt="Product Image">
+            <% }); %>
+          <% } %>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn">Submit</button>
+      <button type="button" class="cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
+    </form>
+  </div>
+  <!-- Crop Container -->
+  <div class="crop-container" id="crop-container">
+    <img id="crop-image" src="" alt="Crop Image">
+    <button id="crop-btn">Crop</button>
+    <button id="cancel-crop-btn">Cancel</button>
+  </div>
+  <!-- Cropper.js Script -->
+  <script src="https://unpkg.com/cropperjs"></script>
+  <script>
+let cropper;
+let currentFile;
+let imageInput = document.getElementById('image');
+let previewContainer = document.getElementById('preview-images');
+let cropContainer = document.getElementById('crop-container');
+let cropImage = document.getElementById('crop-image');
+let cropBtn = document.getElementById('crop-btn');
+let cancelCropBtn = document.getElementById('cancel-crop-btn');
+
+// Function to initialize Cropper on the selected image
+function initCropper(imageSrc, file, previewImage) {
+  cropImage.src = imageSrc;
+  cropContainer.style.display = 'block';
+  
+  // Ensure any previous cropper is destroyed before creating a new one
+  if (cropper) {
+    cropper.destroy();
+  }
+
+  cropper = new Cropper(cropImage, {
+    aspectRatio: 1,
+    viewMode: 1,
+  });
+
+  currentFile = file;
+
+  cropBtn.onclick = () => {
+    const canvas = cropper.getCroppedCanvas();
+    canvas.toBlob(blob => {
+      const imgUrl = URL.createObjectURL(blob);
+      
+      // Update the preview image with the cropped image
+      previewImage.src = imgUrl;
+
+      cropper.destroy();
+      cropContainer.style.display = 'none';
+
+      // Replace the original file with the cropped file in the input's file list
+      const croppedFile = new File([blob], currentFile.name, { type: currentFile.type });
+      updateFileList(croppedFile);
+    });
+  };
+}
+
+// Update the file input with the cropped file
+function updateFileList(croppedFile) {
+  const dataTransfer = new DataTransfer();
+  Array.from(imageInput.files).forEach(file => {
+    if (file !== currentFile) {
+      dataTransfer.items.add(file);
+    }
+  });
+  dataTransfer.items.add(croppedFile);
+  imageInput.files = dataTransfer.files;
+}
+
+// Handle file input change
+imageInput.addEventListener('change', function(event) {
+  const files = Array.from(event.target.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cursor = 'pointer';
+
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+      wrapper.style.display = 'inline-block';
+      wrapper.style.margin = '10px';
+
+      img.addEventListener('click', () => initCropper(e.target.result, file, img));
+      wrapper.appendChild(img);
+
+      // Add delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'X';
+      deleteBtn.style.position = 'absolute';
+      deleteBtn.style.top = '5px';
+      deleteBtn.style.right = '5px';
+      deleteBtn.style.backgroundColor = 'red';
+      deleteBtn.style.color = 'white';
+      deleteBtn.style.border = 'none';
+      deleteBtn.style.cursor = 'pointer';
+      deleteBtn.onclick = () => {
+        wrapper.remove();
+        const dataTransfer = new DataTransfer();
+        Array.from(imageInput.files).forEach(f => {
+          if (f !== file) {
+            dataTransfer.items.add(f);
+          }
+        });
+        imageInput.files = dataTransfer.files;
+      };
+      wrapper.appendChild(deleteBtn);
+
+      previewContainer.appendChild(wrapper);
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+// Handle cancel crop button click
+cancelCropBtn.addEventListener('click', () => {
+  if (cropper) {
+    cropper.destroy();
+  }
+  cropContainer.style.display = 'none';
+});
+
+// Initialize cropper for existing images (this might be on server-loaded images)
+document.querySelectorAll('.preview-images img').forEach(img => {
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'relative';
+  wrapper.style.display = 'inline-block';
+  wrapper.style.margin = '10px';
+
+  img.style.cursor = 'pointer';
+  img.addEventListener('click', () => initCropper(img.src, null, img));
+  wrapper.appendChild(img);
+
+  // Add delete button for server-loaded images
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = 'X';
+  deleteBtn.style.position = 'absolute';
+  deleteBtn.style.top = '5px';
+  deleteBtn.style.right = '5px';
+  deleteBtn.style.backgroundColor = 'red';
+  deleteBtn.style.color = 'white';
+  deleteBtn.style.border = 'none';
+  deleteBtn.style.cursor = 'pointer';
+  deleteBtn.onclick = () => {
+    wrapper.remove();
+    // Handle the deletion of the image on the server-side if needed
+  };
+  wrapper.appendChild(deleteBtn);
+
+  previewContainer.appendChild(wrapper);
+});
+
+// Handle form submission with PUT method
+document.getElementById('edit-product-form').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(this);
+  const productId = '<%= product._id %>';
+  
+  try {
+    const response = await fetch(`/admin/products/edit/${productId}`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (response.ok) {
+      window.location.href = '/admin/products';
+    } else {
+      alert('Error updating product.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error updating product.');
+  }
+});
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/admin/addCategory.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Add Category</title>
+  <style>
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 0.5em;
+    }
+    .valid-message {
+      color: green;
+      font-size: 0.9em;
+      margin-top: 0.5em;
+    }
+    .form-group {
+      margin-bottom: 1em;
+    }
+    .message {
+      margin: 1em 0;
+      padding: 1em;
+      border-radius: 5px;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header and Navigation -->
+  <header>
+    <div class="top-nav">
+      <div class="logo">
+        <h1>Kids Kastle</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+        <i class='bx bx-search'></i>
+      </div>
+      <div class="profile-logout">
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
+      <li><a href="/admin/userManagement"><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/category" class='active'><i class='bx bx-category'></i> Category</a></li>
+      <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/admin/banner"><i class='bx bx-image'></i> Banner</a></li>
+      <li><a href="/admin/chat"><i class='bx bx-chat'></i> Chat</a></li>
+      <li><a href="/admin/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
+      <li><a href="/admin/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
+      <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
+    </ul>
+  </nav>
+
+  <!-- Form Container -->
+  <div class="form-container">
+    <% if (errorMessage && errorMessage.length > 0) { %>
+      <div class="message error"><%= errorMessage %></div>
+    <% } %>
+    <% if (successMessage && successMessage.length > 0) { %>
+      <div class="message success"><%= successMessage %></div>
+    <% } %>
+    <form id="category-form" action="/admin/category/addCategory" method="POST">
+      <div class="form-group">
+        <label for="name">Category Name:</label>
+        <input type="text" id="name" name="name" >
+        <% if (errorMessage && errorMessage.includes('Name must be at least 3 characters long')) { %>
+          <div id="name-error-message" class="error-message">Category name must be at least 3 characters long.</div>
+        <% } %>
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" >
+        <% if (errorMessage && errorMessage.includes('Description must be at least 10 characters long')) { %>
+          <div id="description-error-message" class="error-message">Description must be at least 10 characters long.</div>
+        <% } %>
+      </div>
+      <button type="submit" class="submit-btn">Save Changes</button>
+      <button type="button" class="cancel-btn" onclick="window.location.href='/admin/category'">Cancel</button>
+    </form>
+  </div>
+
+  <!-- JavaScript for Validation -->
+  <script>
+    const form = document.getElementById('category-form');
+    const nameInput = document.getElementById('name');
+    const descriptionInput = document.getElementById('description');
+    const nameErrorMessage = document.getElementById('name-error-message');
+    const descriptionErrorMessage = document.getElementById('description-error-message');
+
+    function validateForm() {
+      let isValid = true;
+
+      // Clear previous error messages
+      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+      // Validate name
+      if (nameInput.value.trim().length < 3) {
+        nameErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+
+      // Validate description
+      if (descriptionInput.value.trim().length < 10) {
+        descriptionErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    form.addEventListener('submit', function(event) {
+      if (!validateForm()) {
+        event.preventDefault(); // Prevent form submission if validation fails
+      }
+    });
+
+    nameInput.addEventListener('input', function() {
+      if (nameInput.value.trim().length < 3) {
+        nameErrorMessage.style.display = 'block';
+      } else {
+        nameErrorMessage.style.display = 'none';
+      }
+    });
+
+    descriptionInput.addEventListener('input', function() {
+      if (descriptionInput.value.trim().length < 10) {
+        descriptionErrorMessage.style.display = 'block';
+      } else {
+        descriptionErrorMessage.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

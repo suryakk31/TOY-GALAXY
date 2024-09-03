@@ -1,0 +1,197 @@
+/* Reset and General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #2c2c2c;
+    color: #e0e0e0;
+}
+
+/* Header Styles */
+header {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.top-nav .logo h1 {
+    margin: 0;
+    color: #ff5e00; /* Similar to the Kids Kastle logo color */
+}
+
+.top-nav .search-bar {
+    position: relative;
+    flex-grow: 1;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.top-nav .search-bar input {
+    padding: 8px 8px 8px 30px;
+    border-radius: 5px;
+    border: none;
+    width: 250px;
+    max-width: 100%;
+    background-color: #444;
+    color: white;
+}
+
+.top-nav .search-bar i {
+    position: absolute;
+    left: 10px;
+    color: #bbb;
+}
+
+.top-nav .profile-logout {
+    display: flex;
+    align-items: center;
+}
+
+.top-nav .logout-btn {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #ff5e00;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.top-nav .logout-btn:hover {
+    background-color: #ff4500;
+}
+
+/* Navigation Styles */
+nav {
+    width: 220px;
+    background-color: #1e1e1e;
+    color: white;
+    position: fixed;
+    top: 60px; /* Height of the top-nav */
+    bottom: 0;
+    left: 0;
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+nav ul li {
+    margin: 15px 0;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px;
+}
+
+nav ul li a i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+nav ul li a:hover {
+    background-color: #ff5e00; /* Orange color */
+    color: #1e1e1e;
+}
+
+nav ul li a.active {
+    background-color: #00ff7f; /* Highlight color */
+    color: #1e1e1e;
+}
+
+/* Form Container Styles */
+.form-container {
+    margin-left: 400px; /* To account for the fixed nav width */
+    padding: 20px;
+    width: 50%;
+  
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff; /* White background for form container */
+    color: #333; /* Text color for form elements */
+    border-radius: 5px;
+    margin-top: 80px; /* Adjust margin-top to clear header */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional: Add shadow */
+}
+
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0; /* Light gray background for inputs */
+    color: #333; /* Text color for inputs */
+}
+
+.form-group input[type="file"] {
+    padding: 3px;
+}
+
+.submit-btn,
+.cancel-btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.submit-btn {
+    background-color: green;
+}
+
+.submit-btn:hover {
+    background-color: darkgreen;
+}
+
+.cancel-btn {
+    background-color: red;
+}
+
+.cancel-btn:hover {
+    background-color: darkred;
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="/css/user/otp.css"> <!-- Link to your CSS file -->
+    <style>
+         .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+        .valid-message {
+            color: green;
+            font-size: 0.9em;
+        }
+        .form-group {
+            margin-bottom: 1em;
+            position: relative;
+        }
+        #errorMessage {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+        } 
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>OTP Verification</h2>
+        <form action="/auth/postverify-otp" method="POST" id="otpForm">
+            <div class="otp-inputs">
+                <input type="text" maxlength="1" class="otp" name="otp1" >
+                <input type="text" maxlength="1" class="otp" name="otp2" >
+                <input type="text" maxlength="1" class="otp" name="otp3" >
+                <input type="text" maxlength="1" class="otp" name="otp4" >
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+                <div class="error-message"><%= errorMessage %></div>
+            <% } %>
+            
+            <button type="submit">Verify OTP</button>
+        </form>
+        <p id="timer">Resend OTP in <span id="time"></span> seconds</p>
+        <button id="resendBtn" disabled>Resend OTP</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let timer = parseInt(localStorage.getItem('otpTimer')) || 60;
+            let interval;
+            const timerSpan = document.getElementById('time');
+            const resendBtn = document.getElementById('resendBtn');
+            
+            const startTimer = () => {
+                if (interval) clearInterval(interval);
+                
+                interval = setInterval(() => {
+                    timer--;
+                    timerSpan.textContent = timer;
+                    localStorage.setItem('otpTimer', timer); // Store the timer in localStorage
+                    
+                    if (timer <= 0) {
+                        clearInterval(interval);
+                        resendBtn.disabled = false;
+                        localStorage.removeItem('otpTimer'); // Clear localStorage when timer ends
+                    }
+                }, 1000);
+            };
+    
+            startTimer(); // Initialize the timer when the page loads
+            
+            resendBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/auth/resend-otp', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        timer = 60;
+                        timerSpan.textContent = timer;
+                        resendBtn.disabled = true;
+                        localStorage.setItem('otpTimer', timer); // Reset timer in localStorage
+                        startTimer();
+                    } else {
+                        console.error('Failed to resend OTP:', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error resending OTP:', error);
+                }
+            });
+    
+            const otpInputs = document.querySelectorAll('.otp');
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                });
+            });
+    
+            document.getElementById('otpForm').addEventListener('submit', (e) => {
+                const otp = Array.from(otpInputs).map(input => input.value).join('');
+                const otpInput = document.createElement('input');
+                otpInput.type = 'hidden';
+                otpInput.name = 'otp';
+                otpInput.value = otp;
+                e.target.appendChild(otpInput);
+    
+                const timerInput = document.createElement('input');
+                timerInput.type = 'hidden';
+                timerInput.name = 'timer';
+                timerInput.value = timer;
+                e.target.appendChild(timerInput);
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

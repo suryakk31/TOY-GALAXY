@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Addresses</title>
+  <link rel="stylesheet" href="/css/user/address.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+  
+<nav class="navbar">
+  <ul class="navbar-menu">
+    <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
+    <li class="dropdown">
+      <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
+      <ul class="dropdown-menu">
+        <% categories.forEach(category => { %>
+          <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
+        <% }) %>
+      </ul>
+    </li>
+    <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
+    <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
+  </ul>
+  <div class="logo">
+    <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
+  </div>
+  <div class="navbar-right">
+    <div class="navbar-search">
+      <input type="text" placeholder="Search...">
+      <button type="submit"><i class="bx bx-search"></i></button>
+    </div>
+    <div class="navbar-icons">
+      <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
+      <% if (isLoggedIn && userDatabase) { %>
+        <div class="user-info" id="user-info" style="display: none;">
+          <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
+          <a href="/auth/logout" id="logout-button">Log out</a>
+        </div>
+      <% } %>
+      <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
+      <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
+    </div>
+  </div>
+</nav>
+
+
+<div class="profile-container">
+  <div class="sidebar">
+    <h2>Hello, <%= userDatabase.firstName %></h2>
+    <ul>
+      <li><a href="/auth/profile">Profile Information</a></li>
+      <li><a href="/auth/addresses">Manage Addresses</a></li>
+      <li><a href="/auth/order">My Orders</a></li>
+      <li><a href="/auth/wallet">My Wallet</a></li>
+      <li><a href="/auth/coupons">My Coupons</a></li>
+      
+      <li><a href="/auth/reviewsRatings">My Reviews & Ratings</a></li>
+      <li><a href="/auth/changePassword">change password</a></li>
+    </ul>
+  </div>
+
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="height: 60px; margin-top: 60px; margin-left: 20px; ">
+   Add address
+  </button>
+
+    
+
+      <!-- Display User's Addresses -->
+<div id="addresses">
+  <% if (addresses && addresses.length > 0) { %>
+    <% addresses.forEach(function(address) { %>
+      <div class="address-card">
+        <h3><%= address.name %></h3>
+        <p><%= address.address %></p>
+        <p><%= address.locality %> - <%= address.pincode %></p>
+        <p><%= address.state %></p>
+        <p><%= address.city %></p>
+        <p>Phone: <%= address.phone %></p>
+        <div class="address-actions">
+          <a href="javascript:void(0);" class="edit-btn" data-id="<%= address._id %>">
+            <i class="bx bx-edit"></i>
+          </a>
+          
+          <a href="javascript:void(0);" class="delete-btn" data-id="<%= address._id %>">
+            <i class="bx bx-trash"></i> 
+           
+          </a>
+          
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p>No addresses found.</p>
+  <% } %>
+</div>
+
+    </div>
+  </div>
+
+ <!-- _footer.ejs -->
+<footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section logo-contact">
+        <div class="logo">
+          <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
+        </div>
+        <p>We’re available by phone -123-456-789</p>
+        <p>info@example.com</p>
+        <p>Monday till Friday 10 to 6 EST</p>
+        <div class="social-icons">
+          <a href="#"><i class='bx bxl-facebook'></i></a>
+          <a href="#"><i class='bx bxl-instagram'></i></a>
+          <a href="#"><i class='bx bxl-twitter'></i></a>
+        </div>
+      </div>
+      <div class="footer-section useful-links">
+        <h2>Useful links</h2>
+        <ul>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Babysitters</a></li>
+          <li><a href="#">Contact us</a></li>
+        </ul>
+      </div>
+      <div class="footer-section my-account">
+        <h2>My account</h2>
+        <ul>
+          <li><a href="#">Track my order</a></li>
+          <li><a href="#">Terms of use</a></li>
+          <li><a href="#">Wishlist</a></li>
+          <li><a href="#">Submit your feedback</a></li>
+        </ul>
+      </div>
+      <div class="footer-section customer-service">
+        <h2>Customer service</h2>
+        <ul>
+          <li><a href="#">Help & contact us</a></li>
+          <li><a href="#">Returns & refunds</a></li>
+          <li><a href="#">Online stores</a></li>
+          <li><a href="#">Terms & conditions</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+<!-- Button trigger modal -->
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="add-address-form" action="/auth/addAddress" method="POST">
+          <input type="hidden" name="userId" value="<%= userDatabase._id %>">
+
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required>
+
+          <label for="address">Address:</label>
+          <input type="text" id="address" name="address" required>
+
+          <label for="phone">Phone:</label>
+          <input type="text" id="phone" name="phone" required>
+
+          <label for="locality">Locality:</label>
+          <input type="text" id="locality" name="locality" required>
+
+          <label for="pincode">Pincode:</label>
+          <input type="text" id="pincode" name="pincode" required>
+
+          <label for="state">State:</label>
+          <input type="text" id="state" name="state" required>
+
+          
+          <label for="city">city:</label>
+          <input type="text" id="city" name="city" required>
+
+          <button type="submit">Save Address</button>
+          
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit Address Modal -->
+<div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editAddressModalLabel">Edit Address</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-address-form" action="/auth/editAddress" method="PUT">
+          <input type="hidden" name="addressId" id="addressId">
+
+          <label for="editName">Name:</label>
+          <input type="text" id="editName" name="name" required>
+
+          <label for="editAddress">Address:</label>
+          <input type="text" id="editAddress" name="address" required>
+
+          <label for="editPhone">Phone:</label>
+          <input type="text" id="editPhone" name="phone" required>
+
+          <label for="editLocality">Locality:</label>
+          <input type="text" id="editLocality" name="locality" required>
+
+          <label for="editPincode">Pincode:</label>
+          <input type="text" id="editPincode" name="pincode" required>
+
+          <label for="editState">State:</label>
+          <input type="text" id="editState" name="state" required>
+
+          <label for="editCity">City:</label>
+          <input type="text" id="editCity" name="city" required>
+
+          <button type="submit">Update Address</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    // Modal logic
+    var modal = document.getElementById("addAddressModal");
+    var btn = document.getElementById("add-address-btn");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+<script>
+document.addEventListener('DOMContentLoaded', function(event) {
+  const addAddressForm = document.getElementById('add-address-form');
+
+  addAddressForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    // Gather form values
+    const name = document.getElementById('name').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const locality = document.getElementById('locality').value.trim();
+    const pincode = document.getElementById('pincode').value.trim();
+    const state = document.getElementById('state').value.trim();
+    const city = document.getElementById('city').value.trim();
+
+    let isValid = true;
+
+    // Name validation
+    if (name === '') {
+      Swal.fire('Validation Error', 'Name is required.', 'error');
+      isValid = false;
+    }
+
+    // Address validation
+    if (address === '') {
+      Swal.fire('Validation Error', 'Address is required.', 'error');
+      isValid = false;
+    }
+
+    // Phone validation
+    const phonePattern = /^[0-9]{10}$/;
+    if (!phonePattern.test(phone)) {
+      Swal.fire('Validation Error', 'Please enter a valid 10-digit phone number.', 'error');
+      isValid = false;
+    }
+
+    // Locality validation
+    if (locality === '') {
+      Swal.fire('Validation Error', 'Locality is required.', 'error');
+      isValid = false;
+    }
+
+    // Pincode validation
+    const pincodePattern = /^[0-9]{6}$/;
+    if (!pincodePattern.test(pincode)) {
+      Swal.fire('Validation Error', 'Please enter a valid 6-digit pincode.', 'error');
+      isValid = false;
+    }
+
+    // State validation
+    if (state === '') {
+      Swal.fire('Validation Error', 'State is required.', 'error');
+      isValid = false;
+    }
+
+    // City validation
+    if (city === '') {
+      Swal.fire('Validation Error', 'City is required.', 'error');
+      isValid = false;
+    }
+
+    // If all validations pass, send the data to the backend
+    if (isValid) {
+      const formData = {
+        name,
+        address,
+        phone,
+        locality,
+        pincode,
+        state,
+        city
+      };
+
+      try {
+        const response = await fetch('/auth/addAddress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          Swal.fire('Success!', 'Address saved successfully!', 'success').then(() => {
+            window.location.reload();
+          });
+        } else {
+          const result = await response.json();
+          Swal.fire('Error!', 'Failed to save address: ' + result.message, 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error!', 'An error occurred: ' + error.message, 'error');
+      }
+    }
+  });
+});
+// Edit address button click handler
+document.querySelectorAll('.edit-address-btn').forEach(button => {
+  button.addEventListener('click', async function() {
+    const addressId = this.getAttribute('data-id');
+
+    try {
+      const response = await fetch(`/auth/addresses/${addressId}`);
+      const address = await response.json();
+
+      // Fill the modal with the address data
+      document.getElementById('addressId').value = address._id;
+      document.getElementById('editName').value = address.name;
+      document.getElementById('editAddress').value = address.address;
+      document.getElementById('editPhone').value = address.phone;
+      document.getElementById('editLocality').value = address.locality;
+      document.getElementById('editPincode').value = address.pincode;
+      document.getElementById('editState').value = address.state;
+      document.getElementById('editCity').value = address.city;
+
+      // Open the modal
+      const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+      modal.show();
+    } catch (error) {
+      alert('Error fetching address data: ' + error.message);
+    }
+  });
+});
+
+// Handle form submission for updating address
+document.getElementById('edit-address-form').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  // Gather form values
+  const addressId = document.getElementById('addressId').value;
+  const name = document.getElementById('editName').value.trim();
+  const address = document.getElementById('editAddress').value.trim();
+  const phone = document.getElementById('editPhone').value.trim();
+  const locality = document.getElementById('editLocality').value.trim();
+  const pincode = document.getElementById('editPincode').value.trim();
+  const state = document.getElementById('editState').value.trim();
+  const city = document.getElementById('editCity').value.trim();
+
+  let isValid = true;
+
+  // Name validation
+  if (name === '') {
+    Swal.fire('Validation Error', 'Name is required.', 'error');
+    isValid = false;
+  }
+
+  // Address validation
+  if (address === '') {
+    Swal.fire('Validation Error', 'Address is required.', 'error');
+    isValid = false;
+  }
+
+  // Phone validation
+  const phonePattern = /^[0-9]{10}$/;
+  if (!phonePattern.test(phone)) {
+    Swal.fire('Validation Error', 'Please enter a valid 10-digit phone number.', 'error');
+    isValid = false;
+  }
+
+  // Locality validation
+  if (locality === '') {
+    Swal.fire('Validation Error', 'Locality is required.', 'error');
+    isValid = false;
+  }
+
+  // Pincode validation
+  const pincodePattern = /^[0-9]{6}$/;
+  if (!pincodePattern.test(pincode)) {
+    Swal.fire('Validation Error', 'Please enter a valid 6-digit pincode.', 'error');
+    isValid = false;
+  }
+
+  // State validation
+  if (state === '') {
+    Swal.fire('Validation Error', 'State is required.', 'error');
+    isValid = false;
+  }
+
+  // City validation
+  if (city === '') {
+    Swal.fire('Validation Error', 'City is required.', 'error');
+    isValid = false;
+  }
+
+  // If all validations pass, send the data to the backend
+  if (isValid) {
+    const formData = {
+      name,
+      address,
+      phone,
+      locality,
+      pincode,
+      state,
+      city
+    };
+
+    try {
+      const response = await fetch(`/auth/addresses/${addressId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        Swal.fire('Updated!', 'Address updated successfully!', 'success').then(() => {
+          window.location.reload();
+        });
+      } else {
+        const result = await response.json();
+        Swal.fire('Error!', 'Failed to update address: ' + result.message, 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error!', 'An error occurred: ' + error.message, 'error');
+    }
+  }
+});
+
+// Handle clicking on the edit button to load the address into the modal
+document.querySelectorAll('.edit-btn').forEach(button => {
+  button.addEventListener('click', async function(event) {
+    event.preventDefault();
+    
+    // Get the address ID from the data attribute
+    const addressId = this.closest('.address-actions').querySelector('.edit-btn').getAttribute('data-id');
+
+    try {
+      // Fetch the address data from the server
+      const response = await fetch(`/auth/addresses/${addressId}`);
+      
+      if (response.ok) {
+        const address = await response.json();
+
+        // Fill the modal fields with the fetched address data
+        document.getElementById('addressId').value = address._id;
+        document.getElementById('editName').value = address.name;
+        document.getElementById('editAddress').value = address.address;
+        document.getElementById('editPhone').value = address.phone;
+        document.getElementById('editLocality').value = address.locality;
+        document.getElementById('editPincode').value = address.pincode;
+        document.getElementById('editState').value = address.state;
+        document.getElementById('editCity').value = address.city;
+
+        // Open the edit modal
+        const editModal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+        editModal.show();
+      } else {
+        alert('Failed to fetch address');
+      }
+    } catch (error) {
+      alert('Error fetching address: ' + error.message);
+    }
+  });
+});
+
+// Handle delete button click
+document.querySelectorAll('.delete-btn').forEach(button => {
+  button.addEventListener('click', async function(event) {
+    event.preventDefault();
+    
+    const addressId = this.getAttribute('data-id');
+    
+    // Show confirmation using SweetAlert
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to delete the address",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`/auth/addresses/${addressId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Address has been deleted.',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.reload(); // Reload the page to reflect the changes
+            });
+          } else {
+            const result = await response.json();
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Failed to delete address: ' + result.message,
+              confirmButtonText: 'OK'
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'An error occurred: ' + error.message,
+            confirmButtonText: 'OK'
+          });
+        }
+      }
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+  </script>
+  
+  
+</body>
+</html>
+

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/admin/product.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <title>Product</title>
+</head>
+<body>
+  <header>
+    <div class="top-nav">
+      <div class="logo">
+        <h1>Kids Kastle</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+        <i class='bx bx-search'></i>
+      </div>
+      <div class="profile-logout">
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
+      <li><a href="/admin/userManagement"><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
+      <li><a href="/admin/products" class='active'><i class="bx bx-box"></i> Products</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
+      <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
+      <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
+      <li><a href="/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
+      <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
+    </ul>
+  </nav>
+  <div class="table-container">
+    <a href="/admin/products/addProduct"><button class="add-product-btn">Add Product</button></a>
+    <table>
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Category</th>
+        
+          <th>Price</th>
+          <th>Image</th>
+          <th>Stock</th>
+          <th>Discount</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(product => { %>
+          <tr>
+            <td><%= product.name %></td>
+            <td><%= product.category.name %></td>
+            <% if (showDescription) { %>
+              <td><%= product.description %></td>
+            <% } %>
+            <td><%= product.price %></td>
+           
+           
+            <td>
+              <% if (product.image && product.image.length > 0) { %>
+                <img src="<%= product.image[0] %>" alt="Product Image" style="width: 50px; height: 50px;">
+              <% } else { %>
+                No Image
+              <% } %>
+            </td>
+            <td><%= product.stock %></td>
+            <td><%= product.discount %></td>
+            <td>
+              <div class="action-icons">
+                <!-- Edit Icon Link -->
+                <a href="/admin/products/edit/<%= product._id %>">
+                  <i class="bx bx-edit edit-icon"></i>
+                </a>
+                <!-- Toggle Icon -->
+                <i class='bx <%= product.isBlocked ? "bx-lock-alt blocked-icon" : "bx-lock-open-alt unblocked-icon" %> toggle-icon' data-id="<%= product._id %>" data-isBlocked="<%= product.isBlocked %>"></i>
+                <form action="/admin/products/<%= product._id %>/toggle" method="POST" class="toggle-form" style="display: none;"></form>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // Toggle product block/unblock
+    document.querySelectorAll('.toggle-icon').forEach(icon => {
+      icon.addEventListener('click', function(event) {
+        event.preventDefault();
+        var productId = this.getAttribute('data-id');
+        var isBlocked = this.getAttribute('data-isBlocked') === 'true';
+        var action = isBlocked ? 'unblock' : 'block';
+        var confirmationText = `You are about to ${action} this product.`;
+
+        Swal.fire({
+          title: `${action.charAt(0).toUpperCase() + action.slice(1)} Product`,
+          text: confirmationText,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: `Yes, ${action} it!`
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.closest('.action-icons').querySelector('.toggle-form').submit();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

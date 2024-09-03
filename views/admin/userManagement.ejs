@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management</title>
+  <link rel="stylesheet" href="/css/admin/usermanage.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <header>
+    <div class="top-nav">
+      <div class="logo">
+        <h1>Kids Kastle</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="profile-logout">
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
+      <li><a href="/admin/userManagement" class="active"><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
+      <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
+      <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
+      <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
+      <li><a href="/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
+      <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
+    </ul>
+  </nav>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>E-mail</th>
+          <th>Phone number</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(user) { %>
+          <tr>
+            <td><%= user.firstName %></td>
+            <td><%= user.email %></td>
+            <td><%= user.phone %></td>
+            <td><%= new Date(user.createdAt).toLocaleString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric', 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit' 
+            }) %></td>
+        <td>
+            
+            <td>
+              <form action="/admin/block/<%= user._id %>" method="POST" class="toggle-form">
+                <i class='bx <%= user.isBlocked ? "bx-lock-alt blocked-icon" : "bx-lock-open-alt unblocked-icon" %> toggle-icon'></i>
+                <input type="hidden" name="isBlocked" value="<%= user.isBlocked ? 'false' : 'true' %> ">
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    document.querySelectorAll('.toggle-icon').forEach(icon => {
+      icon.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent form submission
+        const form = this.parentElement;
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit(); // Submit the form if confirmed
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

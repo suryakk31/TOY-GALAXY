@@ -1,0 +1,287 @@
+/* Reset and General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #2c2c2c;
+    color: #e0e0e0;
+}
+
+/* Header Styles */
+header {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.top-nav .logo h1 {
+    margin: 0;
+    color: #ff5e00; /* Similar to the Kids Kastle logo color */
+}
+
+.top-nav .search-bar {
+    position: relative;
+    flex-grow: 1;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.top-nav .search-bar input {
+    padding: 8px 8px 8px 30px;
+    border-radius: 5px;
+    border: none;
+    width: 250px;
+    max-width: 100%;
+    background-color: #444;
+    color: white;
+}
+
+.top-nav .search-bar i {
+    position: absolute;
+    left: 10px;
+    color: #bbb;
+}
+
+.top-nav .profile-logout {
+    display: flex;
+    align-items: center;
+}
+
+.top-nav .profile img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.top-nav .logout-btn {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #ff5e00;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.top-nav .logout-btn:hover {
+    background-color: #ff4500;
+}
+
+/* Navigation Styles */
+nav {
+    width: 220px;
+    background-color: #1e1e1e;
+    color: white;
+    position: fixed;
+    top: 60px; /* Height of the top-nav */
+    bottom: 0;
+    left: 0;
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+nav ul li {
+    margin: 15px 0;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px;
+}
+
+nav ul li a i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+nav ul li a:hover {
+    background-color: #ff5e00; /* Orange color */
+    color: #1e1e1e;
+}
+
+nav ul li a.active {
+    background-color: #00ff7f; /* Orange color */
+    color: #1e1e1e;
+}
+
+/* Main Content Styles */
+main {
+    margin-left: 220px; /* To account for the fixed nav width */
+    padding: 80px 20px 20px; /* Top padding to avoid overlap with header */
+}
+
+
+
+/* Table Styles */
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #333;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #2e2e2e;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #3a3a3a;
+}
+
+/* Action Icons */
+.edit-icon, .toggle-icon {
+    cursor: pointer;
+    padding-left: 10px;
+    font-size: 30px;
+    transition: color 0.3s ease;
+}
+
+.edit-icon {
+    color: #4caf50; /* Green for edit icon */
+}
+
+.edit-icon:hover {
+    opacity: 0.8;
+}
+
+.blocked-icon {
+    color: #d30606; /* Red for blocked users */
+}
+
+.unblocked-icon {
+    color: #4caf50; /* Green for unblocked users */
+}
+
+.toggle-icon:hover {
+    opacity: 0.8;
+}
+
+/* Align icons separately */
+.action-icons {
+    display: flex;
+    justify-content: space-between;
+    width: 70px; /* Adjust this value to space the icons as desired */
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form input {
+    margin-bottom: 15px; /* Increased margin for more space between inputs */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; /* Adjusted to take full width */
+    box-sizing: border-box;
+}
+
+form button {
+    margin-top: 10px; /* Added margin to create space between the last input and the button */
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+
+.add-category-btn {
+    padding: 10px 20px;
+   margin-left: 1000px;
+   
+ 
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .add-category-btn:hover {
+    background-color: #28a745;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .pagination a {
+    color: #333;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    margin: 0 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .pagination a:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .pagination a.prev::before {
+    content: '←';
+    margin-right: 5px;
+  }
+  
+  .pagination a.next::after {
+    content: '→';
+    margin-left: 5px;
+  }
+  

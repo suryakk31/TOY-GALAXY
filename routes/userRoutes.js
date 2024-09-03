@@ -1,0 +1,61 @@
+const express = require('express')
+const router = express.Router();
+
+
+const userAuth = require('../middleware/userMiddlewear')
+
+const userController =  require('../controllers/userController')
+
+const shopController = require('../controllers/userShopController')
+
+const productController = require('../controllers/userProductController')
+
+const profileController = require('../controllers/userProfileController')
+
+const addressController = require('../controllers/userAddressController')
+
+const cartController = require('../controllers/userCartcontroller');
+
+const userCheckoutController = require('../controllers/userCheckoutController');
+
+const userOrderController = require('../controllers/userOrderController')
+
+
+router.get('/',userController.getLandingPage)
+router.get('/auth/homepage', userController.getHomepage)
+router.get('/shop',userAuth.isAuthenticated,shopController.getShopPage)
+router.get('/product/:id',userAuth.isAuthenticated,productController.getProductPage)
+
+
+router.get('/profile',userAuth.isAuthenticated,profileController.getProfilepage)
+router.put('/auth/updateProfile',profileController.updateProfile)
+
+
+// Route to display the change password page
+router.get('/auth/changePassword', profileController.getChangePasswordPage);
+
+// Route to handle password change logic
+router.put('/auth/changePassword', profileController.changePassword);
+
+
+router.get('/auth/addresses',userAuth.isAuthenticated,addressController.manageAddress);
+router.post('/auth/addAddress', addressController.addAddress);
+
+router.get('/auth/addresses/:id',userAuth.isAuthenticated,addressController.getupdateAddress)
+router.put('/auth/addresses/:id',addressController.updateAddress)
+router.delete('/auth/addresses/:id', addressController.deleteAddress);
+
+router.get('/auth/cart',userAuth.isAuthenticated,cartController.getCart)
+router.post('/auth/cart', userAuth.isAuthenticated, cartController.addToCart);
+
+router.put('/auth/cart',  cartController.updateCartQuantity);
+router.delete('/auth/cart', cartController.removeProductFromCart)
+
+router.get('/auth/checkout',userCheckoutController.getCheckout)
+router.post('/auth/checkout',userCheckoutController.postCheckout)
+
+
+router.get('/auth/order',userOrderController.getOrderPage)
+
+
+module.exports = router;

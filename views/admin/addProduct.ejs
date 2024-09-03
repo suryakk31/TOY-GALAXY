@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/admin/addProduct.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet">
+  <title>Add Product</title>
+  <style>
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 0.5em;
+    }
+    .valid-message {
+      color: green;
+      font-size: 0.9em;
+      margin-top: 0.5em;
+    }
+    .form-group {
+      margin-bottom: 1em;
+    }
+    .message {
+      margin: 1em 0;
+      padding: 1em;
+      border-radius: 5px;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .preview-images {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .preview-images img {
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      object-fit: cover;
+      position: relative;
+    }
+    .delete-icon {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .crop-container {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      z-index: 1000;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .crop-container img {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header and Navigation -->
+  <header>
+    <div class="top-nav">
+      <div class="logo">
+        <h1>Kids Kastle</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+        <i class='bx bx-search'></i>
+      </div>
+      <div class="profile-logout">
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
+      <li><a href="/admin/userManagement"><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
+      <li><a href="/admin/products" class='active'><i class="bx bx-box"></i> Products</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/admin/banner"><i class='bx bx-image'></i> Banner</a></li>
+      <li><a href="/admin/chat"><i class='bx bx-chat'></i> Chat</a></li>
+      <li><a href="/admin/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
+      <li><a href="/admin/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
+      <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
+    </ul>
+  </nav>
+  <!-- Form Container -->
+  <div class="form-container">
+    <form id="product-form" action="/admin/products/addProduct" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="item">Product Name:</label>
+        <input type="text" id="item" name="item">
+        <div id="item-error-message" class="error-message" style="display: none;">Product name must be at least 3 characters long.</div>
+      </div>
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+          <% categories.forEach(category => { %>
+            <option value="<%= category._id %>"><%= category.name %></option>
+          <% }); %>
+        </select>
+        <div id="category-error-message" class="error-message" style="display: none;">Please select a category.</div>
+      </div>
+      <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price">
+        <div id="price-error-message" class="error-message" style="display: none;">Please enter a valid price.</div>
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea>
+        <div id="description-error-message" class="error-message" style="display: none;">Description must be at least 10 characters long.</div>
+      </div>
+      <div class="form-group">
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" name="stock">
+        <div id="stock-error-message" class="error-message" style="display: none;">Please enter a valid stock quantity.</div>
+      </div>
+      <div class="form-group">
+        <label for="discount">Discount:</label>
+        <input type="number" id="discount" name="discount">
+        <div id="discount-error-message" class="error-message" style="display: none;">Please enter a valid discount percentage.</div>
+      </div>
+      <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" multiple>
+        <div class="preview-images" id="preview-images"></div>
+        <div id="image-error-message" class="error-message" style="display: none;">Please upload at least one image.</div>
+      </div>
+      <button type="submit" class="submit-btn">Add Product</button>
+      <button type="button" class="cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
+    </form>
+  </div>
+  <!-- Crop Container -->
+  <div class="crop-container" id="crop-container">
+    <img id="crop-image" src="" alt="Crop Image">
+    <button id="crop-btn">Crop</button>
+    <button id="cancel-crop-btn">Cancel</button>
+  </div>
+  <!-- Cropper.js Script -->
+  <script src="https://unpkg.com/cropperjs"></script>
+  <script>
+    let cropper;
+    let imageQueue = [];
+    let currentFile;
+    let currentImgElement;
+    const imageInput = document.getElementById('image');
+    const previewContainer = document.getElementById('preview-images');
+    const cropContainer = document.getElementById('crop-container');
+    const cropImage = document.getElementById('crop-image');
+    const cropBtn = document.getElementById('crop-btn');
+    const cancelCropBtn = document.getElementById('cancel-crop-btn');
+    const form = document.getElementById('product-form');
+    
+    const itemInput = document.getElementById('item');
+    const categoryInput = document.getElementById('category');
+    const priceInput = document.getElementById('price');
+    const descriptionInput = document.getElementById('description');
+    const stockInput = document.getElementById('stock');
+    const discountInput = document.getElementById('discount');
+    const itemErrorMessage = document.getElementById('item-error-message');
+    const categoryErrorMessage = document.getElementById('category-error-message');
+    const priceErrorMessage = document.getElementById('price-error-message');
+    const descriptionErrorMessage = document.getElementById('description-error-message');
+    const stockErrorMessage = document.getElementById('stock-error-message');
+    const discountErrorMessage = document.getElementById('discount-error-message');
+    const imageErrorMessage = document.getElementById('image-error-message');
+  
+    function validateForm() {
+      let isValid = true;
+  
+      // Clear previous error messages
+      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+  
+      // Validate Product Name
+      if (itemInput.value.length < 3) {
+        itemErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      // Validate Category
+      if (categoryInput.value === "") {
+        categoryErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      // Validate Price
+      if (priceInput.value <= 0) {
+        priceErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      // Validate Description
+      if (descriptionInput.value.length < 10) {
+        descriptionErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      // Validate Stock
+      if (stockInput.value < 0) {
+        stockErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      // Validate Discount
+      if (discountInput.value < 0 || discountInput.value > 100) {
+        discountErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      // Validate Images
+      if (previewContainer.children.length === 0) {
+        imageErrorMessage.style.display = 'block';
+        isValid = false;
+      }
+  
+      return isValid;
+    }
+  
+    function handleFileChange(event) {
+    const files = event.target.files;
+    imageQueue = Array.from(files); // Add all selected files to the queue
+
+    imageQueue.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            // Create a container for the image and the delete icon
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'img-container';
+            imgContainer.style.position = 'relative';
+            imgContainer.style.display = 'inline-block';
+            
+            const imgElement = document.createElement('img');
+            imgElement.src = e.target.result;
+            imgElement.className = 'preview-image';
+            imgElement.style.cursor = 'pointer';
+            imgElement.setAttribute('data-file', file.name);
+
+            const deleteIcon = document.createElement('span');
+            deleteIcon.className = 'delete-icon';
+            deleteIcon.innerHTML = '&#10005;';
+            deleteIcon.onclick = () => {
+                imgContainer.remove(); // Remove the entire container, including the image and delete icon
+            };
+
+            imgElement.onclick = () => {
+                initiateCrop(imgElement, file);
+            };
+
+            // Append the image and delete icon to the container
+            imgContainer.appendChild(imgElement);
+            imgContainer.appendChild(deleteIcon);
+            // Append the container to the preview area
+            previewContainer.appendChild(imgContainer);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+    function initiateCrop(imgElement, file) {
+      currentImgElement = imgElement;
+      currentFile = file;
+  
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        cropImage.src = e.target.result;
+        cropContainer.style.display = 'block';
+        cropper = new Cropper(cropImage, {
+          aspectRatio: 1,
+          viewMode: 2,
+          background: false,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  
+    cropBtn.addEventListener('click', () => {
+      cropper.getCroppedCanvas().toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        currentImgElement.src = url; // Update the preview image with the cropped version
+  
+        cropper.destroy();
+        cropContainer.style.display = 'none';
+      });
+    });
+  
+    cancelCropBtn.addEventListener('click', () => {
+      cropper.destroy();
+      cropContainer.style.display = 'none';
+    });
+  
+    form.addEventListener('submit', (event) => {
+      if (!validateForm()) {
+        event.preventDefault();
+        return;
+      }
+
+      // Create a new DataTransfer object to hold the filtered files
+      const dataTransfer = new DataTransfer();
+
+      // Add only the files that are not deleted to the DataTransfer object
+      imageQueue.forEach(file => {
+        if (!deletedImages.has(file.name)) {
+          dataTransfer.items.add(file);
+        }
+      });
+
+      // Replace the input files with the filtered list
+      imageInput.files = dataTransfer.files;
+
+      // Add deleted images to the form data
+      const deletedImagesInput = document.createElement('input');
+      deletedImagesInput.type = 'hidden';
+      deletedImagesInput.name = 'deletedImages';
+      deletedImagesInput.value = Array.from(deletedImages).join(',');
+      form.appendChild(deletedImagesInput);
+    });
+  
+    imageInput.addEventListener('change', handleFileChange);
+  </script>
+
+  
+</body>
+</html>

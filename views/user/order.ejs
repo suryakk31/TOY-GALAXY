@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <link rel="stylesheet" href="/css/user/order.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+      .order-item {
+          background-color: white;
+          margin: 20px;
+          padding: 15px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-item img {
+          width: 100px;
+          height: 100px;
+          object-fit: cover;
+          border-radius: 10px;
+      }
+
+      .order-details {
+          flex: 1;
+          margin-left: 20px;
+      }
+
+      .order-details h2 {
+          margin: 0;
+          font-size: 18px;
+          color: #333;
+      }
+
+      .order-details p {
+          margin: 5px 0;
+          color: #666;
+      }
+
+      .order-item .order-status {
+          text-align: right;
+      }
+
+      .order-item .order-status .status {
+          font-weight: bold;
+      }
+
+      .order-item .order-status .status.delivered {
+          color: green;
+      }
+
+      .order-item .order-status .status.cancelled {
+          color: red;
+      }
+    </style>
+</head>
+<body>
+    
+<nav class="navbar">
+    <ul class="navbar-menu">
+      <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
+      <li class="dropdown">
+        <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
+        <ul class="dropdown-menu">
+          <% categories.forEach(category => { %>
+            <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
+          <% }) %>
+        </ul>
+      </li>
+      <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
+      <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
+    </ul>
+    <div class="logo">
+      <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
+    </div>
+    <div class="navbar-right">
+      <div class="navbar-search">
+        <input type="text" placeholder="Search...">
+        <button type="submit"><i class="bx bx-search"></i></button>
+      </div>
+      <div class="navbar-icons">
+        <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
+        <% if (isLoggedIn && userDatabase) { %>
+          <div class="user-info" id="user-info" style="display: none;">
+            <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
+            <a href="/auth/logout" id="logout-button">Log out</a>
+          </div>
+        <% } %>
+        <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
+        <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dynamic Content Section: Start here -->
+  <% if (orders.length > 0) { %>
+    <% orders.forEach(order => { %>
+      <% order.items.forEach(item => { %>
+        <div class="order-item">
+          <img src="<%= item.productImage[0] %>" alt="Product Image">
+          <div class="order-details">
+            <h2><%= item.productName %></h2>
+            <p><strong>Description:</strong> <%= item.productDescription %></p>
+            <p><strong>Quantity:</strong> <%= item.quantity %></p>
+            <p><strong>Price:</strong> ₹<%= item.price %> <small>(Discounted price: ₹<%= item.discountPrice %>)</small></p>
+          </div>
+          <div class="order-status">
+            <p class="status <%= order.items[0].orderStatus ? order.items[0].orderStatus : 'unknown' %>">
+              <%= order.items[0].orderStatus ? order.items[0].orderStatus.charAt(0).toUpperCase() + order.items[0].orderStatus.slice(1) : 'Unknown' %>
+            </p>
+        </div>
+        
+          
+        </div>
+      <% }) %>
+    <% }) %>
+  <% } else { %>
+    <p>No orders found.</p>
+  <% } %>
+  <!-- Dynamic Content Section: End here -->
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section logo-contact">
+        <div class="logo">
+          <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
+        </div>
+        <p>We’re available by phone -123-456-789</p>
+        <p>info@example.com</p>
+        <p>Monday till Friday 10 to 6 EST</p>
+        <div class="social-icons">
+          <a href="#"><i class='bx bxl-facebook'></i></a>
+          <a href="#"><i class='bx bxl-instagram'></i></a>
+          <a href="#"><i class='bx bxl-twitter'></i></a>
+        </div>
+      </div>
+      <div class="footer-section useful-links">
+        <h2>Useful links</h2>
+        <ul>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Babysitters</a></li>
+          <li><a href="#">Contact us</a></li>
+        </ul>
+      </div>
+      <div class="footer-section my-account">
+        <h2>My account</h2>
+        <ul>
+          <li><a href="#">Track my order</a></li>
+          <li><a href="#">Terms of use</a></li>
+          <li><a href="#">Wishlist</a></li>
+          <li><a href="#">Submit your feedback</a></li>
+        </ul>
+      </div>
+      <div class="footer-section customer-service">
+        <h2>Customer service</h2>
+        <ul>
+          <li><a href="#">Help & contact us</a></li>
+          <li><a href="#">Returns & refunds</a></li>
+          <li><a href="#">Online stores</a></li>
+          <li><a href="#">Terms & conditions</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('user-icon').addEventListener('click', function(event) {
+      <% if (isLoggedIn) { %>
+        event.preventDefault();
+        var userInfo = document.getElementById('user-info');
+        if (userInfo.style.display === 'none' || userInfo.style.display === '') {
+          userInfo.style.display = 'block';
+        } else {
+          userInfo.style.display = 'none';
+        }
+      <% } %>
+    });
+
+    document.getElementById('logout-button').addEventListener('click', function(event) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Are you sure you want to logout?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = '/auth/logout';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

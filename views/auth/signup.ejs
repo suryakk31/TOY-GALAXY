@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="/css/user/signup.css"> <!-- Link to your CSS file -->
+    <style>
+        /* Add some basic styles for validation feedback */
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+        .valid-message {
+            color: green;
+            font-size: 0.9em;
+        }
+        .form-group {
+            margin-bottom: 1em;
+            position: relative;
+        }
+        #errorMessage {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2em;
+            display: none; /* Initially hide the toggle icon */
+        }
+        .show-password {
+            color: green; /* Color when password is visible */
+        }
+        .hide-password {
+            color: red; /* Color when password is hidden */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Signup</h2>
+        <form id="signupForm" action="/auth/signup" method="POST">
+            <div class="form-group">
+                <input type="text" id="firstName" name="firstName" placeholder="First Name" >
+                <span id="firstNameError" class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <input type="text" id="lastName" name="lastName" placeholder="Last Name" >
+                <span id="lastNameError" class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email" >
+                <span id="emailError" class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <input type="text" id="phone" name="phone" placeholder="Phone number" >
+                <span id="phoneError" class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Password" >
+                <span class="toggle-password hide-password">👁️</span>
+                <span id="passwordError" class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" >
+                <span class="toggle-password hide-password">👁️</span>
+                <span id="confirmPasswordError" class="error-message"></span>
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+                <div class="error-message"><%= errorMessage %></div>
+            <% } %>
+            
+            <button type="submit">Signup</button>
+        </form>
+        <p>Already signed up? <a href="/auth/login">Login</a></p>
+        
+    </div>
+
+    <script>
+        // Restrict phone input to digits only
+        document.getElementById('phone').addEventListener('input', function(event) {
+            const phone = event.target;
+            phone.value = phone.value.replace(/\D/g, '');
+            if (phone.value.length > 10) {
+                phone.value = phone.value.slice(0, 10);
+            }
+        });
+
+        // Form validation
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            const firstNameError = document.getElementById('firstNameError');
+            const lastNameError = document.getElementById('lastNameError');
+            const emailError = document.getElementById('emailError');
+            const phoneError = document.getElementById('phoneError');
+            const passwordError = document.getElementById('passwordError');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            const errorMessage = document.getElementById('errorMessage');
+
+            let isValid = true;
+
+            // Reset previous error messages
+            firstNameError.textContent = '';
+            lastNameError.textContent = '';
+            emailError.textContent = '';
+            phoneError.textContent = '';
+            passwordError.textContent = '';
+            confirmPasswordError.textContent = '';
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+
+            // Validate first name
+            if (firstName === '') {
+                firstNameError.textContent = 'First name is required';
+                isValid = false;
+            } else if (!/^[A-Za-z]+$/.test(firstName)) {
+                firstNameError.textContent = 'First name must contain only letters';
+                isValid = false;
+            }
+
+            // Validate last name
+            if (lastName === '') {
+                lastNameError.textContent = 'Last name is required';
+                isValid = false;
+            } else if (!/^[A-Za-z]+$/.test(lastName)) {
+                lastNameError.textContent = 'Last name must contain only letters';
+                isValid = false;
+            }
+
+            // Validate email
+            if (email === '') {
+                emailError.textContent = 'Email is required';
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailError.textContent = 'Invalid email format';
+                isValid = false;
+            }
+
+            // Validate phone number
+            if (phone === '') {
+                phoneError.textContent = 'Phone number is required';
+                isValid = false;
+            } else if (phone.length !== 10) {
+                phoneError.textContent = 'Phone number must be 10 digits';
+                isValid = false;
+            }
+
+            // Validate password
+            if (password === '') {
+                passwordError.textContent = 'Password is required';
+                isValid = false;
+            } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{6,}/.test(password)) {
+                passwordError.textContent = 'Password must be strong';
+                isValid = false;
+            }
+
+            // Validate confirm password
+            if (confirmPassword === '') {
+                confirmPasswordError.textContent = 'Confirm password is required';
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                confirmPasswordError.textContent = 'Passwords do not match';
+                isValid = false;
+            }
+
+            // Show overall error message if there are validation issues
+            if (!isValid) {
+                errorMessage.textContent = 'Please correct the errors above.';
+                errorMessage.style.display = 'block';
+                event.preventDefault(); // Prevent form submission if validation fails
+            }
+        });
+
+        // JavaScript for toggling password visibility
+        const passwordField = document.getElementById('password');
+        const confirmPasswordField = document.getElementById('confirmPassword');
+        const togglePasswordIcons = document.querySelectorAll('.toggle-password');
+
+        function togglePasswordVisibility(field, icon) {
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('hide-password');
+                icon.classList.add('show-password');
+                icon.textContent = '👁️';
+            } else {
+                field.type = 'password';
+                icon.classList.remove('show-password');
+                icon.classList.add('hide-password');
+                icon.textContent = '👁️';
+            }
+        }
+
+        passwordField.addEventListener('input', function() {
+            const togglePassword = passwordField.nextElementSibling;
+            if (passwordField.value.length > 0) {
+                togglePassword.style.display = 'block'; // Show the toggle icon
+            } else {
+                togglePassword.style.display = 'none'; // Hide the toggle icon
+            }
+        });
+
+        confirmPasswordField.addEventListener('input', function() {
+            const togglePassword = confirmPasswordField.nextElementSibling;
+            if (confirmPasswordField.value.length > 0) {
+                togglePassword.style.display = 'block'; // Show the toggle icon
+            } else {
+                togglePassword.style.display = 'none'; // Hide the toggle icon
+            }
+        });
+
+        togglePasswordIcons.forEach(icon => {
+            icon.addEventListener('click', function() {
+                const field = this.previousElementSibling;
+                togglePasswordVisibility(field, this);
+            });
+        });
+    </script>
+</body>
+</html>

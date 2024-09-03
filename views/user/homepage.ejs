@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page</title>
+  <link rel="stylesheet" href="/css/user/homePage.css">
+  
+  <!-- Boxicons -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+  <style>
+  
+
+  </style>
+</head>
+<body>
+
+
+  <%- include('../partials/header') %>
+ 
+
+
+  <!-- Banner Section -->
+  <section class="banner">
+    <img src="/image/ban1.jpeg" alt="Banner Image">
+  </section>
+  
+  <div class="new-arrivals">
+    <h1>NEW ARRIVALS</h1>
+  </div>
+  
+
+  <section class="products">
+    <% products.forEach(product => { %>
+      <div class="product">
+        <div class="product-image-container">
+          <a href="/auth/product/<%= product._id %>">
+            <% if (product.image && product.image.length > 0) { %>
+              <img src="<%= product.image[0] %>" alt="Product Image" class="product-image">
+            <% } else { %>
+              No Image
+            <% } %>
+          </a>
+          <i class="bx bx-heart heart-icon"></i>
+        </div>
+        <h3><a href="/product/<%= product._id %>"><%= product.name %></a></h3>
+        <p>₹<%= product.price %> (<%= product.discount %>% off)</p>
+        <p><%= product.description %></p>
+      </div>
+    <% }); %>
+</section>
+
+
+<%- include('../partials/footer') %>
+
+  <script>
+    document.getElementById('user-icon').addEventListener('click', function(event) {
+      <% if (isLoggedIn) { %>
+        event.preventDefault();
+        var userInfo = document.getElementById('user-info');
+        if (userInfo.style.display === 'none' || userInfo.style.display === '') {
+          userInfo.style.display = 'block';
+        } else {
+          userInfo.style.display = 'none';
+        }
+      <% } %>
+    });
+
+    document.getElementById('logout-button').addEventListener('click', function(event) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Are you sure you want to logout?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = '/auth/logout';
+        }
+      });
+    });
+
+
+
+
+
+      /*===== MENU SHOW Y HIDDEN =====*/ 
+      const navMenu = document.getElementById('nav-menu'),
+              toggleMenu = document.getElementById('nav-toggle'),
+              closeMenu = document.getElementById('nav-close')
+
+        /*SHOW*/ 
+        toggleMenu.addEventListener('click', ()=>{
+            navMenu.classList.toggle('show')
+        })
+
+        /*HIDDEN*/
+        closeMenu.addEventListener('click', ()=>{
+            navMenu.classList.remove('show')
+        })
+
+        /*===== ACTIVE AND REMOVE MENU =====*/
+        const navLink = document.querySelectorAll('.nav__link');   
+
+        function linkAction(){
+          /*Active link*/
+          navLink.forEach(n => n.classList.remove('active'));
+          this.classList.add('active');
+          
+          /*Remove menu mobile*/
+          navMenu.classList.remove('show')
+        }
+        navLink.forEach(n => n.addEventListener('click', linkAction));
+  </script>
+</body>
+</html>

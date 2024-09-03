@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop</title>
+  <link rel="stylesheet" href="/css/user/shop.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .user-info {
+      display: none;
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 10px;
+      right: 10px;
+      top: 80px;
+      z-index: 1000;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-info a {
+      display: block;
+      padding: 10px;
+      color: black;
+      text-decoration: none;
+    }
+
+    .user-info a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .navbar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+    }
+
+    .navbar-menu li {
+      position: relative;
+    }
+
+    .navbar-menu a {
+      text-decoration: none;
+      padding: 15px;
+      display: block;
+      color: #000;
+    }
+
+    .navbar-menu .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu {
+      list-style: none;
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #fff;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .dropdown-menu li {
+      width: 200px;
+      list-style: none;
+    }
+
+    .dropdown-menu a {
+      padding: 10px;
+      color: #000;
+      text-decoration: none;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .bxs-heart {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul class="navbar-menu">
+      <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
+      <li class="dropdown">
+        <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
+        <ul class="dropdown-menu">
+          <% categories.forEach(category => { %>
+            <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
+          <% }) %>
+        </ul>
+      </li>
+      <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
+      <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
+    </ul>
+    <div class="logo">
+      <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
+    </div>
+    <div class="navbar-right">
+      <div class="navbar-search">
+        <input type="text" id="search-input" placeholder="Search...">
+        <button type="button" onclick="searchProducts()"><i class="bx bx-search"></i></button>
+      </div>
+      
+      <div class="navbar-icons">
+        <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
+        <% if (isLoggedIn && userDatabase) { %>
+          <div class="user-info" id="user-info">
+            <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
+            <a href="/auth/logout" id="logout-button">Log out</a>
+          </div>
+        <% } %>
+        <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
+        <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="filter-navbar">
+    <div class="filter-options">
+      <h3></h3>
+      <ul>
+        <li><a href="#" onclick="applyCombinedFilter('popularity')">Popularity</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('price-asc')">Price: Low to High</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('price-desc')">Price: High to Low</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('ratings')">Average Ratings</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('featured')">Featured</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('new-arrivals')">New Arrivals</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('a-z')">A-Z</a></li>
+        <li><a href="#" onclick="applyCombinedFilter('z-a')">Z-A</a></li>
+      </ul>
+    </div>
+    <div class="filter-categories">
+      <h3></h3>
+      <ul>
+        <% categories.forEach(category => { %>
+          <li><a href="#" onclick="applyCategoryFilter('<%= category._id %>')"><%= category.name %></a></li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+  
+    
+
+  <section class="products">
+    <% products.forEach(product => { 
+      const discountedPrice = product.price - (product.price * product.discount / 100); 
+    %>
+      <div class="product">
+        <div class="product-image-container">
+          <a href="/auth/product/<%= product._id %>">
+            <% if (product.image && product.image.length > 0) { %>
+              <img src="<%= product.image[0] %>" alt="Product Image">
+            <% } else { %>
+              No Image
+            <% } %>
+          </a>
+          <i class="bx bx-heart heart-icon"></i>
+        </div>
+        <h3><a href="/product/<%= product._id %>"><%= product.name %></a></h3>
+        <p>
+          <span style="text-decoration: line-through;">₹<%= product.price %></span> 
+          ₹<%= discountedPrice.toFixed(2) %> (<%= product.discount %>% off)
+        </p>
+        <p><%= product.description %></p>
+      </div>
+    <% }); %>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section logo-contact">
+        <div class="logo">
+          <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
+        </div>
+        <p>We’re available by phone -123-456-789</p>
+        <p>info@example.com</p>
+        <p>Monday till Friday 10 to 6 EST</p>
+        <div class="social-icons">
+          <a href="#"><i class='bx bxl-facebook'></i></a>
+          <a href="#"><i class='bx bxl-instagram'></i></a>
+          <a href="#"><i class='bx bxl-twitter'></i></a>
+        </div>
+      </div>
+      <div class="footer-section useful-links">
+        <h2>Useful links</h2>
+        <ul>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Babysitters</a></li>
+          <li><a href="#">Contact us</a></li>
+        </ul>
+      </div>
+      <div class="footer-section my-account">
+        <h2>My account</h2>
+        <ul>
+          <li><a href="#">Track my order</a></li>
+          <li><a href="#">Terms of use</a></li>
+          <li><a href="#">Wishlist</a></li>
+          <li><a href="#">Submit your feedback</a></li>
+        </ul>
+      </div>
+      <div class="footer-section customer-service">
+        <h2>Customer service</h2>
+        <ul>
+          <li><a href="#">Help & contact us</li>
+          <li><a href="#">Returns & refunds</a></li>
+          <li><a href="#">Online stores</a></li>
+          <li><a href="#">Terms & conditions</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.getElementById('user-icon').addEventListener('click', function(event) {
+      <% if (isLoggedIn) { %>
+        event.preventDefault();
+        var userInfo = document.getElementById('user-info');
+        if (userInfo.style.display === 'none' || userInfo.style.display === '') {
+          userInfo.style.display = 'block';
+        } else {
+          userInfo.style.display = 'none';
+        }
+      <% } %>
+    });
+
+
+
+    function applyCombinedFilter(filter) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('category') || '';
+    window.location.href = `/shop?filter=${encodeURIComponent(filter)}&category=${encodeURIComponent(categoryId)}`;
+  }
+
+  function applyCategoryFilter(categoryId) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const filter = urlParams.get('filter') || '';
+    window.location.href = `/shop?category=${encodeURIComponent(categoryId)}&filter=${encodeURIComponent(filter)}`;
+  }
+  function searchProducts() {
+    var query = document.getElementById('search-input').value;
+    window.location.href = `/shop?search=${encodeURIComponent(query)}`;
+  }
+
+  
+  </script>
+</body>
+</html>
