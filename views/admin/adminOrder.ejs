@@ -134,9 +134,10 @@
                       <input type="hidden" name="itemId" value="<%= order.items[0]._id %>">
                       <select name="status" onchange="this.form.submit()">
                           <option value="pending" <%= order.items[0].orderStatus === 'pending' ? 'selected' : '' %>>Pending</option>
-                          <option value="confirmed" <%= order.items[0].orderStatus === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
-                          <option value="shipping" <%= order.items[0].orderStatus === 'shipping' ? 'selected' : '' %>>Shipping</option>
-                          <option value="delivered" <%= order.items[0].orderStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                          <option value="Order Confirmed" <%= order.items[0].orderStatus === 'Order Confirmed' ? 'selected' : '' %>>Order Confirmed</option>
+                          <option value="Shipped" <%= order.items[0].orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                          <option value="Out for delivery" <%= order.items[0].orderStatus === 'Out for delivery' ? 'selected' : '' %>>Out for delivery</option>
+                          <option value="delivered" <%= order.items[0].orderStatus === 'delivered' ? 'selected' : '' %>>delivered</option>
                           <option value="cancelled" <%= order.items[0].orderStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
                       </select>
                   </form>

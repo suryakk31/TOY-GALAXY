@@ -30,6 +30,8 @@ exports.manageAddress = async(req,res) => {
     }
 }
 
+
+
 exports.addAddress = async (req, res) => {
     try {
         const { name, address, phone, locality, pincode, state, city } = req.body;

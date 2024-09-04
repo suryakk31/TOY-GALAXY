@@ -149,7 +149,8 @@
           <input type="hidden" name="productId" value="<%= product._id %>" />
           <button type="submit">Add to Cart</button>
         </form>
-        <button class="buy-now">Buy Now</button>
+        <a href="/auth/checkout?productId=<%= product._id %>"><button class="buy-now">Buy Now</button></a>
+
       </div>
       <div class="product-description">
         <h3>Product Details</h3>
@@ -271,6 +272,12 @@
       }
     });
   });
+
+
+  document.getElementById('buyNowButton').addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        window.location.href = `/auth/checkout?productId=${productId}`;
+    });
 
   
   </script>

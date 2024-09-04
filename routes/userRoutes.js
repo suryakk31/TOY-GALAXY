@@ -20,6 +20,8 @@ const userCheckoutController = require('../controllers/userCheckoutController');
 
 const userOrderController = require('../controllers/userOrderController')
 
+const userOrderdetailsController = require('../controllers/userOrderdetailsController')
+
 
 router.get('/',userController.getLandingPage)
 router.get('/auth/homepage', userController.getHomepage)
@@ -57,5 +59,6 @@ router.post('/auth/checkout',userCheckoutController.postCheckout)
 
 router.get('/auth/order',userOrderController.getOrderPage)
 
+router.get('/auth/orderDetails/:orderId', userOrderdetailsController.getOrderdetails);
 
 module.exports = router;

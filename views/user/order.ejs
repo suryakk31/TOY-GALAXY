@@ -7,17 +7,38 @@
     <link rel="stylesheet" href="/css/user/order.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-      .order-item {
-          background-color: white;
-          margin: 20px;
-          padding: 15px;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(52, 152, 219, 0.4);
+  }
+  70% {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 0 10px rgba(52, 152, 219, 0);
+  }
+  100% {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(52, 152, 219, 0);
+  }
+}
 
+.order-item {
+  background-color: white;
+  margin: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 2px solid transparent;
+}
+
+.order-item:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: #3498db;
+  background-color: #f8f9fa;
+  animation: pulse 1.5s infinite;
+}
       .order-item img {
           width: 100px;
           height: 100px;
@@ -96,11 +117,10 @@
     </div>
   </nav>
 
-  <!-- Dynamic Content Section: Start here -->
   <% if (orders.length > 0) { %>
     <% orders.forEach(order => { %>
       <% order.items.forEach(item => { %>
-        <div class="order-item">
+        <div class="order-item" data-order-id="<%= order._id %>">
           <img src="<%= item.productImage[0] %>" alt="Product Image">
           <div class="order-details">
             <h2><%= item.productName %></h2>
@@ -121,7 +141,7 @@
   <% } else { %>
     <p>No orders found.</p>
   <% } %>
-  <!-- Dynamic Content Section: End here -->
+ 
 
   <!-- Footer -->
   <footer class="footer">
@@ -195,6 +215,14 @@
           window.location.href = '/auth/logout';
         }
       });
+    });
+
+
+    document.querySelectorAll('.order-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            window.location.href = `/auth/orderDetails/${orderId}`;
+        });
     });
   </script>
 </body>
