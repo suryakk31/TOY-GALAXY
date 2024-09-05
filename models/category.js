@@ -11,6 +11,11 @@ const categorySchema = new Schema({
     type: String,
     required: true
   },
+
+  offer: {
+    type: Number,
+    default: 0
+  },
  
   isBlocked: {
     type: Boolean,

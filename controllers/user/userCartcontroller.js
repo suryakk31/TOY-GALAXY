@@ -1,7 +1,7 @@
-const User = require('../models/user');
-const Product = require('../models/product');
-const Cart = require('../models/cart');
-const Category = require('../models/category'); 
+const User = require('../../models/user');
+const Product = require('../../models/product');
+const Cart = require('../../models/cart');
+const Category = require('../../models/category'); 
 
 exports.getCart = async (req, res) => {
   try {
@@ -34,7 +34,7 @@ exports.getCart = async (req, res) => {
     if (!cart || cart.items.length === 0) {
       return res.render('user/cart', {
         isLoggedIn,
-        cart: { items: [], originalTotal: 0, discount: 0, deliveryFee: 0, total: 0 }, 
+        cart: { items: [], originalTotal: 0,  deliveryFee: 0, total: 0 }, 
         message: 'Your cart is empty.',
         products,
         categories,
@@ -44,10 +44,24 @@ exports.getCart = async (req, res) => {
     }
 
   
-    const originalTotal = cart.items.reduce((sum, item) => sum + (item.productId.price - (item.productId.price * item.productId.discount / 100)) * item.quantity, 0).toFixed(2);
-    const discount = cart.items.reduce((sum, item) => sum + (item.productId.price * item.productId.discount / 100) * item.quantity, 0).toFixed(2);
+    const originalTotal = cart.items.reduce((sum, item) => {
+      const itemTotal = (item.productId.price - (item.productId.price * item.productId.discount / 100)) * item.quantity;
+      return sum + itemTotal;
+    }, 0);
+
+    const categoryOffer = cart.items.reduce((sum, item) => {
+      if (item.productId.category && item.productId.category.offer) {
+        const productPriceAfterDiscount = (item.productId.price - (item.productId.price * item.productId.discount / 100)) * item.quantity;
+        const offer = productPriceAfterDiscount * (item.productId.category.offer / 100);
+        return sum + offer;
+      }
+      return sum; 
+    }, 0);
+
+    
+    
     const deliveryFee = 50;
-    const total = parseFloat((originalTotal - discount + deliveryFee).toFixed(2));
+    const total =  (originalTotal - categoryOffer + deliveryFee).toFixed(2);
    
 
 
@@ -57,8 +71,8 @@ exports.getCart = async (req, res) => {
       categories,
       cart: {
         ...cart.toObject(), 
-        originalTotal,
-        discount,
+        originalTotal: originalTotal.toFixed(2), 
+        categoryOffer : categoryOffer.toFixed(2),
         deliveryFee,
         total
       },
@@ -144,26 +158,28 @@ exports.addToCart = async (req, res) => {
   
         const updatedItem = cart.items.find(item => item.productId._id.toString() === productId);
   
-        let newPrice = 0;
-        let newQuantity = 0;
-        if (updatedItem) {
-          newPrice = (updatedItem.productId.price - (updatedItem.productId.price * updatedItem.productId.discount / 100)) * updatedItem.quantity;
-          newQuantity = updatedItem.quantity;
-        }
+    //     let newPrice = 0;
+    //     let newQuantity = 0;
+    //     if (updatedItem) {
+    //       newPrice = (updatedItem.productId.price - (updatedItem.productId.price * updatedItem.productId.discount / 100)) * updatedItem.quantity;
+    //       newQuantity = updatedItem.quantity;
+    //     }
   
-        const originalTotal = cart.items.reduce((sum, item) => sum + (item.productId.price * item.quantity), 0);
-        const discount = cart.items.reduce((sum, item) => sum + (item.productId.price * item.productId.discount / 100 * item.quantity), 0);
-        const deliveryFee = 50;
-        const total = parseFloat((originalTotal - discount + deliveryFee).toFixed(2));
+    //     const originalTotal = cart.items.reduce((sum, item) => sum + (item.productId.price * item.quantity), 0);
+    //      const categoryOffer = item.productId.category && item.productId.category.offer
+    // ? productPriceAfterDiscount * (item.productId.category.offer / 100)
+    // : 0;
+    //     const deliveryFee = 50;
+    //     const total = parseFloat((originalTotal  + deliveryFee).toFixed(2));
   
         return res.json({
           success: true,
-          newQuantity,
-          newPrice,
-          originalTotal,
-          discount,
-          deliveryFee,
-          total
+          // newQuantity,
+          // newPrice,
+          // originalTotal,
+          // categoryOffer,
+          // deliveryFee,
+          // total
         });
       } else {
         return res.status(404).json({ success: false, message: 'Item not found in cart' });
@@ -198,17 +214,19 @@ exports.addToCart = async (req, res) => {
         cart.items.pull({ productId });
         await cart.save();
   
-        const originalTotal = cart.items.reduce((sum, item) => sum + (item.productId.price * item.quantity), 0);
-        const discount = cart.items.reduce((sum, item) => sum + (item.productId.price * item.productId.discount / 100 * item.quantity), 0);
-        const deliveryFee = 50;
-        const total = parseFloat((originalTotal - discount + deliveryFee).toFixed(2));
+    //     const originalTotal = cart.items.reduce((sum, item) => sum + (item.productId.price * item.quantity), 0);
+    //     const categoryOffer = item.productId.category && item.productId.category.offer
+    // ? productPriceAfterDiscount * (item.productId.category.offer / 100)
+    // : 0;
+    //     const deliveryFee = 50;
+    //     const total = parseFloat((originalTotal - discount + deliveryFee).toFixed(2));
   
         return res.json({
           success: true,
-          originalTotal,
-          discount,
-          deliveryFee,
-          total
+          // originalTotal,
+          // categoryOffer,
+          // deliveryFee,
+          // total
         });
       } else {
         return res.status(404).json({ success: false, message: 'Item not found in cart' });

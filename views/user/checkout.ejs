@@ -204,7 +204,8 @@
                     <h3>PRICE DETAILS</h3>
                     <ul>
                         <li>Original Total <span>₹<%= originalTotal %></span></li>
-                        <li>Discount <span>₹<%= discount %></span></li>
+                        <li>Category Offer <span>₹<%= categoryOffer || '0.00' %></span></li>
+
                         <li>Delivery Fee <span>₹<%= deliveryFee %></span></li>
                         <li>Total Payable: <span>₹<%= total %></span></li>
                     </ul>
@@ -244,6 +245,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+console.log('Category Offer asdasd:', '<%= categoryOffer %>');
+
     document.getElementById('saveAddressBtn').addEventListener('click',async function(){
     // Gather form values
     const name = document.getElementById('name').value.trim();

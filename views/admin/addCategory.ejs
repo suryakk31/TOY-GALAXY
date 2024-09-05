@@ -60,6 +60,7 @@
       <li><a href="/admin/category" class='active'><i class='bx bx-category'></i> Category</a></li>
       <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
       <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/admin/coupon"><i class='bx bx-gift'></i> coupon</a></li>
       <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
       <li><a href="/admin/banner"><i class='bx bx-image'></i> Banner</a></li>
       <li><a href="/admin/chat"><i class='bx bx-chat'></i> Chat</a></li>
@@ -85,6 +86,15 @@
           <div id="name-error-message" class="error-message">Category name must be at least 3 characters long.</div>
         <% } %>
       </div>
+
+      <div class="form-group">
+        <label for="offer">Offer:</label>
+        <input type="text" id="offer" name="offer">
+        <% if (errorMessage && errorMessage.includes('Offer is required')) { %>
+          <div id="offer-error-message" class="error-message">Offer is required.</div>
+        <% } %>
+      </div>
+
       <div class="form-group">
         <label for="description">Description:</label>
         <input type="text" id="description" name="description" >

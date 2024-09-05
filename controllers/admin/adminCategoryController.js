@@ -1,5 +1,5 @@
-const Category = require('../models/category');
-const Product = require('../models/product')
+const Category = require('../../models/category');
+const Product = require('../../models/product')
 
 
 
@@ -40,7 +40,7 @@ exports.addCategory = (req, res) => {
 
 exports.postAddCategoryPage = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, offer } = req.body;
     console.log('Received name:', name);
     console.log(description)
 
@@ -48,6 +48,12 @@ exports.postAddCategoryPage = async (req, res) => {
       req.flash('errorMessage', 'Name must be at least 3 characters long');
       return res.redirect('/admin/category/addCategory');
     }
+
+    if (offer && (isNaN(offer) || offer < 0 || offer > 100)) {
+      req.flash('errorMessage', 'Offer must be a number between 0 and 100');
+      return res.redirect('/admin/category/addCategory');
+    }
+
 
     if (!description || description.length < 10) {
       req.flash('errorMessage', 'Description must be at least 10 characters long');
@@ -63,6 +69,7 @@ exports.postAddCategoryPage = async (req, res) => {
     const newCategory = new Category({
       name,
       description,
+      offer: offer || 0,
     });
 
     await newCategory.save();
@@ -122,11 +129,12 @@ exports.updateCategory = async (req, res) => {
     const categoryId = req.params.id;
     const updates = req.body;
 
-    
- 
+    if (updates.offer && (isNaN(updates.offer) || updates.offer < 0 || updates.offer > 100)) {
+      return res.status(400).json({ success: false, message: 'Offer must be a number between 0 and 100' });
+    }
 
     const updatedCategory = await Category.findByIdAndUpdate(categoryId, updates, { new: true });
- 
+
     if (updatedCategory) {
       res.status(200).json({ success: true, category: updatedCategory });
     } else {
@@ -137,6 +145,5 @@ exports.updateCategory = async (req, res) => {
     res.status(500).json({ success: false, message: 'An error occurred while updating the category' });
   }
 };
-
 
 

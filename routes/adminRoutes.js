@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
+
 const upload = require('../middleware/multer')
-const adminLoginController = require('../controllers/adminLoginController');
-const adminUserController = require('../controllers/adminUserController');
-const adminProductController = require('../controllers/adminProductController');
-const adminCategoryController = require('../controllers/adminCategoryController');
-const adminOrderController = require('../controllers/adminOrderController')
+
+const adminLoginController = require('../controllers/admin/adminLoginController');
+
+const adminUserController = require('../controllers/admin/adminUserController');
+
+const adminProductController = require('../controllers/admin/adminProductController');
+
+const adminCategoryController = require('../controllers/admin/adminCategoryController');
+
+const adminOrderController = require('../controllers/admin/adminOrderController')
+
+const adminCouponController = require('../controllers/admin/adminCouponController')
 
 
 router.get('/login', adminLoginController.adminLogin);
@@ -33,6 +41,9 @@ router.post('/category/:id/toggle', adminCategoryController.blockCategory);
 
 router.get('/orders',adminOrderController.adminOrder)
 router.post('/updateOrderStatus/:id', adminOrderController.updateOrderStatus);
+
+
+router.get('/coupon',adminCouponController.getCouponPage)
 
 
 router.get('/logout', adminLoginController.adminLogout);

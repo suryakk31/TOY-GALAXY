@@ -1,6 +1,6 @@
-const Product = require('../models/product');
-const User = require('../models/user');
-const Category = require('../models/category');
+const Product = require('../../models/product');
+const User = require('../../models/user');
+const Category = require('../../models/category');
 
 exports.getProductPage = async (req, res) => {
   try {
@@ -22,7 +22,7 @@ exports.getProductPage = async (req, res) => {
     const productId = req.params.id;
 
 
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate('category');
     const products = await Product.find({ isBlocked: false });
     const categories = await Category.find({ isBlocked: false });
 

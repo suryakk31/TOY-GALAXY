@@ -1,6 +1,6 @@
-const User = require('../models/user');
-const Category = require('../models/category');
-const Orders = require('../models/order');
+const User = require('../../models/user');
+const Category = require('../../models/category');
+const Orders = require('../../models/order');
 
 
 exports.getOrderdetails = async (req, res) => {

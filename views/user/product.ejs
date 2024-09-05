@@ -152,6 +152,27 @@
         <a href="/auth/checkout?productId=<%= product._id %>"><button class="buy-now">Buy Now</button></a>
 
       </div>
+
+      <div class="category">
+        <h4 style="font-weight: bold;">Category: 
+          <span style="color: #131313; font-weight: normal;">
+            <%= product.category ? product.category.name : 'No category assigned' %>
+          </span>
+        
+          <h4 style="font-weight: bold;">Category offer: 
+            <span style="color: #131313; font-weight: normal;">
+              <%= product.category && product.category.offer ? product.category.offer + '%' : 'No category assigned' %>
+            </span>
+          </h4>
+          
+
+
+          
+        </h3>
+      </div>
+      
+      
+
       <div class="product-description">
         <h3>Product Details</h3>
         <p><%= product.description %></p>

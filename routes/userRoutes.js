@@ -4,23 +4,23 @@ const router = express.Router();
 
 const userAuth = require('../middleware/userMiddlewear')
 
-const userController =  require('../controllers/userController')
+const userController =  require('../controllers/user/userController')
 
-const shopController = require('../controllers/userShopController')
+const shopController = require('../controllers/user/userShopController')
 
-const productController = require('../controllers/userProductController')
+const productController = require('../controllers/user/userProductController')
 
-const profileController = require('../controllers/userProfileController')
+const profileController = require('../controllers/user/userProfileController')
 
-const addressController = require('../controllers/userAddressController')
+const addressController = require('../controllers/user/userAddressController')
 
-const cartController = require('../controllers/userCartcontroller');
+const cartController = require('../controllers/user/userCartcontroller');
 
-const userCheckoutController = require('../controllers/userCheckoutController');
+const userCheckoutController = require('../controllers/user/userCheckoutController');
 
-const userOrderController = require('../controllers/userOrderController')
+const userOrderController = require('../controllers/user/userOrderController')
 
-const userOrderdetailsController = require('../controllers/userOrderdetailsController')
+const userOrderdetailsController = require('../controllers/user/userOrderdetailsController')
 
 
 router.get('/',userController.getLandingPage)

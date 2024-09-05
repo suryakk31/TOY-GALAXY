@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coupon</title>
+  <link rel="stylesheet" href="/css/admin/coupon.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+  <style>
+    /* Modal Background */
+    .modal {
+      display: none; 
+      position: fixed;
+      z-index: 1000; /* Ensure it appears above other content */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5); /* Darker overlay */
+      padding-top: 50px; /* Space from the top */
+    }
+    
+    /* Modal Content */
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto; /* Center the modal horizontally */
+      padding: 30px; /* Spacing inside the modal */
+      border-radius: 8px; /* Rounded corners */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+      width: 90%;
+      max-width: 500px; /* Maximum width */
+      animation: fadeIn 0.3s ease; /* Smooth fade-in effect */
+    }
+    
+    /* Close Button */
+    .close {
+      color: #666;
+      float: right;
+      font-size: 24px; /* Size of the close button */
+      font-weight: bold;
+      transition: color 0.3s; /* Smooth color transition */
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #333; /* Darker color on hover */
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    /* Fade-in Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    </style>
+    
+
+
+</head>
+<body>
+  <header>
+    <div class="top-nav">
+      <div class="logo">
+        <h1>Kids Kastle</h1>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="profile-logout">
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
+      <li><a href="/admin/userManagement" ><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
+      <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/admin/coupon" class="active"><i class='bx bx-gift'></i> coupon</a></li>
+      <li><a href="/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
+      <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
+      <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
+      <li><a href="/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
+      <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
+    </ul>
+  </nav>
+  <div class="table-container">
+    <button class="add-coupon-btn">Add Coupon</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Coupon code</th>
+          <th>Coupon offer</th>
+          <th>expiry date</th>
+          
+          <th>Action</th>
+        </tr>
+      </thead>
+      
+    </table>
+  </div>
+
+
+
+<div id="couponModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Add Coupon</h2>
+    <form id="couponForm">
+      <label for="couponCode">Coupon Code:</label>
+      <input type="text" id="couponCode" name="couponCode" required>
+      
+      <label for="couponOffer">Coupon Offer (%):</label>
+      <input type="number" id="couponOffer" name="couponOffer" required min="0" max="100">
+      
+      <label for="expiryDate">Expiry Date:</label>
+      <input type="date" id="expiryDate" name="expiryDate" required>
+      
+      <button type="submit">Add Coupon</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+<script>
+  // Get the modal
+  var modal = document.getElementById("couponModal");
+  
+  // Get the button that opens the modal
+  var btn = document.querySelector(".add-coupon-btn");
+  
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+  
+  // When the user clicks the button, open the modal 
+  btn.onclick = function() {
+    modal.style.display = "block";
+  }
+  
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+  </script>
+  
+
+
+</body>
+</html>

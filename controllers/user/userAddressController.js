@@ -1,6 +1,6 @@
-const User = require('../models/user');
-const Category = require('../models/category');
-const Address = require('../models/address')
+const User = require('../../models/user');
+const Category = require('../../models/category');
+const Address = require('../../models/address')
 
 
 exports.manageAddress = async(req,res) => {

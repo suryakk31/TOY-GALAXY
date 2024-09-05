@@ -241,7 +241,7 @@ strong {
                         <p><strong>Product Name:</strong> <%= item.productName %></p>
                         <p><strong>Description:</strong> <%= item.productDescription %></p>
                         <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                        <p><strong>Price:</strong> ₹<%= item.price %> <small>(Discounted price: ₹<%= item.discountPrice %>)</small></p>
+                        <p><strong>Total Price:</strong> ₹<%= order.totalPrice.toFixed(2) %></p>
                     </div>
                 </div>
                 <div class="delivery-status">

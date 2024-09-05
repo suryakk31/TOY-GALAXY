@@ -1,6 +1,6 @@
-const User = require('../models/user');
-const Category = require('../models/category');
-const Orders = require('../models/order')
+const User = require('../../models/user');
+const Category = require('../../models/category');
+const Orders = require('../../models/order')
 
 exports.getOrderPage = async (req, res) => {
     try {
@@ -16,7 +16,10 @@ exports.getOrderPage = async (req, res) => {
                 req.session.destroy();
                 return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
             }
-            orders = await Orders.find({ userId: userDatabase._id }).populate('items.productId');
+            orders = await Orders.find({ userId: userDatabase._id }).populate({
+                path: 'items.productId',
+                
+            });
         }
 
         res.render('user/order', { isLoggedIn, categories, userDatabase, orders });
