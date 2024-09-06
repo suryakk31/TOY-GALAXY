@@ -8,46 +8,45 @@
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
   <style>
     /* Modal Background */
     .modal {
       display: none; 
       position: fixed;
-      z-index: 1000; /* Ensure it appears above other content */
+      z-index: 1000;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.5); /* Darker overlay */
-      padding-top: 50px; /* Space from the top */
+      background-color: rgba(0,0,0,0.5); 
+      padding-top: 50px; 
     }
     
     /* Modal Content */
     .modal-content {
       background-color: #fff;
-      margin: 5% auto; /* Center the modal horizontally */
-      padding: 30px; /* Spacing inside the modal */
-      border-radius: 8px; /* Rounded corners */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
       width: 90%;
-      max-width: 500px; /* Maximum width */
-      animation: fadeIn 0.3s ease; /* Smooth fade-in effect */
+      max-width: 500px;
+      animation: fadeIn 0.3s ease; 
     }
     
     /* Close Button */
     .close {
       color: #666;
       float: right;
-      font-size: 24px; /* Size of the close button */
+      font-size: 24px; 
       font-weight: bold;
-      transition: color 0.3s; /* Smooth color transition */
+      transition: color 0.3s; 
     }
     
     .close:hover,
     .close:focus {
-      color: #333; /* Darker color on hover */
+      color: #333; 
       text-decoration: none;
       cursor: pointer;
     }
@@ -61,9 +60,7 @@
         opacity: 1;
       }
     }
-    </style>
-    
-
+  </style>
 
 </head>
 <body>
@@ -80,6 +77,7 @@
       </div>
     </div>
   </header>
+  
   <nav>
     <ul>
       <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
@@ -87,7 +85,7 @@
       <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
       <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
       <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
-      <li><a href="/admin/coupon" class="active"><i class='bx bx-gift'></i> coupon</a></li>
+      <li><a href="/admin/coupon" class="active"><i class='bx bx-gift'></i> Coupon</a></li>
       <li><a href="/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
       <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
       <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
@@ -96,75 +94,153 @@
       <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
     </ul>
   </nav>
+  
   <div class="table-container">
     <button class="add-coupon-btn">Add Coupon</button>
     <table>
       <thead>
         <tr>
-          <th>Coupon code</th>
-          <th>Coupon offer</th>
-          <th>expiry date</th>
-          
+          <th>Coupon Code</th>
+          <th>Discount (%)</th>
+          <th>Minimum Amount</th>
+          <th>Maximum Amount</th>
+          <th>Expiry Date</th>
           <th>Action</th>
         </tr>
       </thead>
-      
+      <tbody>
+        <% coupons.forEach(function(coupon) { %>
+          <tr>
+            <td><%= coupon.couponCode %></td>
+            <td><%= coupon.discount %>%</td>
+            <td><%= coupon.minAmount %></td>
+            <td><%= coupon.maxAmount %></td>
+            <td>
+              <%= new Date(coupon.expiryDate).toLocaleString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+              }) %>
+            </td>
+            <td>
+              <form action="/admin/coupons/<%= coupon._id %>/delete" method="POST" class="delete-form" style="display: inline;">
+                <!-- Trash Icon for Deleting Coupon -->
+                <i class="bx bx-trash delete-icon" onclick="this.closest('form').submit()"></i>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
     </table>
   </div>
 
+  <!-- Coupon Modal -->
+  <div id="couponModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Add Coupon</h2>
+      <form id="couponForm">
+        <!-- Coupon Description (added here but not in the table) -->
+        <label for="couponDescription">Coupon Description:</label>
+        <input type="text" id="couponDescription" name="couponDescription" required>
+        
+        <label for="couponCode">Coupon Code:</label>
+        <input type="text" id="couponCode" name="couponCode" required>
+        
+        <label for="couponOffer">Coupon Offer (%):</label>
+        <input type="number" id="couponOffer" name="couponOffer" required min="0" max="100">
+        
+        <label for="expiryDate">Expiry Date:</label>
+        <input type="date" id="expiryDate" name="expiryDate" required>
 
+        <label for="minAmount">Minimum Amount:</label>
+        <input type="number" id="minAmount" name="minAmount" required>
 
-<div id="couponModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Add Coupon</h2>
-    <form id="couponForm">
-      <label for="couponCode">Coupon Code:</label>
-      <input type="text" id="couponCode" name="couponCode" required>
-      
-      <label for="couponOffer">Coupon Offer (%):</label>
-      <input type="number" id="couponOffer" name="couponOffer" required min="0" max="100">
-      
-      <label for="expiryDate">Expiry Date:</label>
-      <input type="date" id="expiryDate" name="expiryDate" required>
-      
-      <button type="submit">Add Coupon</button>
-    </form>
+        <label for="maxAmount">Maximum Amount:</label>
+        <input type="number" id="maxAmount" name="maxAmount" required>
+        
+        <button type="submit">Add Coupon</button>
+      </form>
+    </div>
   </div>
-</div>
 
-
-
-
-<script>
-  // Get the modal
-  var modal = document.getElementById("couponModal");
+  <script>
+    // Get modal elements
+    const modal = document.getElementById("couponModal");
+    const closeModal = document.querySelector(".close");
+    const addCouponBtn = document.querySelector(".add-coupon-btn");
+    const couponForm = document.getElementById("couponForm");
+    const couponTable = document.querySelector("table tbody");
   
-  // Get the button that opens the modal
-  var btn = document.querySelector(".add-coupon-btn");
+    // Open the modal when "Add Coupon" button is clicked
+    addCouponBtn.addEventListener("click", () => {
+      modal.style.display = "block";
+    });
   
-  // Get the <span> element that closes the modal
-  var span = document.getElementsByClassName("close")[0];
-  
-  // When the user clicks the button, open the modal 
-  btn.onclick = function() {
-    modal.style.display = "block";
-  }
-  
-  // When the user clicks on <span> (x), close the modal
-  span.onclick = function() {
-    modal.style.display = "none";
-  }
-  
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function(event) {
-    if (event.target == modal) {
+    // Close the modal when the close button is clicked
+    closeModal.addEventListener("click", () => {
       modal.style.display = "none";
-    }
-  }
-  </script>
+    });
   
+    // Close the modal if the user clicks outside the modal
+    window.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  
+    // Function to add a new row to the table (note no description field)
+    function addCouponToTable(coupon) {
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>${coupon.couponCode}</td>
+        <td>${coupon.discount}%</td>
+        <td>${coupon.minAmount}</td>
+        <td>${coupon.maxAmount}</td>
+        <td>${new Date(coupon.expiryDate).toLocaleDateString()}</td>
+        <td>
+          <form action="/admin/coupons/${coupon._id}/delete" method="POST" class="delete-form" style="display: inline;">
+            <i class="bx bx-trash delete-icon" onclick="this.closest('form').submit()"></i>
+          </form>
+        </td>
+      `;
+      couponTable.appendChild(newRow);
+    }
 
+    // Handling the form submission for adding a coupon
+    couponForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+    
+      const formData = new FormData(couponForm);
+      const couponData = Object.fromEntries(formData.entries());
 
+      try {
+          const response = await fetch("/admin/coupon", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify(couponData),
+          });
+
+          if (response.ok) {
+              const newCoupon = await response.json();
+              addCouponToTable(newCoupon);
+              couponForm.reset();
+              modal.style.display = "none";
+              Swal.fire("Success", "Coupon added successfully!", "success");
+          } else {
+              const errorData = await response.json();
+              Swal.fire("Error", errorData.message || "Failed to add coupon", "error");
+          }
+      } catch (error) {
+          console.error("Error adding coupon:", error);
+          Swal.fire("Error", "Failed to add coupon. Please try again.", "error");
+      }
+    });
+  </script>
 </body>
 </html>

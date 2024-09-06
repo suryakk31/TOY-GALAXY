@@ -44,7 +44,7 @@ router.post('/updateOrderStatus/:id', adminOrderController.updateOrderStatus);
 
 
 router.get('/coupon',adminCouponController.getCouponPage)
-
+router.post('/coupon',adminCouponController.postCoupon)
 
 router.get('/logout', adminLoginController.adminLogout);
 

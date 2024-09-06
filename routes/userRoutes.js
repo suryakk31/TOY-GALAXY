@@ -22,6 +22,8 @@ const userOrderController = require('../controllers/user/userOrderController')
 
 const userOrderdetailsController = require('../controllers/user/userOrderdetailsController')
 
+const userCouponController = require('../controllers/user/userCouponController')
+
 
 router.get('/',userController.getLandingPage)
 router.get('/auth/homepage', userController.getHomepage)
@@ -60,5 +62,7 @@ router.post('/auth/checkout',userCheckoutController.postCheckout)
 router.get('/auth/order',userOrderController.getOrderPage)
 
 router.get('/auth/orderDetails/:orderId', userOrderdetailsController.getOrderdetails);
+
+router.get('/auth/coupon',userCouponController.getCoupon)
 
 module.exports = router;
