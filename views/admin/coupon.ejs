@@ -103,7 +103,7 @@
           <th>Coupon Code</th>
           <th>Discount (%)</th>
           <th>Minimum Amount</th>
-          <th>Maximum Amount</th>
+      
           <th>Expiry Date</th>
           <th>Action</th>
         </tr>
@@ -114,7 +114,7 @@
             <td><%= coupon.couponCode %></td>
             <td><%= coupon.discount %>%</td>
             <td><%= coupon.minAmount %></td>
-            <td><%= coupon.maxAmount %></td>
+         
             <td>
               <%= new Date(coupon.expiryDate).toLocaleString('en-US', { 
                 year: 'numeric', 
@@ -159,8 +159,7 @@
         <label for="minAmount">Minimum Amount:</label>
         <input type="number" id="minAmount" name="minAmount" required>
 
-        <label for="maxAmount">Maximum Amount:</label>
-        <input type="number" id="maxAmount" name="maxAmount" required>
+       
         
         <button type="submit">Add Coupon</button>
       </form>
@@ -199,7 +198,7 @@
         <td>${coupon.couponCode}</td>
         <td>${coupon.discount}%</td>
         <td>${coupon.minAmount}</td>
-        <td>${coupon.maxAmount}</td>
+       
         <td>${new Date(coupon.expiryDate).toLocaleDateString()}</td>
         <td>
           <form action="/admin/coupons/${coupon._id}/delete" method="POST" class="delete-form" style="display: inline;">

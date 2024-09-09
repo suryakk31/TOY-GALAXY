@@ -8,21 +8,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Basic styles for the checkout page */
-        .container { width: 90%; margin: 0 auto; }
-        .header, .footer { text-align: center; margin: 20px 0; }
-        .main-content { display: flex; justify-content: space-between; }
-        .checkout-section { width: 70%; }
-        .btn-primary3 { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
-        .section { border: 1px solid #ddd; margin-bottom: 10px; padding: 15px; border-radius: 5px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; }
-        .step-content { display: none; } /* Initially hide all sections */
-        .step-content.active { display: block; } /* Show the active section */
-        .btn-primary { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;}
-        .btn-primary1 { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; }
-        .savings { color: green; font-weight: bold; }
-        .change-link { font-size: 14px; color: #9D51FF; cursor: pointer; text-decoration: underline; }
-        .address-form { display: none; } /* Initially hide the address form */
+  
     </style>
 </head>
 <body>
@@ -185,7 +171,7 @@
         <% } %>
         <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
             <button id="place-order-btn" class="btn-primary3" type="button" onclick="placeOrder()">PLACE ORDER</button>
-            <button class="btn-primary1" type="button" onclick="goToCart()" style="margin-left: 10px;">GO TO CART</button>
+            <button class="btn-primary4" type="button" onclick="goToCart()" style="margin-left: 10px;">GO TO CART</button>
         </div>
     </div>
     
@@ -203,23 +189,62 @@
                 <aside class="price-details">
                     <h3>PRICE DETAILS</h3>
                     <ul>
-                        <li>Original Total <span>₹<%= originalTotal %></span></li>
-                        <li>Category Offer <span>₹<%= categoryOffer || '0.00' %></span></li>
-
-                        <li>Delivery Fee <span>₹<%= deliveryFee %></span></li>
-                        <li>Total Payable: <span>₹<%= total %></span></li>
-                    </ul>
+                      <li>Original Total <span>₹<%= originalTotal %></span></li>
+                      <li>Category Offer <span>-₹<%= categoryOffer || '0.00' %></span></li>
+                     
+                      <li>Coupon Discount <span>-₹0</span></li>
+                      <li>Total Amount: <span id="totalAmount">₹0</span></li>
+                    
+                      <li>Delivery Fee <span>₹<%= deliveryFee %></span></li>
+                      <li>Total Payable: <span>₹<%= total %></span></li>
+                  </ul>
+                    <button class="apply-coupon-btn" onclick="applyCoupon()">
+                      <i class='bx bxs-coupon'></i>
+                      Apply Coupon
+                  </button>
                     
                   
                 </aside>
+              
+              </div>
+
+              <div id="modalOverlay" class="modal-overlay"></div>
+              <div id="couponModal" class="modal">
+                  <span class="close-btn" onclick="closeModal()">&times;</span>
+ 
+                
+                  <input type="text" id="couponCode" placeholder="Enter coupon code">
+                  <button onclick="submitCoupon()">Apply </button>
+
+                  
+                  <div class="unavailable-coupons">
+                    <h3> </h3>
+                    <% coupon.forEach(coupon => { %>
+                    <div class="coupon">
+                        <div class="coupon-code">
+                            <i class='bx bx-purchase-tag'></i> <%= coupon.couponCode %>
+                        </div>
+                        <div class="coupon-title">Get  <%= coupon.discount %> % off</div>
+                        <div class="coupon-description"><%= coupon.description %> 
+                          <br>
+                          add minimum amount ₹ <%= coupon.minAmount %> to get this offer</div>
+                      
+                        <div class="unavailable-message">Valid Till : <%= new Date(coupon.expiryDate).toLocaleDateString() %></div>
+                    </div>
+                    <% }) %>
+
+                  </div>
+               
+              </div>
 
 
-                <!-- Order Confirmation Modal -->
-          <div id="orderConfirmationModal" class="modal" style="display: none;">
-    <div class="modal-content" style="text-align: center; padding: 20px; border-radius: 10px; background-color: white; width: 300px; margin: auto;">
-        <div class="modal-body">
+             
+
+          <div id="orderConfirmationModal" class="modal1" style="display: none;">
+    <div class="modal-content1" style="text-align: center; padding: 20px; border-radius: 10px; background-color: white; width: 300px; margin: auto;">
+        <div class="modal-body1">
             <div style="margin-bottom: 20px;">
-                <!-- Green checkmark inside a circle -->
+             
                 <div style="font-size: 50px; color: green; margin-bottom: 20px;">
                     &#10004;
                 </div>
@@ -235,7 +260,7 @@
                     
                 
                
-            </div>
+         
             
         </main>
 
@@ -247,7 +272,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
-console.log('Category Offer asdasd:', '<%= categoryOffer %>');
+
 
     document.getElementById('saveAddressBtn').addEventListener('click',async function(){
     // Gather form values
@@ -427,13 +452,15 @@ console.log('Category Offer asdasd:', '<%= categoryOffer %>');
         }
 
 
-
         function placeOrder() {
+    // Gather the necessary order details
     const orderDetails = {
-        address: document.querySelector('input[name="address"]:checked').value,
-        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+        address: document.querySelector('input[name="address"]:checked').value,  // Get selected address
+        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,  // Get selected payment method
+        couponCode: document.getElementById('couponCode').value  // Get coupon code if entered
     };
 
+    // Send a POST request to the server with the order details and coupon code
     fetch('/auth/checkout', {
         method: 'POST',
         headers: {
@@ -448,8 +475,12 @@ console.log('Category Offer asdasd:', '<%= categoryOffer %>');
         return response.json();
     })
     .then(data => {
-        console.log('Order placed successfully:', data);
-        showOrderConfirmationModal();  
+        if (data.message) {
+            console.log('Order placed successfully:', data.message);
+            showOrderConfirmationModal();  // Show confirmation modal or navigate to confirmation page
+        } else if (data.error) {
+            alert(data.error);  // Display error message if any
+        }
     })
     .catch(error => {
         console.error('Error:', error);
@@ -502,7 +533,28 @@ console.log('Category Offer asdasd:', '<%= categoryOffer %>');
         }
       });
     });
+
+
+
+    function applyCoupon() {
+            document.body.classList.add('blur');
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('couponModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.body.classList.remove('blur');
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('couponModal').style.display = 'none';
+        }
+
+
+
+        
+
+     
   
+
         
     </script>
     

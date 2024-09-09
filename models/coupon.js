@@ -22,9 +22,7 @@ const couponSchema = new Schema({
     minAmount: {
         type: Number,
     },
-    maxAmount: {
-        type: Number,
-    }
+   
 }, { timestamps: true }); 
 
 module.exports = mongoose.model('Coupon', couponSchema);

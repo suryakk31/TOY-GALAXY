@@ -17,7 +17,7 @@ exports.getCouponPage = async (req, res) => {
 };
 
 exports.postCoupon = async (req, res) => {
-    const { couponDescription, couponCode, couponOffer, expiryDate, minAmount, maxAmount } = req.body;
+    const { couponDescription, couponCode, couponOffer, expiryDate, minAmount } = req.body;
 
 
     try {
@@ -34,7 +34,7 @@ exports.postCoupon = async (req, res) => {
             discount: couponOffer, 
             expiryDate, 
             minAmount,  
-            maxAmount   
+            
         });
 
         const newCoupon = await coupon.save();

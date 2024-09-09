@@ -805,7 +805,7 @@ body {
     }
 }
 
-.modal {
+.modal1 {
     position: absolute;
     padding-top: 250px;
     z-index: 1;
@@ -819,7 +819,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5); /* Dark backdrop */
 }
 
-.modal-content {
+.modal-content1 {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -829,16 +829,16 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.modal-body h2 {
+.modal-body1 h2 {
     margin-top: 0;
     font-size: 24px;
 }
 
-.modal-body p {
+.modal-body1 p {
     margin: 10px 0 20px;
 }
 
-.modal-body button {
+.modal-body1 button {
     background-color: #2874f0;
     color: white;
     padding: 10px 20px;
@@ -846,3 +846,192 @@ body {
     cursor: pointer;
     border-radius: 5px;
 }
+
+
+
+      /* Basic styles for the checkout page */
+      .container { width: 90%; margin: 0 auto; }
+      .header, .footer { text-align: center; margin: 20px 0; }
+      .main-content { display: flex; justify-content: space-between; }
+      .checkout-section { width: 70%; }
+      .btn-primary3 { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
+      .section { border: 1px solid #ddd; margin-bottom: 10px; padding: 15px; border-radius: 5px; }
+      .section-header { display: flex; justify-content: space-between; align-items: center; }
+      .step-content { display: none; } /* Initially hide all sections */
+      .step-content.active { display: block; } /* Show the active section */
+      .btn-primary { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;}
+      .btn-primary1 { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; }
+      .savings { color: green; font-weight: bold; }
+      .change-link { font-size: 14px; color: #9D51FF; cursor: pointer; text-decoration: underline; }
+      .address-form { display: none; } /* Initially hide the address form */
+
+
+      .price-details-container {
+  width: 100%;
+  margin-left: 20px;
+}
+
+.price-details {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.price-details h3 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.price-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.price-details ul li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.price-details input[type="text"] {
+  width: calc(100% - 120px); /* Adjusting width for the button */
+  padding: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.apply-coupon-btn {
+          width: 100%;
+          padding: 10px 15px;
+          background-color: transparent;
+          color: #333;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+      }
+      .apply-coupon-btn:hover {
+          background-color: #f5f5f5;
+      }
+      .apply-coupon-btn i {
+          margin-right: 8px;
+          font-size: 18px;
+      }
+
+
+.modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0; /* Start off-screen */
+          width: 100%;
+          max-width: 400px;
+          height: 100%;
+          background-color: #ffffff;
+          box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+          padding: 20px;
+          box-sizing: border-box;
+          overflow-y: auto;
+          transition: left 0.3s ease-out;
+          z-index: 1001;
+      }
+      .modal.show {
+          left: 0; /* Slide in from the right */
+      }
+      .modal h2 {
+          color: #333;
+          margin-top: 0;
+          border-bottom: 2px solid #eee;
+          padding-bottom: 10px;
+      }
+      .close-btn {
+          float: right;
+          cursor: pointer;
+          font-size: 24px;
+          color: #aaa;
+          transition: color 0.3s;
+      }
+      .close-btn:hover {
+          color: #333;
+      }
+      .modal p {
+          color: #666;
+          margin-bottom: 20px;
+      }
+      .modal input[type="text"] {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 20px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          box-sizing: border-box;
+      }
+      .modal button {
+          width: 100%;
+          padding: 12px;
+          background-color: #9D51FF;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 16px;
+          transition: background-color 0.3s;
+      }
+      .modal button:hover {
+          background-color: #9D51FF;
+      }
+
+
+      .coupon-input {
+          display: flex;
+          margin-top: 400px;
+          margin-bottom: 100px;
+      }
+      .coupon-input input {
+          flex-grow: 1;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-right: none;
+          border-radius: 4px 0 0 4px;
+      }
+      .coupon-input button {
+          padding: 10px 20px;
+          background-color: #ff5722;
+          color: white;
+          border: none;
+          border-radius: 0 4px 4px 0;
+          cursor: pointer;
+      }
+     
+      .coupon {
+          border: 1px dashed #ccc;
+          padding: 15px;
+          margin-bottom: 15px;
+      }
+      .coupon-code {
+          background-color: #fff9c4;
+          padding: 5px 10px;
+          display: inline-block;
+          margin-bottom: 10px;
+      }
+      .coupon-title {
+          font-weight: bold;
+          margin-bottom: 5px;
+      }
+      .coupon-description {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 5px;
+      }
+      .more-info {
+          color: #1a73e8;
+          font-size: 12px;
+          cursor: pointer;
+      }
