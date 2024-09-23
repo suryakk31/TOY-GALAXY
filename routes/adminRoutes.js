@@ -15,6 +15,9 @@ const adminOrderController = require('../controllers/admin/adminOrderController'
 
 const adminCouponController = require('../controllers/admin/adminCouponController')
 
+const adminSalesController = require('../controllers/admin/adminSalesreportController')
+
+
 
 router.get('/login', adminLoginController.adminLogin);
 router.post('/', adminLoginController.loginPost);
@@ -40,11 +43,16 @@ router.put('/category/:id/edit',adminCategoryController.updateCategory);
 router.post('/category/:id/toggle', adminCategoryController.blockCategory);
 
 router.get('/orders',adminOrderController.adminOrder)
-router.post('/updateOrderStatus/:id', adminOrderController.updateOrderStatus);
+router.post('/updateOrderStatus', adminOrderController.updateOrderStatus);
 
 
 router.get('/coupon',adminCouponController.getCouponPage)
 router.post('/coupon',adminCouponController.postCoupon)
+
+router.get('/sales-report',adminSalesController.adminSales)
+
+router.get('/sales-report/pdf', adminSalesController.downloadSalesReportPDF);
+router.get('/sales-report/excel', adminSalesController.downloadSalesReportExcel);
 
 router.get('/logout', adminLoginController.adminLogout);
 

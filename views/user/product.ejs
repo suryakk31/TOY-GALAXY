@@ -144,14 +144,8 @@
         <span>⭐⭐⭐⭐⭐</span>
         <span>(123 reviews)</span>
       </div>
-      <div class="actions">
-        <form action="/auth/cart" method="POST">
-          <input type="hidden" name="productId" value="<%= product._id %>" />
-          <button type="submit">Add to Cart</button>
-        </form>
-        <a href="/auth/checkout?productId=<%= product._id %>"><button class="buy-now">Buy Now</button></a>
-
-      </div>
+     
+      
 
       <div class="category">
         <h4 style="font-weight: bold;">Category: 
@@ -164,11 +158,41 @@
               <%= product.category && product.category.offer ? product.category.offer + '%' : 'No category assigned' %>
             </span>
           </h4>
+
+          <% if (product.stock === 0) { %>
+            <p style="color: red;">Not available</p>
+        <% } else if (product.stock < 5) { %>
+            <p style="color: red;">Only <%= product.stock %> left in stock!</p>
+        <% } %>
+        
           
 
 
           
-        </h3>
+        
+      </div>
+
+      <div class="actions">
+        <form action="/auth/cart" method="POST">
+          <input type="hidden" name="productId" value="<%= product._id %>" />
+          <button 
+            type="submit"
+            <% if (product.stock <= 0) { %> 
+              disabled
+            <% } %>
+          >
+            Add to Cart
+          </button>
+        </form>
+        <a href="/auth/checkout?productId=<%= product._id %>">
+          <button class="buy-now"
+            <% if (product.stock <= 0) { %> 
+              disabled
+            <% } %>
+          >
+            Buy Now
+          </button>
+        </a>
       </div>
       
       

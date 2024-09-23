@@ -10,6 +10,7 @@ const couponSchema = new Schema({
     couponCode: {
         type: String,
         required: true, 
+        unique: true,
     },
     discount: {
         type: Number,

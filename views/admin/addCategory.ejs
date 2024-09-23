@@ -107,7 +107,7 @@
     </form>
   </div>
 
-  <!-- JavaScript for Validation -->
+
   <script>
     const form = document.getElementById('category-form');
     const nameInput = document.getElementById('name');
@@ -118,16 +118,16 @@
     function validateForm() {
       let isValid = true;
 
-      // Clear previous error messages
+
       document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
 
-      // Validate name
+     
       if (nameInput.value.trim().length < 3) {
         nameErrorMessage.style.display = 'block';
         isValid = false;
       }
 
-      // Validate description
+      
       if (descriptionInput.value.trim().length < 10) {
         descriptionErrorMessage.style.display = 'block';
         isValid = false;
@@ -138,7 +138,7 @@
 
     form.addEventListener('submit', function(event) {
       if (!validateForm()) {
-        event.preventDefault(); // Prevent form submission if validation fails
+        event.preventDefault(); 
       }
     });
 

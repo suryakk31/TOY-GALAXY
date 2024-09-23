@@ -21,3 +21,28 @@ exports.getCoupon = async(req,res) => {
 
     res.render('user/coupon',{isLoggedIn, userDatabase, categories, coupon})
 }
+
+
+// exports.applyCoupon = async (req, res) => {
+//   const { couponCode } = req.body;
+
+//   try {
+  
+//     const coupon = await Coupon.findOne({ couponCode: couponCode });
+
+//     if (coupon && new Date() < new Date(coupon.expiryDate)) {
+ 
+//       res.json({
+//         isValid: true,
+//         discount: coupon.discount,
+//         minAmount: coupon.minAmount
+//       });
+//     } else {
+    
+//       res.json({ isValid: false, message: 'Coupon is invalid or expired' });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };

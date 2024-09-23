@@ -24,6 +24,10 @@ const userOrderdetailsController = require('../controllers/user/userOrderdetails
 
 const userCouponController = require('../controllers/user/userCouponController')
 
+const userWalletController = require('../controllers/user/userWalletController')
+
+const userwishlistController = require('../controllers/user/userWishListController')
+
 
 router.get('/',userController.getLandingPage)
 router.get('/auth/homepage', userController.getHomepage)
@@ -57,12 +61,21 @@ router.delete('/auth/cart', cartController.removeProductFromCart)
 
 router.get('/auth/checkout',userCheckoutController.getCheckout)
 router.post('/auth/checkout',userCheckoutController.postCheckout)
-
+router.post('/create-razorpay-order',userCheckoutController.createRazorpayOrder)
 
 router.get('/auth/order',userOrderController.getOrderPage)
 
 router.get('/auth/orderDetails/:orderId', userOrderdetailsController.getOrderdetails);
+router.post('/cancel-order-item/:itemId',userOrderdetailsController.cancelOrder)
+router.post('/returnOrder', userOrderdetailsController.returnOrder)
 
 router.get('/auth/coupon',userCouponController.getCoupon)
+// router.post('/validateCoupon',userCouponController.applyCoupon)
+
+router.get('/auth/wallet',userWalletController.getWallet)
+
+router.get('/auth/wishlist',userwishlistController.getWishlist)
+router.post('/wishlist/add',userwishlistController.addToWishlist)
+
 
 module.exports = router;

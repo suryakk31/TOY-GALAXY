@@ -2,10 +2,24 @@ const mongoose = require('mongoose');
 
 
 const userSchema = new mongoose.Schema({
+    
     googleId: {
         type: String,
         required: false
     },
+
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0
+        },
+        transactions: [{
+            amount: Number,
+            description: String,
+            date: { type: Date, default: Date.now }
+        }]
+    },
+    
     firstName: String,
     lastName: String,
     email: {

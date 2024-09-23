@@ -21,28 +21,37 @@ exports.adminOrder = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { status } = req.body;
-        const orderId = req.params.id;
-        const itemId = req.body.itemId;
+        const { status, itemId } = req.body;
 
-        console.log(`Status: ${status}, Order ID: ${orderId}, Item ID: ${itemId}`);
-
-        if (!status || !orderId || !itemId) {
+        if (!status || !itemId) {
             return res.status(400).send('Invalid request');
         }
 
+        
+        const order = await Order.findOne({ 'items._id': itemId });
+        if (!order) {
+            return res.status(404).send('Order or Item not found');
+        }
+
+      
+        const item = order.items.find(item => item._id.toString() === itemId);
+        if (item.orderStatus === 'cancelled') {
+            return res.status(400).send('Cannot update status of a canceled item');
+        }
+
+    
         const updatedOrder = await Order.findOneAndUpdate(
-            { _id: orderId, 'items._id': itemId },
+            { 'items._id': itemId },
             { $set: { 'items.$.orderStatus': status } },
             { new: true }
         );
 
         if (!updatedOrder) {
-            return res.status(404).send('Order not found');
+            return res.status(404).send('Order or Item not found');
         }
 
-        console.log('Order updated successfully:', updatedOrder);
-        res.redirect('/admin/orders'); // Redirect to orders page
+   
+        res.redirect('/admin/orders'); 
     } catch (error) {
         console.error('Error updating order status:', error);
         res.status(500).send('Server Error');

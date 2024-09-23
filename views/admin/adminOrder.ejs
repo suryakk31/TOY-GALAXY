@@ -6,8 +6,82 @@
   <title>Order Management</title>
   <link rel="stylesheet" href="/css/admin/adminOrder.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Include SweetAlert CSS and JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
   <style>
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe; /* White background */
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px; /* Padding */
+  border: 1px solid #888; /* Gray border */
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 600px; /* Max width */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+}
+
+.close {
+  color: #aaa; /* Gray color */
+  float: right; /* Float right */
+  font-size: 28px; /* Font size */
+  font-weight: bold; /* Bold text */
+}
+
+.close:hover,
+.close:focus {
+  color: black; /* Change color on hover */
+  text-decoration: none; /* No underline */
+  cursor: pointer; /* Pointer cursor */
+}
+
+h2 {
+  margin: 0; 
+  color: #333;/* Remove default margin */
+}
+
+button {
+  background-color: #4CAF50; /* Green background */
+  border: none; /* No border */
+  color: white; /* White text */
+  padding: 10px 20px; /* Padding */
+  text-align: center; /* Center text */
+  text-decoration: none; /* No underline */
+  display: inline-block; /* Inline block */
+  font-size: 16px; /* Font size */
+  margin-top: 20px; /* Space above */
+  cursor: pointer; /* Pointer cursor */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s; /* Transition effect */
+}
+
+button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.modal-content h2 {
+  text-align: center; /* Center the text */
+  color: black; /* Set text color to black */
+  margin: 0 0 20px; /* Remove top margin and add bottom margin */
+}
+
+
   
   select {
     padding: 8px;
@@ -75,7 +149,7 @@
       <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
       <li><a href="/admin/orders" class="active"><i class='bx bx-cart'></i> Orders</a></li>
       <li><a href="/admin/coupon"><i class='bx bx-gift'></i> coupon</a></li>
-      <li><a href="/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
+      <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
       <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
       <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
       <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
@@ -105,48 +179,71 @@
         </thead>
         <tbody>
           <% orders.forEach(order => { %>
+            <% order.items.forEach(item => { %>
               <tr>
-                  <td><%= order.userId.firstName %></td>
-                  <td><%= order.userId.phone %></td>
-                  <td>
-                      <%= order.address.name %>, <%= order.address.locality %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
-                  </td>
-                  <td>
-                    <% if(order.items && order.items.length > 0 && order.items[0].productId && order.items[0].productId.image && order.items[0].productId.image.length > 0) { %>
-                        <img src="<%= order.items[0].productId.image[0] %>" alt="Product Image" style="width: 50px; height: 50px;">
-                    <% } else { %>
-                        <span>No Image Available</span>
-                    <% } %>
-                  </td>
-                  <td>
-                      <% if(order.items && order.items.length > 0) { %>
-                          <%= order.items[0].productName %>
-                      <% } else { %>
-                          <span>No Product Name Available</span>
-                      <% } %>
-                  </td>
-                  <td><%= order.totalQuantity %></td>
-                  <td>₹<%= order.totalPrice.toFixed(2) %></td>
-                  <td><%= order.paymentMethod %></td>
-                  <td><%= order.orderDate.toDateString() %></td>
-                  <!-- <td><%= order.deliveryDate ? order.deliveryDate.toDateString() : 'N/A' %></td> -->
-                  <td>
-                    <form action="/admin/updateOrderStatus/<%= order._id %>" method="POST">
-                      <input type="hidden" name="itemId" value="<%= order.items[0]._id %>">
+                <td><%= order.userId ? order.userId.firstName : 'Unknown' %></td>
+                <td><%= order.userId ? order.userId.phone : 'Unknown' %></td>
+                <td>
+                  <%= order.address.name %>, <%= order.address.locality %>, 
+                  <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
+                </td>
+                <td>
+                  <% if(item.productId && item.productId.image && item.productId.image.length > 0) { %>
+                    <img src="<%= item.productId.image[0] %>" alt="Product Image" style="width: 50px; height: 50px;">
+                  <% } else { %>
+                    <span>No Image Available</span>
+                  <% } %>
+                </td>
+                <td><%= item.productName %></td>
+                <td><%= item.quantity %></td>
+                <td>₹<%= order.totalPrice.toFixed(2) %></td>
+                <td><%= order.paymentMethod %></td>
+                <td><%= order.orderDate.toDateString() %></td>
+                <td>
+                  <% if (item.orderStatus === 'delivered') { %>
+                    <p style="color: green; font-weight: bold;">This order has been delivered.</p>
+                  <% } else if (item.orderStatus === 'return requested') { %>
+                    <p style="color: orange; font-weight: bold;">This order has been returned.</p>
+                  <% } else if (item.orderStatus === 'cancelled') { %>
+                    <select disabled>
+                      <option value="cancelled" selected>Cancelled</option>
+                    </select>
+                  <% } else { %>
+                    <form action="/admin/updateOrderStatus" method="POST">
+                      <input type="hidden" name="itemId" value="<%= item._id %>">
                       <select name="status" onchange="this.form.submit()">
-                          <option value="pending" <%= order.items[0].orderStatus === 'pending' ? 'selected' : '' %>>Pending</option>
-                          <option value="Order Confirmed" <%= order.items[0].orderStatus === 'Order Confirmed' ? 'selected' : '' %>>Order Confirmed</option>
-                          <option value="Shipped" <%= order.items[0].orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                          <option value="Out for delivery" <%= order.items[0].orderStatus === 'Out for delivery' ? 'selected' : '' %>>Out for delivery</option>
-                          <option value="delivered" <%= order.items[0].orderStatus === 'delivered' ? 'selected' : '' %>>delivered</option>
-                          <option value="cancelled" <%= order.items[0].orderStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                        <option value="pending" <%= item.orderStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+                        <option value="Order Confirmed" <%= item.orderStatus === 'Order Confirmed' ? 'selected' : '' %>>Order Confirmed</option>
+                        <option value="Shipped" <%= item.orderStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                        <option value="Out for delivery" <%= item.orderStatus === 'Out for delivery' ? 'selected' : '' %>>Out for Delivery</option>
+                        <option value="delivered" <%= item.orderStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                        <option value="cancelled" <%= item.orderStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
                       </select>
-                  </form>
-                  
-                  </td>
+                    </form>
+                  <% } %>
+                  <hr>
+                  <button onclick="openModal('<%= item._id %>')">View Details</button>
+        
+                  <div id="orderDetailsModal-<%= item._id %>" class="modal" style="display:none;">
+                    <div class="modal-content">
+                      <span class="close" onclick="closeModal('<%= item._id %>')">&times;</span>
+                      <h2>Billing Details</h2> 
+                      <h5>Product name: <%= item.productName %></h5>
+                      <h5><strong>Name:</strong> <% if (order.userId && order.userId.firstName) { %> <%= order.userId.firstName %> <% } else { %> User not available <% } %></h5>
+                      <h5><strong>Phone no:</strong> <% if (order.userId && order.userId.phone) { %> <%= order.userId.phone %> <% } else { %> N/A <% } %></h5>
+                      <h5><strong>Address:</strong> <%= order.address.name %>, <%= order.address.locality %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></h5>
+                      <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
+                      <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                      <button id="downloadPdf" onclick="downloadPDF('<%= item.productName %>', '<%= order.userId ? order.userId.firstName : 'User not available' %>', '<%= order.userId ? order.userId.phone : 'N/A' %>', '<%= order.address.name %>', '<%= order.address.locality %>', '<%= order.address.city %>', '<%= order.address.state %>', '<%= order.address.pincode %>', <%= order.totalPrice %>, <%= item.quantity %>)">Download PDF</button>
+                    </div>
+                  </div>
+                </td>
               </tr>
-          <% }) %>
+            <% }); %>
+          <% }); %>
         </tbody>
+        
+      
         
       
     </table>
@@ -169,7 +266,52 @@
     updateSelectColor(select);
     select.addEventListener('change', () => updateSelectColor(select));
   });
+
+
+  
 </script>
+
+
+<script>
+  // Function to open modal
+  function openModal(itemId) {
+    document.getElementById('orderDetailsModal-' + itemId).style.display = 'flex';
+  }
+  
+  // Function to close modal
+  function closeModal(itemId) {
+    document.getElementById('orderDetailsModal-' + itemId).style.display = 'none';
+  }
+  
+  // Close the modal when clicking outside of the modal content
+  window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+  </script>
+
+
+<script>
+  function downloadPDF(productName, firstName, phone, addressName, locality, city, state, pincode, totalPrice, quantity) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text('Billing Details', 20, 20);
+    doc.text(`Product Name: ${productName}`, 20, 30);
+    doc.text(`Name: ${firstName}`, 20, 40);
+    doc.text(`Phone No: ${phone}`, 20, 50);
+    doc.text(`Address: ${addressName}, ${locality}, ${city}, ${state} - ${pincode}`, 20, 60);
+    doc.text(`Total Price: ₹${totalPrice}`, 20, 70);
+    doc.text(`Quantity: ${quantity}`, 20, 80);
+
+    doc.save(`${productName}_Billing_Details.pdf`);
+  }
+</script>
+
 
 
 

@@ -34,27 +34,27 @@ header {
 
 .top-nav .search-bar {
   position: relative;
-  flex-grow: 1;
-  text-align: right;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
+  width: 300px;
+  margin-left: 900px; /* Adjust width as needed */
 }
 
 .top-nav .search-bar input {
-  padding: 8px 8px 8px 30px;
+  width: 100%;
+  padding: 10px;
+  padding-right: 40px; /* Add space for the icon */
+  border: 1px solid #ccc;
   border-radius: 5px;
-  border: none;
-  width: 250px;
-  max-width: 100%;
-  background-color: #444;
-  color: white;
+  font-size: 16px;
 }
 
 .top-nav .search-bar i {
   position: absolute;
-  left: 10px;
-  color: #bbb;
+  right: 10px;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .top-nav .profile-logout {

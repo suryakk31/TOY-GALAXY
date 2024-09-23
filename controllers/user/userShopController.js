@@ -61,7 +61,7 @@ exports.getShopPage = async (req, res) => {
           sortCriteria.name = -1;
           break;
         default:
-          // No specific sorting
+         
       }
     });
 

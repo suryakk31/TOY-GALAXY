@@ -78,6 +78,41 @@
           color: red;
       }
     </style>
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 50px 0;
+  }
+
+  .pagination a {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .pagination a.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+  }
+
+  .pagination a:hover {
+    background-color: #e9ecef;
+  }
+
+  .pagination a:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  }
+</style>
+
 </head>
 <body>
     
@@ -142,6 +177,20 @@
     <p>No orders found.</p>
   <% } %>
  
+
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>">Previous</a>
+    <% } %>
+  
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+    <% } %>
+  
+    <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %>">Next</a>
+    <% } %>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">

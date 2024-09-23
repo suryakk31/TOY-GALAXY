@@ -122,8 +122,10 @@
                         <form action="#">
                             <div class="payment-method">
                                 <input type="radio" name="paymentMethod" id="cod" value="Cash on delivery">
-
                                 <label for="cod">Cash on delivery</label>
+
+                                <input type="radio" name="paymentMethod" id="razor" value="Online payment">
+                                <label for="cod">Online payment</label>
                             </div>
                         </form>
                         <button class="btn-primary" type="button" onclick="handlePaymentSelection()">CONTINUE</button>
@@ -189,14 +191,17 @@
                 <aside class="price-details">
                     <h3>PRICE DETAILS</h3>
                     <ul>
-                      <li>Original Total <span>₹<%= originalTotal %></span></li>
+                      <li> Total price<span>₹<%= originalTotal %></span></li>
                       <li>Category Offer <span>-₹<%= categoryOffer || '0.00' %></span></li>
                      
-                      <li>Coupon Discount <span>-₹0</span></li>
-                      <li>Total Amount: <span id="totalAmount">₹0</span></li>
+                      <li class="coupon-discount">Coupon Discount <span>-₹0</span></li>
+                    
+                      
+                    
                     
                       <li>Delivery Fee <span>₹<%= deliveryFee %></span></li>
-                      <li>Total Payable: <span>₹<%= total %></span></li>
+                      <li>Total Payable: <span id="total-amount">₹<%= total %></span></li>
+
                   </ul>
                     <button class="apply-coupon-btn" onclick="applyCoupon()">
                       <i class='bx bxs-coupon'></i>
@@ -213,9 +218,11 @@
                   <span class="close-btn" onclick="closeModal()">&times;</span>
  
                 
-                  <input type="text" id="couponCode" placeholder="Enter coupon code">
-                  <button onclick="submitCoupon()">Apply </button>
-
+                  <form id="couponForm">
+                    <label for="couponInput">Enter Coupon Code:</label>
+                    <input type="text" id="couponInput" name="couponCode" required>
+                    <button type="submit">Submit Coupon</button>
+                  </form>
                   
                   <div class="unavailable-coupons">
                     <h3> </h3>
@@ -268,6 +275,7 @@
             <span>© 2024 KidsKastle.com</span>
         </footer>
     </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -409,11 +417,10 @@
             document.getElementById('city').value = '';
             document.getElementById('state').value = '';
             document.getElementById('phone').value = '';
-    
-            // Show the address form and hide the "Add a new address" button
+   
             toggleAddressForm();
     
-            // Ensure the Deliver Here button is visible
+          
             document.getElementById('deliver-here-btn').style.display = 'block';
         }
   
@@ -421,30 +428,83 @@
         function DeliverHere() {
             showNextSection('payment-options-section', 'change-address-link');
         }
-    
         function handlePaymentSelection() {
-        const codOption = document.getElementById('cod');
-        
-        if (codOption.checked) {
+    const codOption = document.getElementById('cod');
+    const razorOption = document.getElementById('razor');
+
+
+    let totalAmount = document.getElementById('total-amount').innerText;
+    totalAmount = totalAmount.replace('₹', '').trim();  
+
+    if (codOption.checked) {
+        Swal.fire({
+            title: 'Payment Selected',
+            text: 'Cash on Delivery is selected.',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            showSection('order-summary-section');
+        });
+    } else if (razorOption.checked) {
+        fetch('/create-razorpay-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount: totalAmount * 100, 
+            })
+        })
+        .then(response => response.json())
+        .then(order => {
+            var options = {
+                "key": order.key_id,
+                "amount": order.amount,
+                "currency": "INR",
+                "name": "Your Company Name",
+                "description": "Test Transaction",
+                "order_id": order.id,
+                "handler": function (response) {
+                    Swal.fire({
+                        title: 'Payment Success',
+                        text: 'Payment was successful! Payment ID: ' + response.razorpay_payment_id,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        showSection('order-summary-section');
+                    });
+                },
+                "prefill": {
+                    "name": "Your Name",
+                    "email": "your.email@example.com",
+                    "contact": "9999999999"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+        })
+        .catch(error => {
+            console.error('Error creating Razorpay order:', error);
             Swal.fire({
-                title: 'Payment Selected',
-                text: 'Cash on Delivery is selected.',
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                // Proceed to place order or show a confirmation screen
-                showSection('order-summary-section'); // You can define this section or redirect the user
-            });
-        } else {
-            Swal.fire({
-                title: 'No Payment Selected',
-                text: 'Please select a payment option to continue.',
-                icon: 'warning',
+                title: 'Payment Error',
+                text: 'There was an error with the payment. Please try again.',
+                icon: 'error',
                 confirmButtonText: 'OK'
             });
-        }
+        });
+    } else {
+        Swal.fire({
+            title: 'No Payment Selected',
+            text: 'Please select a payment option to continue.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
     }
-    
+}
+
        
     
         function goToCart() {
@@ -453,14 +513,14 @@
 
 
         function placeOrder() {
-    // Gather the necessary order details
+
     const orderDetails = {
-        address: document.querySelector('input[name="address"]:checked').value,  // Get selected address
-        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,  // Get selected payment method
-        couponCode: document.getElementById('couponCode').value  // Get coupon code if entered
+        address: document.querySelector('input[name="address"]:checked').value,  
+        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+       
     };
 
-    // Send a POST request to the server with the order details and coupon code
+  
     fetch('/auth/checkout', {
         method: 'POST',
         headers: {
@@ -477,9 +537,9 @@
     .then(data => {
         if (data.message) {
             console.log('Order placed successfully:', data.message);
-            showOrderConfirmationModal();  // Show confirmation modal or navigate to confirmation page
+            showOrderConfirmationModal();  
         } else if (data.error) {
-            alert(data.error);  // Display error message if any
+            alert(data.error);  
         }
     })
     .catch(error => {
@@ -548,15 +608,67 @@
             document.getElementById('couponModal').style.display = 'none';
         }
 
-
-
-        
-
-     
-  
-
         
     </script>
+
+<!-- <script>
+  document.getElementById('couponForm').addEventListener('submit', function(e) {
+    e.preventDefault(); 
+
+    const couponCode = document.getElementById('couponInput').value;
+
+    fetch('/validateCoupon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ couponCode: couponCode })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.isValid) {
+        const discount = data.discount;
+        const minAmount = data.minAmount;
+        const originalTotal = parseFloat(document.querySelector('#total-amount').innerText.replace('₹', ''));
+
+        if (originalTotal >= minAmount) {
+          const discountAmount = (discount / 100) * originalTotal;
+          const newTotal = originalTotal - discountAmount;
+
+     
+          localStorage.setItem('coupon', JSON.stringify({
+            couponCode: couponCode,
+            discount: discountAmount,
+            newTotal: newTotal
+          }));
+
+          document.querySelector('.coupon-discount span').innerText = `-₹${discountAmount.toFixed(2)}`;
+          document.querySelector('#total-amount').innerText = `₹${newTotal.toFixed(2)}`;
+        } else {
+          alert(`The minimum amount to apply this coupon is ₹${minAmount}.`);
+        }
+      } else {
+        alert('Invalid coupon code.');
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+    });
+  });
+
+
+  window.addEventListener('load', function() {
+    const storedCoupon = localStorage.getItem('coupon');
+
+    if (storedCoupon) {
+      const couponData = JSON.parse(storedCoupon);
+      const originalTotal = parseFloat(document.querySelector('#total-amount').innerText.replace('₹', ''));
+
+
+      document.querySelector('.coupon-discount span').innerText = `-₹${couponData.discount.toFixed(2)}`;
+      document.querySelector('#total-amount').innerText = `₹${couponData.newTotal.toFixed(2)}`;
+    }
+  });
+</script> -->
+
     
     
 </body>

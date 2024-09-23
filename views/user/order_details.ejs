@@ -37,71 +37,53 @@ p {
 strong {
     font-weight: 600;
 }
+.delivery-status {
+    margin: 20px 0;
+}
 
 .status-bar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
     position: relative;
 }
 
 .status-item {
+    display: flex;
+    align-items: center;
     position: relative;
-    width: 16.6%;
     text-align: center;
-    font-size: 12px;
-    color: #aaa;
+    flex: 1; /* Equal width for all items */
 }
 
-.status-item .status-round {
-    width: 15px;
-    height: 15px;
-    background-color: #ddd;
+.status-round {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    margin: 0 auto 5px;
+    background-color: #ccc; /* Default circle color */
+    position: relative;
+    z-index: 1; /* Ensure the circle is above the line */
+}
+
+.line {
+    height: 2px;
+    background-color: #ccc; /* Default line color */
+    flex: 1; /* This will ensure lines stretch to fill space */
+    position: relative;
+    top: 10px; /* Align line with the center of the circle */
+    z-index: 0; /* Ensure line is below the circle */
 }
 
 .status-item.active .status-round {
-    background-color: #00aaff;
+    background-color: #4bb8a9; /* Active circle color */
 }
 
-.status-item.active {
-    color: #000;
+.line.active {
+    background-color: #4caf50; /* Active line color */
 }
 
-.status-bar::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #ddd;
-    z-index: -1;
-}
-
-.status-bar .status-item.active ~ .status-item .status-round {
-    background-color: #ddd;
-}
-
-.status-bar .status-item.active ~ .status-item::before {
-    background-color: #ddd;
-}
-
-.status-bar .status-item.active::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    height: 3px;
-    background-color: #00aaff;
-    z-index: -1;
-    width: 100%;
-}
-
-.status-item:first-child .status-round {
-    background-color: #aaa; /* Ensure pending is always visible */
+/* Optional: Style for text */
+.status-item span {
+    margin-left: 10px;
 }
 
 
@@ -174,6 +156,90 @@ strong {
     color: #26a541;
     font-weight: 500;
 }
+
+
+/* The Modal (background) */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Content Box */
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  text-align: center;
+}
+
+/* Close Button */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-actions {
+  margin-top: 20px;
+}
+
+.btn-confirm, .btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-confirm {
+  background-color: #ff4d4f;
+  color: white;
+  margin-right: 10px;
+}
+
+.btn-cancel {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Feedback Message */
+.feedback-message {
+    display: none; /* Hidden by default */
+    position: fixed;
+    bottom: 20px; /* Position it 20px from the bottom */
+    left: 50%;
+    transform: translateX(-50%); /* Center it horizontally */
+    background-color: #d4edda; /* Success green background */
+    color: #155724; /* Success green text */
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    z-index: 1000;
+}
+.feedback-message.error {
+    background-color: #f8d7da; /* Error red background */
+    color: #721c24; /* Error red text */
+}
+
+
+
     </style>
 </head>
 <body>
@@ -222,12 +288,43 @@ strong {
             <section class="delivery-address">
                 <div class="section-header">
                     <h2>Delivery Address</h2>
-                    <button class="cancel-button" data-order-id="<%= order._id %>">Cancel</button>
+                    <button class="cancel-button" 
+                    data-item-id="<%= item._id %>" 
+                    data-product-id="<%= item.productId %>" 
+                    <% if (item.orderStatus === 'cancelled' || item.orderStatus === 'delivered' || item.orderStatus === 'Out for delivery' || item.orderStatus === 'return requested') { %> 
+                        style="display: none;" 
+                    <% } %>>
+                    Cancel
+                </button>
+                
+
+                    
+
+                
+ <% if (item.orderStatus === 'delivered') { %>
+  <button type="button" onclick="openModal('<%= item._id %>')" style="padding: 10px; background-color: #f0ad4e; border: none; color: white; cursor: pointer;">Return Order</button>
+<% } %>
+
+<!-- Modal -->
+<div id="returnModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background-color:rgba(0, 0, 0, 0.7); justify-content:center; align-items:center; z-index: 1000;">
+    <div style="background:white; padding:20px; border-radius:8px; width:400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <h4 style="margin: 0 0 15px; font-family: Arial, sans-serif;">Return Order</h4>
+        <form id="returnForm" action="/auth/returnOrder" method="POST">
+            <input type="hidden" name="itemId" id="itemId">
+            <textarea name="returnMessage" placeholder="Reason for return" required style="width: 100%; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 10px; font-family: Arial, sans-serif;"></textarea>
+            <br>
+            <button type="submit" style="margin-top:15px; padding: 10px 15px; background-color: #5cb85c; border: none; color: white; cursor: pointer; border-radius: 5px;">Submit</button>
+            <button type="button" onclick="closeModal()" style="margin-top:15px; padding: 10px 15px; background-color: #d9534f; border: none; color: white; cursor: pointer; border-radius: 5px;">Cancel</button>
+        </form>
+    </div>
+</div>
+
                 </div>
                 <% if (order.address) { %>
                     <p><strong>Name:</strong> <%= order.address.name %></p>
                     <p><strong>Address:</strong> <%= order.address.address %>, <%= order.address.locality %>, <%= order.address.city %> - <%= order.address.pincode %>, <%= order.address.state %></p>
                     <p><strong>Phone Number:</strong> <%= order.address.phone %> </p>
+                    <p><strong>Order Status:</strong> <%= order.items[0].orderStatus ? order.items[0].orderStatus.charAt(0).toUpperCase() + order.items[0].orderStatus.slice(1) : 'Unknown' %></p>
                 <% } else { %>
                     <p>Shipping address information is not available.</p>
                 <% } %>
@@ -245,33 +342,36 @@ strong {
                     </div>
                 </div>
                 <div class="delivery-status">
-                  <div class="status-bar">
-                      <div class="status-item <%= order.items[0].orderStatus === 'pending' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Pending</span>
-                      </div>
-                      <div class="status-item <%= order.items[0].orderStatus === 'Order Confirmed' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Order Confirmed</span>
-                      </div>
-                      <div class="status-item <%= order.items[0].orderStatus === 'Shipped' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Shipped</span>
-                      </div>
-                      <div class="status-item <%= order.items[0].orderStatus === 'Out for delivery' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Out for Delivery</span>
-                      </div>
-                      <div class="status-item <%= order.items[0].orderStatus === 'delivered' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Delivered</span>
-                      </div>
-                      <div class="status-item <%= order.items[0].orderStatus === 'cancelled' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Cancelled</span>
-                      </div>
+                  <div class="status-bar" data-item-id="<%= item._id %>">
+                    <div class="status-item <%= item.orderStatus === 'pending' ? 'active' : '' %>">
+                      <div class="status-round"></div>
+                      <span>Pending</span>
                   </div>
-                  <p><strong>Order Status:</strong> <%= order.items[0].orderStatus ? order.items[0].orderStatus.charAt(0).toUpperCase() + order.items[0].orderStatus.slice(1) : 'Unknown' %></p>
+                  <div class="status-item <%= item.orderStatus === 'Order Confirmed' ? 'active' : '' %>">
+                      <div class="status-round"></div>
+                      <span>Order Confirmed</span>
+                  </div>
+                  <div class="status-item <%= item.orderStatus === 'Shipped' ? 'active' : '' %>">
+                      <div class="status-round"></div>
+                      <span>Shipped</span>
+                  </div>
+                  <div class="status-item <%= item.orderStatus === 'Out for delivery' ? 'active' : '' %>">
+                      <div class="status-round"></div>
+                      <span>Out for Delivery</span>
+                  </div>
+                  <div class="status-item <%= item.orderStatus === 'delivered' ? 'active' : '' %>">
+                      <div class="status-round"></div>
+                      <span>Delivered</span>
+                  </div>
+                  <% if (item.orderStatus !== 'delivered' && item.orderStatus !== 'Out for delivery') { %>
+                    <div class="status-item <%= item.orderStatus === 'cancelled' ? 'active' : '' %>">
+                        <div class="status-round"></div>
+                        <span>Cancelled</span>
+                    </div>
+                <% } %>
+                
+                  </div>
+               
               </div>
               
             </section>
@@ -281,6 +381,34 @@ strong {
     <p>No orders found.</p>
 <% } %>
 
+
+<!-- Modal Structure -->
+<!-- Cancel Order Modal -->
+<div id="cancelOrderModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Cancel Order</h2>
+    <p>Are you sure you want to cancel this order? This action cannot be undone.</p>
+    <label for="cancelReason">Select a reason:</label>
+    <select id="cancelReason" required>
+      <option value="">Select a reason</option>
+      <option value="Changed my mind">Changed my mind</option>
+      <option value="Found a better price">Found a better price</option>
+      <option value="Item not as described">Item not as described</option>
+      <option value="Order placed by mistake">Order placed by mistake</option>
+      <option value="Shipping took too long">Shipping took too long</option>
+    </select>
+    <div class="modal-actions">
+      <button id="confirmCancel" class="btn-confirm">Yes, Cancel</button>
+      <button id="cancelModal" class="btn-cancel">No, Keep Order</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="feedbackMessage" class="feedback-message">
+  <p id="feedbackText"></p>
+</div>
 
 
 
@@ -367,6 +495,129 @@ strong {
       });
     });
   </script>
+
+<script>
+  // Get modal element and buttons
+  const modal = document.getElementById('cancelOrderModal');
+const confirmCancelBtn = document.getElementById('confirmCancel');
+const closeModalBtn = document.querySelector('.close');
+const cancelModalBtn = document.getElementById('cancelModal');
+const feedbackMessage = document.getElementById('feedbackMessage');
+const feedbackText = document.getElementById('feedbackText');
+
+// Open the modal when clicking the Cancel button
+document.querySelectorAll('.cancel-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.getAttribute('data-item-id');
+        const productId = this.getAttribute('data-product-id');
+        confirmCancelBtn.setAttribute('data-item-id', itemId);
+        confirmCancelBtn.setAttribute('data-product-id', productId);
+        modal.style.display = 'flex';
+    });
+});
+
+// When the user clicks 'Yes, Cancel', proceed with the cancellation
+function showFeedbackMessage(message, isError = false) {
+    feedbackText.textContent = message;
+    if (isError) {
+        feedbackMessage.classList.add('error');
+    } else {
+        feedbackMessage.classList.remove('error');
+    }
+
+    feedbackMessage.style.display = 'block'; // Show the feedback message
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+        feedbackMessage.style.display = 'none';
+    }, 3000);
+}
+
+confirmCancelBtn.addEventListener('click', async function() {
+    const itemId = this.getAttribute('data-item-id');
+    const productId = this.getAttribute('data-product-id');
+    const cancelMessage = document.getElementById('cancelReason').value; 
+
+
+    try {
+        const response = await fetch(`/auth/cancel-order-item/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reason: cancelMessage, productId })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+        
+            showFeedbackMessage('Order has been cancelled successfully.');
+
+            const cancelButton = document.querySelector(`.cancel-button[data-item-id="${itemId}"]`);
+            if (cancelButton) {
+                cancelButton.style.display = 'none'; 
+            }
+
+            const statusBar = document.querySelector(`.status-bar[data-item-id="${itemId}"]`);
+            if (statusBar) {
+             
+                statusBar.querySelectorAll('.status-item').forEach(statusItem => {
+                    statusItem.classList.remove('active');
+                });
+
+                const cancelledStatus = statusBar.querySelector('.status-item:nth-child(6)'); 
+                if (cancelledStatus) {
+                    cancelledStatus.classList.add('active');
+                }
+            }
+
+
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 3000);
+        } else {
+            showFeedbackMessage('Failed to cancel the order.', true);
+        }
+    } catch (error) {
+        showFeedbackMessage('An error occurred. Please try again.', true);
+    }
+
+    modal.style.display = 'none';
+});
+
+
+cancelModalBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+});
+
+
+closeModalBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+});
+
+
+window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+
+
+
+function openModal(itemId) {
+        document.getElementById('itemId').value = itemId;
+        document.getElementById('returnModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('returnModal').style.display = 'none';
+    }
+
+</script>
+
+
+  
   
 
 

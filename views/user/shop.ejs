@@ -161,7 +161,8 @@
               No Image
             <% } %>
           </a>
-          <i class="bx bx-heart heart-icon"></i>
+          <i class="bx bx-heart heart-icon" data-product-id="<%= product._id %>"></i>
+
         </div>
         <h3><a href="/product/<%= product._id %>"><%= product.name %></a></h3>
         <p>
@@ -169,6 +170,13 @@
           ₹<%= discountedPrice.toFixed(2) %> (<%= product.discount %>% off)
         </p>
         <p><%= product.description %></p>
+        <% if (product.stock === 0) { %>
+          <p style="color: red;">Not available</p>
+      <% } else if (product.stock < 5) { %>
+          <p style="color: red;">Only <%= product.stock %> left in stock!</p>
+      <% } %>
+      
+      
       </div>
     <% }); %>
   </section>
@@ -251,6 +259,42 @@
     var query = document.getElementById('search-input').value;
     window.location.href = `/shop?search=${encodeURIComponent(query)}`;
   }
+
+
+
+  // Wait for the DOM to load before attaching event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const heartIcons = document.querySelectorAll('.heart-icon');
+
+  heartIcons.forEach(icon => {
+    icon.addEventListener('click', async function() {
+      const productId = this.getAttribute('data-product-id');
+
+      try {
+        // Send an AJAX request to add the product to the wishlist
+        const response = await fetch('/wishlist/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          Swal.fire('Success', 'Product added to wishlist!', 'success');
+        } else {
+          Swal.fire('Error', data.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error adding product to wishlist:', error);
+        Swal.fire('Error', 'Something went wrong!', 'error');
+      }
+    });
+  });
+});
+
 
   
   </script>
