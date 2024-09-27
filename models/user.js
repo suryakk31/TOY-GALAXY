@@ -8,18 +8,6 @@ const userSchema = new mongoose.Schema({
         required: false
     },
 
-    wallet: {
-        balance: {
-            type: Number,
-            default: 0
-        },
-        transactions: [{
-            amount: Number,
-            description: String,
-            date: { type: Date, default: Date.now }
-        }]
-    },
-    
     firstName: String,
     lastName: String,
     email: {

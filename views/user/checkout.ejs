@@ -12,48 +12,13 @@
     </style>
 </head>
 <body>
-   
-<nav class="navbar">
-    <ul class="navbar-menu">
-      <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
-      <li class="dropdown">
-        <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
-        <ul class="dropdown-menu">
-          <% categories.forEach(category => { %>
-            <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
-          <% }) %>
-        </ul>
-      </li>
-      <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
-      <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
-    </ul>
-    <div class="logo">
-      <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
-    </div>
-    <div class="navbar-right">
-      <div class="navbar-search">
-        <input type="text" placeholder="Search...">
-        <button type="submit"><i class="bx bx-search"></i></button>
-      </div>
-      <div class="navbar-icons">
-        <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
-        <% if (isLoggedIn && userDatabase) { %>
-          <div class="user-info" id="user-info" style="display: none;">
-            <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
-            <a href="/auth/logout" id="logout-button">Log out</a>
-          </div>
-        <% } %>
-        <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
-        <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
-      </div>
-    </div>
-  </nav>
-        </header>
+    
+  <%- include('../partials/header') %>
+      
 
         <main class="main-content">
             <div class="checkout-section">
 
-                <!-- Delivery Address Section -->
                 <div id="delivery-address-section" class="section">
                     <div class="section-header">
                         <div>
@@ -110,6 +75,54 @@
                 </div>
 
 
+                <div id="order-summary-section" class="section">
+                    <div class="section-header">
+                        <h3>ORDER SUMMARY</h3>
+                        <div class="change-link" onclick="showSection('order-summary-section')">Change</div>
+                    </div>
+                    <div class="step-content">
+                        <% if (cartItems.length === 0) { %>
+                            <p>Your cart is empty.</p>
+                        <% } else { %>
+                            <% cartItems.forEach(item => { %>
+                                <div class="order-item" style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                    <div class="order-item-image" style="flex: 1;">
+                                        <img src="<%= item.productId.image[0] %>" alt="Product Image" style="width: 100px; height: auto;">
+                                    </div>
+                                    <div class="order-item-details" style="flex: 3; padding-left: 15px;">
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.name %></h4>
+                                            <br>
+                                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.category.name %></h4>
+                                            <br>
+                                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.description %></h4>
+                                            <br>
+                                            <h4 style="margin: 0; font-size: 16px;"> Quantity :<%= item.quantity%></h4>
+                
+                                     
+                                        
+                                            <p style="margin: 5px 0; font-size: 14px;"><span style="text-decoration: line-through; color: gray;"><%= item.productId.originalPrice %>
+                                        
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="order-item-actions" style="flex: 1; text-align: right;">
+                                      
+                                        
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                            <button id="place-order-btn" class="btn-primary3" type="button" onclick="placeOrder()">PLACE ORDER</button>
+                       
+                        </div>
+                    </div>
+                    
+                </div>
+                
+
+
                  <!-- Payment Options Section -->
                  <div id="payment-options-section" class="section">
                     <div class="section-header">
@@ -133,51 +146,6 @@
                 </div>
 
              <!-- Order Summary Section -->
-<div id="order-summary-section" class="section">
-    <div class="section-header">
-        <h3>ORDER SUMMARY</h3>
-        <div class="change-link" onclick="showSection('order-summary-section')">Change</div>
-    </div>
-    <div class="step-content">
-        <% if (cartItems.length === 0) { %>
-            <p>Your cart is empty.</p>
-        <% } else { %>
-            <% cartItems.forEach(item => { %>
-                <div class="order-item" style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <div class="order-item-image" style="flex: 1;">
-                        <img src="<%= item.productId.image[0] %>" alt="Product Image" style="width: 100px; height: auto;">
-                    </div>
-                    <div class="order-item-details" style="flex: 3; padding-left: 15px;">
-                        <div>
-                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.name %></h4>
-                            <br>
-                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.category.name %></h4>
-                            <br>
-                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.description %></h4>
-                            <br>
-                            <h4 style="margin: 0; font-size: 16px;"> Quantity :<%= item.quantity%></h4>
-
-                     
-                        
-                            <p style="margin: 5px 0; font-size: 14px;"><span style="text-decoration: line-through; color: gray;"><%= item.productId.originalPrice %>
-                        
-                        </div>
-                       
-                    </div>
-                    <div class="order-item-actions" style="flex: 1; text-align: right;">
-                      
-                        
-                    </div>
-                </div>
-            <% }) %>
-        <% } %>
-        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-            <button id="place-order-btn" class="btn-primary3" type="button" onclick="placeOrder()">PLACE ORDER</button>
-            <button class="btn-primary4" type="button" onclick="goToCart()" style="margin-left: 10px;">GO TO CART</button>
-        </div>
-    </div>
-    
-</div>
 
 
                
@@ -198,15 +166,23 @@
                     
                       
                     
-                    
-                      <li>Delivery Fee <span>₹<%= deliveryFee %></span></li>
+                    <li>Delivery Fee <span><%= deliveryFeeDisplay %></span></li>
                       <li>Total Payable: <span id="total-amount">₹<%= total %></span></li>
 
                   </ul>
-                    <button class="apply-coupon-btn" onclick="applyCoupon()">
+                  <div id="couponContainer">
+                    <button id="applyCouponBtn" class="apply-coupon-btn" onclick="openCouponModal()">
                       <i class='bx bxs-coupon'></i>
                       Apply Coupon
-                  </button>
+                    </button>
+                    <div id="appliedCouponInfo" style="display: none;">
+                      <span id="appliedCouponCode"></span>
+                      <span id="appliedCouponDiscount"></span>
+                      <button id="removeCouponBtn" onclick="removeCoupon()">Remove</button>
+                    </div>
+                  </div>
+                  
+                  <!-- Keep the modal and form as they were before -->
                     
                   
                 </aside>
@@ -234,7 +210,10 @@
                         <div class="coupon-title">Get  <%= coupon.discount %> % off</div>
                         <div class="coupon-description"><%= coupon.description %> 
                           <br>
-                          add minimum amount ₹ <%= coupon.minAmount %> to get this offer</div>
+                          add minimum amount ₹ <%= coupon.minAmount %> to get this offer
+                          <br>
+                          This offer is valid for orders upto ₹ <%= coupon.maxAmount %>
+                        </div>
                       
                         <div class="unavailable-message">Valid Till : <%= new Date(coupon.expiryDate).toLocaleDateString() %></div>
                     </div>
@@ -270,11 +249,17 @@
          
             
         </main>
-
-        <footer class="footer">
-            <span>© 2024 KidsKastle.com</span>
-        </footer>
     </div>
+       
+    <footer>
+        <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
+      </footer>
+      
+      
+   
+
+
+
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -373,9 +358,7 @@
     }
   });
 
-    </script>
-
-    <script>
+    
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.step-content');
             sections.forEach(section => {
@@ -426,22 +409,24 @@
   
     
         function DeliverHere() {
-            showNextSection('payment-options-section', 'change-address-link');
+            showNextSection('order-summary-section', 'change-address-link');
         }
+
+
         function handlePaymentSelection() {
     const codOption = document.getElementById('cod');
     const razorOption = document.getElementById('razor');
-
 
     let totalAmount = document.getElementById('total-amount').innerText;
     totalAmount = totalAmount.replace('₹', '').trim();  
 
     if (codOption.checked) {
         Swal.fire({
-            title: 'Payment Selected',
-            text: 'Cash on Delivery is selected.',
+            title: 'Cash on Delivery Selected',
+            text: 'You have chosen to pay on delivery.',
             icon: 'info',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Confirm',
+            confirmButtonColor: '#4CAF50'
         }).then(() => {
             showSection('order-summary-section');
         });
@@ -461,26 +446,27 @@
                 "key": order.key_id,
                 "amount": order.amount,
                 "currency": "INR",
-                "name": "Your Company Name",
-                "description": "Test Transaction",
+                "name": "Kids Kastle",
+                "description": "Toy Purchase",
                 "order_id": order.id,
                 "handler": function (response) {
                     Swal.fire({
-                        title: 'Payment Success',
-                        text: 'Payment was successful! Payment ID: ' + response.razorpay_payment_id,
+                        title: 'Payment Successful!',
+                        text: 'Your order has been placed. Order ID: ' + response.razorpay_payment_id,
                         icon: 'success',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'View Order',
+                        confirmButtonColor: '#4CAF50'
                     }).then(() => {
                         showSection('order-summary-section');
                     });
                 },
                 "prefill": {
-                    "name": "Your Name",
-                    "email": "your.email@example.com",
-                    "contact": "9999999999"
+                    "name": "<%= userDatabase.firstName %> <%= userDatabase.lastName %>",
+                    "email": "<%= userDatabase.email %>",
+                    "contact": "<%= userDatabase.phoneNumber %>"
                 },
                 "theme": {
-                    "color": "#3399cc"
+                    "color": "#FF6600"
                 }
             };
             var rzp = new Razorpay(options);
@@ -489,18 +475,20 @@
         .catch(error => {
             console.error('Error creating Razorpay order:', error);
             Swal.fire({
-                title: 'Payment Error',
-                text: 'There was an error with the payment. Please try again.',
+                title: 'Oops!',
+                text: 'There was an issue processing your payment. Please try again.',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'Retry',
+                confirmButtonColor: '#FF6600'
             });
         });
     } else {
         Swal.fire({
-            title: 'No Payment Selected',
-            text: 'Please select a payment option to continue.',
+            title: 'Payment Method Required',
+            text: 'Please choose a payment method to continue.',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#FF6600'
         });
     }
 }
@@ -567,107 +555,111 @@
 
 
 
-    document.getElementById('user-icon').addEventListener('click', function(event) {
-      <% if (isLoggedIn) { %>
-        event.preventDefault();
-        var userInfo = document.getElementById('user-info');
-        if (userInfo.style.display === 'none' || userInfo.style.display === '') {
-          userInfo.style.display = 'block';
-        } else {
-          userInfo.style.display = 'none';
-        }
-      <% } %>
-    });
-
-    document.getElementById('logout-button').addEventListener('click', function(event) {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Are you sure you want to logout?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, logout',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = '/auth/logout';
-        }
-      });
-    });
 
 
-
-    function applyCoupon() {
-            document.body.classList.add('blur');
-            document.getElementById('modalOverlay').style.display = 'block';
-            document.getElementById('couponModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.body.classList.remove('blur');
-            document.getElementById('modalOverlay').style.display = 'none';
-            document.getElementById('couponModal').style.display = 'none';
-        }
 
         
-    </script>
+ 
+ 
+ let appliedCoupon = null;
 
-<!-- <script>
-  document.getElementById('couponForm').addEventListener('submit', function(e) {
-    e.preventDefault(); 
+function openCouponModal() {
+  document.getElementById('modalOverlay').style.display = 'block';
+  document.getElementById('couponModal').style.display = 'block';
+}
 
-    const couponCode = document.getElementById('couponInput').value;
+function closeModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+  document.getElementById('couponModal').style.display = 'none';
+}
 
-    fetch('/validateCoupon', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ couponCode: couponCode })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.isValid) {
-        const discount = data.discount;
-        const minAmount = data.minAmount;
-        const originalTotal = parseFloat(document.querySelector('#total-amount').innerText.replace('₹', ''));
+function updateCouponDisplay() {
+  const applyCouponBtn = document.getElementById('applyCouponBtn');
+  const appliedCouponInfo = document.getElementById('appliedCouponInfo');
+  const appliedCouponCode = document.getElementById('appliedCouponCode');
+  const appliedCouponDiscount = document.getElementById('appliedCouponDiscount');
 
-        if (originalTotal >= minAmount) {
-          const discountAmount = (discount / 100) * originalTotal;
-          const newTotal = originalTotal - discountAmount;
+  if (appliedCoupon) {
+    applyCouponBtn.style.display = 'none';
+    appliedCouponInfo.style.display = 'block';
+    appliedCouponCode.textContent = appliedCoupon.couponCode;
+    appliedCouponDiscount.textContent = `₹${appliedCoupon.discountAmount.toFixed(2)} OFF`;
+  } else {
+    applyCouponBtn.style.display = 'block';
+    appliedCouponInfo.style.display = 'none';
+  }
+}
 
-     
-          localStorage.setItem('coupon', JSON.stringify({
-            couponCode: couponCode,
-            discount: discountAmount,
-            newTotal: newTotal
-          }));
+function removeCoupon() {
+  appliedCoupon = null;
+  localStorage.removeItem('coupon');
+  updateCouponDisplay();
+  
+  const originalTotal = parseFloat(localStorage.getItem('originalTotal'));
+  document.querySelector('#total-amount').innerText = `₹${originalTotal.toFixed(2)}`;
+  document.querySelector('.coupon-discount span').innerText = '-₹0.00';
+}
 
-          document.querySelector('.coupon-discount span').innerText = `-₹${discountAmount.toFixed(2)}`;
-          document.querySelector('#total-amount').innerText = `₹${newTotal.toFixed(2)}`;
-        } else {
-          alert(`The minimum amount to apply this coupon is ₹${minAmount}.`);
-        }
-      } else {
-        alert('Invalid coupon code.');
-      }
-    })
-    .catch(err => {
-      console.error('Error:', err);
-    });
-  });
+document.getElementById('couponForm').addEventListener('submit', function(e) {
+  e.preventDefault(); 
 
+  const couponCode = document.getElementById('couponInput').value;
+  const totalAmount = parseFloat(document.querySelector('#total-amount').innerText.replace('₹', ''));
 
-  window.addEventListener('load', function() {
-    const storedCoupon = localStorage.getItem('coupon');
+  fetch('/validateCoupon', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ couponCode, totalAmount })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.isValid) {
+      const { discount, discountAmount, minAmount, maxAmount } = data;
 
-    if (storedCoupon) {
-      const couponData = JSON.parse(storedCoupon);
-      const originalTotal = parseFloat(document.querySelector('#total-amount').innerText.replace('₹', ''));
+      appliedCoupon = {
+        couponCode,
+        discount,
+        discountAmount,
+        newTotal: totalAmount - discountAmount
+      };
 
+      localStorage.setItem('coupon', JSON.stringify(appliedCoupon));
+      localStorage.setItem('originalTotal', totalAmount);
 
-      document.querySelector('.coupon-discount span').innerText = `-₹${couponData.discount.toFixed(2)}`;
-      document.querySelector('#total-amount').innerText = `₹${couponData.newTotal.toFixed(2)}`;
+      document.querySelector('.coupon-discount span').innerText = `-₹${discountAmount.toFixed(2)}`;
+      document.querySelector('#total-amount').innerText = `₹${appliedCoupon.newTotal.toFixed(2)}`;
+
+      updateCouponDisplay();
+      closeModal();
+    } else {
+      alert(data.message);
     }
+  })
+  .catch(err => {
+    console.error('Error:', err);
+    alert('An error occurred while validating the coupon. Please try again.');
   });
-</script> -->
+});
+
+window.addEventListener('load', function() {
+  const storedCoupon = localStorage.getItem('coupon');
+
+  if (storedCoupon) {
+    appliedCoupon = JSON.parse(storedCoupon);
+    const originalTotal = parseFloat(localStorage.getItem('originalTotal'));
+
+    document.querySelector('.coupon-discount span').innerText = `-₹${appliedCoupon.discountAmount.toFixed(2)}`;
+    document.querySelector('#total-amount').innerText = `₹${appliedCoupon.newTotal.toFixed(2)}`;
+
+    updateCouponDisplay();
+  }
+});
+
+// Initialize coupon display on page load
+updateCouponDisplay();
+
+
+</script>
 
     
     

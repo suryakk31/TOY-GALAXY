@@ -1,617 +1,293 @@
+/* Base styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #FFECCF;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Section styles */
+section {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+
+/* Heading styles */
+h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #2874f0;
+}
+
+.delivery-address {
+  position: relative;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+/* Your Rewards styles */
+.your-rewards p {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.your-rewards p:before {
+  content: '🪙';
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+/* More Actions styles */
+.more-actions button {
+  background-color: #fff;
+  border: 1px solid #2874f0;
+  color: #2874f0;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+/* Order Details styles */
+.product-details {
+  display: flex;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+.product-info p {
+  margin: 5px 0;
+}
+
+.offers {
+  color: #388e3c;
+}
+
+.delivery-status {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+}
+
+.delivery-status button {
+  background-color: #fff;
+  border: 1px solid #2874f0;
+  color: #2874f0;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Open Box Delivery styles */
+.open-box-delivery a {
+  color: #2874f0;
+  text-decoration: none;
+}
+
+/* Rate Your Experience styles */
+.rate-experience a {
+  color: #2874f0;
+  text-decoration: none;
+}
+/* Status Bar styles */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: nowrap;
+}
+
+.status-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.status-step:before {
+  content: '';
+  height: 2px;
+  background-color: #e0e0e0;
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.status-step:first-child:before {
+  left: 50%;
+}
+
+.status-step:last-child:before {
+  right: 50%;
+}
+
+.status-dot {
+  width: 30px;
+  height: 30px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+}
+
+.status-label {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.status-step.active .status-dot {
+  background-color: #2874f0;
+}
+
+.status-step.active:before,
+.status-step.active + .status-step:before {
+  background-color: #2874f0;
+}
+
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+footer {
+  text-align: center;
+  padding: 20px 0;
+  background-color: #FF9933;
+  margin-top: 50px;
+}
+
+footer p {
+  color: white;
+  font-size: 1rem;
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 768px) {
+  section {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 15px;
   }
-  
-  .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background-color: #FFECCF;
-    border-bottom: 1px solid #ddd;
+
+  .product-details {
+    flex-direction: column;
   }
-  
-  .navbar-menu {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
+
+  .product-image {
+    margin-right: 0;
+    margin-bottom: 15px;
   }
-  
-  .navbar-menu li {
-    margin: 0 15px;
-  }
-  
-  .navbar-menu a {
-    text-decoration: none;
-    color: #333;
-    font-size: 1em;
-    transition: color 0.3s ease, border-bottom 0.3s ease;
-    position: relative;
-  }
-  
-  .navbar-menu a:hover {
-    color: #9D51FF;
-  }
-  
-  .navbar-menu a::after {
-    content: '';
-    display: block;
-    width: 0;
-    height: 2px;
-    background: #f34906;
-    transition: width 0.3s;
-    position: absolute;
-    left: 0;
-    bottom: -5px;
-  }
-  
-  .navbar-menu a:hover::after {
+
+  .delivery-status button {
+    margin-left: 0;
     width: 100%;
   }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
-  
-  .logo i {
-    font-size: 2em;
-    color: #0f0e0e;
-    animation: bounce 4s infinite;
-  }
-  
-  .logo h1 {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #282727;
-    margin-left: 10px;
-    transition: color 0.3s ease;
-    text-shadow: 2px 2px 5px rgba(157, 81, 255, 0.8); /* Text shadow effect */
-  }
-  
-  .logo:hover i {
-    animation: bounce 4s infinite;
-    transform: scale(1.1);
-    color: #9D51FF;
-  }
-  
-  .logo:hover h1 {
-    animation: none;
-    transform: scale(1.1);
-    color: #9D51FF;
-  }
-  
-  .logo i,
-  .logo h1 {
-    cursor: pointer;
-  }
-  
-  
-  .logo::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background-color: rgba(0, 0, 0, 0.1);
-    z-index: -1;
-    transition: opacity 0.3s ease;
-    opacity: 0;
-    border-radius: 8px;
-  }
-  
-  .logo:hover::before {
-    opacity: 1;
-  }
-  
-  .navbar-right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .navbar-search {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-  }
-  
-  .navbar-search input {
-    padding: 5px;
-    font-size: 1em;
-    border: 1px solid #151414;
-    border-radius: 6px;
-  }
-  
-  .navbar-search button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 5px;
-    font-size: 1.2em;
-    color: #333;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar-search button:hover {
-    color: #9D51FF;
-  }
-  
-  .navbar-icons a {
-    margin-left: 15px;
-    color: #333;
-    font-size: 1.5em;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar-icons a:hover {
-    color: #9D51FF;
-  }
-  
-  /* Bouncing animation */
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-20px);
-    }
-    60% {
-      transform: translateY(-10px);
-    }
-  }
-  
-  
-  /* Footer Styles */
-  .footer {
-    background-color: #f4e3ff;
-    padding: 50px 0;
-    text-align: center;
-    color: #333;
-    margin-top: 50px;
-  }
-  
-  .footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-  
-  .footer-section {
-    flex: 1;
-    margin: 20px;
-  }
-  
-  .footer-section h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .footer-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-section ul li {
-    margin-bottom: 10px;
-  }
-  
-  .footer-section ul li a {
-    text-decoration: none;
-    color: #333;
-    transition: color 0.3s ease;
-  }
-  
-  .footer-section ul li a:hover {
-    color: #9D51FF;
-  }
-  
-  .logo-contact p {
-    margin: 10px 0;
-  }
-  
-  .social-icons a {
-    margin: 0 10px;
-    font-size: 1.5em;
-    color: #333;
-    transition: color 0.3s ease;
-  }
-  
-  .social-icons a:hover {
-    color: #9D51FF;
-  }
-  
-  
-  
-  /* For screens up to 905px */
-  @media (max-width: 905px) {
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-  
-    .navbar-menu {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-    }
-  
-    .navbar-menu li {
-        margin: 10px 0;
-    }
-  
-    .navbar-search {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-    }
-  
-    .navbar-search input {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-  
-    .navbar-right {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-    }
-  
-    .banner-content h2 {
-        font-size: 1.8em;
-    }
-  
-    .banner-content p {
-        font-size: 1em;
-    }
-  
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .footer-section {
-        margin: 10px 0;
-        text-align: center;
-    }
-  }
-  
-  /* For screens up to 768px */
-  @media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .navbar-menu {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .navbar-menu li {
-        margin: 10px 0;
-    }
-  
-    .navbar-search {
-        width: 100%;
-        justify-content: center;
-    }
-  
-    .banner {
-        height: 300px;
-    }
-  
-    .banner-content h2 {
-        font-size: 1.5em;
-    }
-  
-    .banner-content p {
-        font-size: 0.9em;
-    }
-  
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .footer-section {
-        margin: 10px 0;
-        text-align: center;
-    }
-  }
-  
-  /* For screens up to 480px */
-  @media (max-width: 480px) {
-    .navbar {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .navbar-menu {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .navbar-menu li {
-        margin: 5px 0;
-    }
-  
-    .navbar-search {
-        width: 100%;
-        justify-content: center;
-    }
-  
-    .banner {
-        height: 200px;
-    }
-  
-    .banner-content h2 {
-        font-size: 1.2em;
-    }
-  
-    .banner-content p {
-        font-size: 0.8em;
-    }
-  
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .footer-section {
-        margin: 5px 0;
-        text-align: center;
-    }
-  }
-    
-  .user-info {
-    
-    position: absolute; /* Ensure this element is positioned correctly */
-    right: 10px; /* Adjust as necessary */
-    top: 100px; /* Adjust as necessary */
-    background: white; /* Optional: for better visibility */
-    border: 1px solid #ccc; /* Optional: for better visibility */
-    padding: 10px; /* Optional: for better visibility */
-    z-index: 1000; /* Ensure it appears above other elements */
-  }
-  
-  
-  
-    /* Dropdown Menu Styles */
-    .navbar-menu {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-    }
-  
-    .navbar-menu li {
-      position: relative;
-    }
-  
-    .navbar-menu a {
-      text-decoration: none;
-      padding: 15px;
-      display: block;
-      color: #000;
-    }
-  
-    .navbar-menu .dropdown:hover .dropdown-menu {
-      display: block;
-    }
-  
-    .dropdown-menu {
-      list-style: none;
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background-color: #fff;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-  
-    .dropdown-menu li {
-      width: 200px;
-      list-style: none;
-    }
-  
-    .dropdown-menu a {
-      padding: 10px;
-      color: #000;
-      text-decoration: none;
-    }
-  
-    .dropdown-menu a:hover {
-      background-color: #f0f0f0;
-    }
 
-    /* Section styles */
-  section {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    width: 70%;
-    
-    margin-left: 200px;
-    margin-top: 20px;
-   
-  }
-  
-  /* Heading styles */
-  h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #2874f0;
-  }
-  
-  .delivery-address {
-    position: relative;
-  }
-  
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  /* Your Rewards styles */
-  .your-rewards p {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-  }
-  
-  .your-rewards p:before {
-    content: '🪙';
-    margin-right: 10px;
-    font-size: 20px;
-  }
-  
-  /* More Actions styles */
-  .more-actions button {
-    background-color: #fff;
-    border: 1px solid #2874f0;
-    color: #2874f0;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 5px 0;
-  }
-  
-  /* Order Details styles */
-  .product-details {
-    display: flex;
-    margin-bottom: 20px;
-  }
-  
-  .product-image {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-right: 20px;
-  }
-  
-  .product-info p {
-    margin: 5px 0;
-  }
-  
-  .offers {
-    color: #388e3c;
-  }
-  
-  .delivery-status {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 15px;
-  }
-  
-  .delivery-status button {
-    background-color: #fff;
-    border: 1px solid #2874f0;
-    color: #2874f0;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 100px;
-  }
-  
-  /* Open Box Delivery styles */
-  .open-box-delivery a {
-    color: #2874f0;
-    text-decoration: none;
-  }
-  
-  /* Rate Your Experience styles */
-  .rate-experience a {
-    color: #2874f0;
-    text-decoration: none;
-  }
-  
-  /* Status bar styles */
   .status-bar {
-    display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 15px;
+  }
+
+  .status-step {
+    flex-basis: auto;
+    width: 100%;
+    text-align: left;
+    padding-left: 30px;
     margin-bottom: 20px;
   }
-  
-  .status-step {
-    flex: 1;
-    text-align: center;
-    position: relative;
-  }
-  
+
   .status-step:before {
-    content: '';
-    height: 2px;
-    background-color: #e0e0e0;
-    position: absolute;
-    top: 15px;
-    left: 0;
-    right: 0;
-    z-index: 1;
+    width: 2px;
+    height: calc(100% + 20px);
+    top: 0;
+    left: 14px;
+    right: auto;
   }
-  
-  .status-step:first-child:before {
-    left: 50%;
-  }
-  
+
   .status-step:last-child:before {
-    right: 50%;
+    height: 15px;
   }
-  
+
   .status-dot {
-    width: 30px;
-    height: 30px;
-    background-color: #e0e0e0;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    z-index: 2;
+    position: absolute;
+    left: -15px;
+    top: 0;
   }
-  
+
   .status-label {
-    margin-top: 5px;
-    font-size: 12px;
-  }
-  
-  .status-step.active .status-dot {
-    background-color: #2874f0;
-  }
-  
-  .status-step.active:before,
-  .status-step.active + .status-step:before {
-    background-color: #2874f0;
-  }
-  
-  
-  .cancel-button {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
+    margin-top: 0;
     font-size: 14px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    font-weight: bold;
   }
-  
-  .cancel-button:hover {
-    background-color: #d32f2f;
+
+  .status-step::after {
+    content: attr(data-description);
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
   }
- 
-  
+}
+
+@media screen and (max-width: 480px) {
+  h2 {
+    font-size: 16px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-step::after {
+    font-size: 11px;
+  }
+
+  .status-label {
+    font-size: 13px;
+  }
+}

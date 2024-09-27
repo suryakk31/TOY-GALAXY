@@ -70,12 +70,15 @@ router.post('/cancel-order-item/:itemId',userOrderdetailsController.cancelOrder)
 router.post('/returnOrder', userOrderdetailsController.returnOrder)
 
 router.get('/auth/coupon',userCouponController.getCoupon)
-// router.post('/validateCoupon',userCouponController.applyCoupon)
+router.post('/validateCoupon',userCouponController.applyCoupon)
 
 router.get('/auth/wallet',userWalletController.getWallet)
+router.post('/create-razorpay-order',userWalletController.createRazorPayorder)
+router.post('/update-wallet',userWalletController.updateWallet)
 
 router.get('/auth/wishlist',userwishlistController.getWishlist)
 router.post('/wishlist/add',userwishlistController.addToWishlist)
+
 
 
 module.exports = router;

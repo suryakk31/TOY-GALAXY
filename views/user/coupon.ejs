@@ -7,158 +7,66 @@
   <link rel="stylesheet" href="/css/user/coupon.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
   <style>
     /* Add any additional styles here if necessary */
   </style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <div class="logo">
-      <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
-    </div>
-    <ul class="navbar-menu">
-      <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
-      <li class="dropdown">
-        <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
-        <ul class="dropdown-menu">
-          <% categories.forEach(category => { %>
-            <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
-          <% }) %>
-        </ul>
-      </li>
-      <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
-      <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
-    </ul>
-    <div class="navbar-right">
-      <div class="navbar-search">
-        <input type="text" placeholder="Search...">
-        <button type="submit"><i class="bx bx-search"></i></button>
-      </div>
-      <div class="navbar-icons">
-        <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
-        <% if (isLoggedIn && userDatabase) { %>
-          <div class="user-info" id="user-info" style="display: none;">
-            <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
-            <a href="/auth/logout" id="logout-button">Log out</a>
-          </div>
-        <% } %>
-        <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
-        <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
-      </div>
-    </div>
-  </nav>
-
+  
+  <%- include('../partials/header') %>
   <div class="profile-container">
-    <div class="sidebar">
-      <h2>Hello, <%= isLoggedIn && userDatabase ? userDatabase.firstName : 'Guest' %></h2>
-      <ul>
-        <li><a href="/auth/profile">Profile Information</a></li>
-        <li><a href="/auth/addresses">Manage Addresses</a></li>
-        <li><a href="/auth/orders">My Orders</a></li>
-        <li><a href="/auth/wallet">My Wallet</a></li>
-        <li><a href="/auth/coupon">My Coupons</a></li>
-        <li><a href="/auth/reviewsRatings">My Reviews & Ratings</a></li>
-        <li><a href="/auth/changePassword">Change Password</a></li>
-      </ul>
+    <div class="profile-header">
+      <h2>Hello, <%= userDatabase.firstName %></h2>
     </div>
+    
+    <nav class="profile-nav">
+      <ul>
+        <li><a href="/auth/profile" >Profile</a></li>
+        <li><a href="/auth/addresses">Addresses</a></li>
+        <li><a href="/auth/order">Orders</a></li>
+        <li><a href="/auth/wallet">Wallet</a></li>
+        <li><a href="/auth/coupon" class="active">Coupons</a></li>
+        <li><a href="/auth/reviewsRatings">Reviews</a></li>
+        <li><a href="/auth/changePassword">Password</a></li>
+      </ul>
+    </nav>
 
     <div class="container">
-      <% coupon.forEach(coupon => { %>
-      <div class="coupon-card">
-        
-        <h3><%= coupon.description %></h3>
-        <h5> offer : <%= coupon.discount %> %</h5>
-
-
-        <div class="coupon-row">
-          <span id="cpnCode"><%= coupon.couponCode %></span>
-          <span class="cpnBtn">COPY CODE</span>
+      <div class="coupon-container">
+        <% coupon.forEach(coupon => { %>
+        <div class="coupon-card">
+          <div>
+            <h3><%= coupon.description %></h3>
+            <h5>Offer: <%= coupon.discount %> %</h5>
+          </div>
+    
+          <div class="coupon-row">
+            <span id="cpnCode" class="coupon-code"><%= coupon.couponCode %></span>
+            <button class="cpnBtn copy-btn">COPY CODE</button>
+          </div>
+    
+          <h5>Min amount: ₹ <%= coupon.minAmount %> to get this offer</h5>
+          <h5>Max amount: This offer is valid for orders upto ₹ <%= coupon.maxAmount %> </h5>
+          <p>Valid Till: <%= new Date(coupon.expiryDate).toLocaleDateString() %></p>
+    
+          
         </div>
-        <h5> Min amount : ₹ <%= coupon.minAmount %> to get this offer </h5>
-       
-        <p>Valid Till: <%= new Date(coupon.expiryDate).toLocaleDateString() %> </p >
-
-        <div class="circle1"></div>
-        <div class="circle2"></div>
+        <br>
+        <% }) %>
       </div>
-      <% }) %>
     </div>
+    
   </div>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-section logo-contact">
-        <div class="logo">
-          <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
-        </div>
-        <p>We’re available by phone -123-456-789</p>
-        <p>info@example.com</p>
-        <p>Monday till Friday 10 to 6 EST</p>
-        <div class="social-icons">
-          <a href="#"><i class='bx bxl-facebook'></i></a>
-          <a href="#"><i class='bx bxl-instagram'></i></a>
-          <a href="#"><i class='bx bxl-twitter'></i></a>
-        </div>
-      </div>
-      <div class="footer-section useful-links">
-        <h2>Useful links</h2>
-        <ul>
-          <li><a href="#">How it works</a></li>
-          <li><a href="#">About us</a></li>
-          <li><a href="#">Babysitters</a></li>
-          <li><a href="#">Contact us</a></li>
-        </ul>
-      </div>
-      <div class="footer-section my-account">
-        <h2>My account</h2>
-        <ul>
-          <li><a href="#">Track my order</a></li>
-          <li><a href="#">Terms of use</a></li>
-          <li><a href="#">Wishlist</a></li>
-          <li><a href="#">Submit your feedback</a></li>
-        </ul>
-      </div>
-      <div class="footer-section customer-service">
-        <h2>Customer service</h2>
-        <ul>
-          <li><a href="#">Help & contact us</a></li>
-          <li><a href="#">Returns & refunds</a></li>
-          <li><a href="#">Online stores</a></li>
-          <li><a href="#">Terms & conditions</a></li>
-        </ul>
-      </div>
-    </div>
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
   </footer>
+  
 
   <script>
-    document.getElementById('user-icon').addEventListener('click', function(event) {
-      <% if (isLoggedIn) { %>
-        event.preventDefault();
-        var userInfo = document.getElementById('user-info');
-        if (userInfo.style.display === 'none' || userInfo.style.display === '') {
-          userInfo.style.display = 'block';
-        } else {
-          userInfo.style.display = 'none';
-        }
-      <% } %>
-    });
-
-    document.getElementById('logout-button').addEventListener('click', function(event) {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Are you sure you want to logout?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, logout',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = '/auth/logout';
-        }
-      });
-    });
+   
 
     document.addEventListener('DOMContentLoaded', function() {
   let cpnBtn = document.querySelectorAll('.cpnBtn');

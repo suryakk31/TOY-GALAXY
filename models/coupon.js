@@ -23,6 +23,9 @@ const couponSchema = new Schema({
     minAmount: {
         type: Number,
     },
+    maxAmount: {
+        type: Number,
+    }
    
 }, { timestamps: true }); 
 

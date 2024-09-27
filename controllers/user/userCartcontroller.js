@@ -16,7 +16,6 @@ exports.getCart = async (req, res) => {
             return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
         }
     }
-
     
     if (!userDatabase) {
         return res.redirect('/auth/login');
@@ -34,7 +33,7 @@ exports.getCart = async (req, res) => {
     if (!cart || cart.items.length === 0) {
       return res.render('user/cart', {
         isLoggedIn,
-        cart: { items: [], originalTotal: 0,  deliveryFee: 0, total: 0 }, 
+        cart: { items: [], originalTotal: 0, deliveryFee: 0, deliveryFeeDisplay: 'Free', total: 0 }, 
         message: 'Your cart is empty.',
         products,
         categories,
@@ -43,7 +42,6 @@ exports.getCart = async (req, res) => {
       });
     }
 
-  
     const originalTotal = cart.items.reduce((sum, item) => {
       const itemTotal = (item.productId.price - (item.productId.price * item.productId.discount / 100)) * item.quantity;
       return sum + itemTotal;
@@ -57,13 +55,12 @@ exports.getCart = async (req, res) => {
       }
       return sum; 
     }, 0);
-
     
+    // Calculate delivery fee based on original total
+    const deliveryFee = originalTotal > 500 ? 0 : 50;
+    const deliveryFeeDisplay = deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`;
     
-    const deliveryFee = 50;
-    const total =  (originalTotal - categoryOffer + deliveryFee).toFixed(2);
-   
-
+    const total = (originalTotal - categoryOffer + deliveryFee).toFixed(2);
 
     res.render('user/cart', {
       isLoggedIn,
@@ -72,22 +69,18 @@ exports.getCart = async (req, res) => {
       cart: {
         ...cart.toObject(), 
         originalTotal: originalTotal.toFixed(2), 
-        categoryOffer : categoryOffer.toFixed(2),
+        categoryOffer: categoryOffer.toFixed(2),
         deliveryFee,
+        deliveryFeeDisplay,
         total
       },
       products,
-      
-      
-
-   
     });
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');
   }
 };
-
 
 
 exports.addToCart = async (req, res) => {

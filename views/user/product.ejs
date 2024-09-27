@@ -73,41 +73,7 @@
 </head>
 <body>
 
-  <nav class="navbar">
-    <ul class="navbar-menu">
-      <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
-      <li class="dropdown">
-        <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
-        <ul class="dropdown-menu">
-          <% categories.forEach(category => { %>
-            <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
-          <% }) %>
-        </ul>
-      </li>
-      <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
-      <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
-    </ul>
-    <div class="logo">
-      <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
-    </div>
-    <div class="navbar-right">
-      <div class="navbar-search">
-        <input type="text" placeholder="Search...">
-        <button type="submit"><i class="bx bx-search"></i></button>
-      </div>
-      <div class="navbar-icons">
-        <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
-        <% if (isLoggedIn && userDatabase) { %>
-          <div class="user-info" id="user-info" style="display: none;">
-            <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
-            <a href="/auth/logout" id="logout-button">Log out</a>
-          </div>
-        <% } %>
-        <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
-        <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
-      </div>
-    </div>
-  </nav>
+  <%- include('../partials/header') %>
   
 
   <section class="product-details">
@@ -205,70 +171,12 @@
     </section>
     
 
-  <div class="user-info" id="user-info">
-    <p>hello <%= userDatabase.firstName %></p>
-    <a href="/auth/logout" id="logout-button">log out</a>
-  </div>
+ 
 
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-section logo-contact">
-        <div class="logo">
-          <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
-        </div>
-        <p>We’re available by phone -123-456-789</p>
-        <p>info@example.com</p>
-        <p>Monday till Friday 10 to 6 EST</p>
-        <div class="social-icons">
-          <a href="#"><i class='bx bxl-facebook'></i></a>
-          <a href="#"><i class='bx bxl-instagram'></i></a>
-          <a href="#"><i class='bx bxl-twitter'></i></a>
-        </div>
-      </div>
-      <div class="footer-section useful-links">
-        <h2>Useful links</h2>
-        <ul>
-          <li><a href="#">How it works</a></li>
-          <li><a href="#">About us</a></li>
-          <li><a href="#">Babysitters</a></li>
-          <li><a href="#">Contact us</a></li>
-        </ul>
-      </div>
-      <div class="footer-section my-account">
-        <h2>My account</h2>
-        <ul>
-          <li><a href="#">Track my order</a></li>
-          <li><a href="#">Terms of use</a></li>
-          <li><a href="#">Wishlist</a></li>
-          <li><a href="#">Submit your feedback</a></li>
-        </ul>
-      </div>
-      <div class="footer-section customer-service">
-        <h2>Customer service</h2>
-        <ul>
-          <li><a href="#">Help & contact us</li>
-          <li><a href="#">Returns & refunds</a></li>
-          <li><a href="#">Online stores</a></li>
-          <li><a href="#">Terms & conditions</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
-
-
+  <%- include('../partials/footer') %>
 
   <script>
-    document.getElementById('user-icon').addEventListener('click', function(event) {
-      <% if (isLoggedIn) { %>
-        event.preventDefault();
-        var userInfo = document.getElementById('user-info');
-        if (userInfo.style.display === 'none' || userInfo.style.display === '') {
-          userInfo.style.display = 'block';
-        } else {
-          userInfo.style.display = 'none';
-        }
-      <% } %>
-    });
+   
     
     document.querySelectorAll('.thumbnail').forEach(thumbnail => {
       thumbnail.addEventListener('click', function() {
@@ -285,16 +193,6 @@
         const y = ((e.pageY - top) / height) * 100;
         mainImage.style.transformOrigin = `${x}% ${y}%`;
       });
-    });
-
-    document.getElementById('user-icon').addEventListener('click', function(event) {
-      event.preventDefault();
-      var userInfo = document.getElementById('user-info');
-      if (userInfo.style.display === 'none' || userInfo.style.display === '') {
-        userInfo.style.display = 'block';
-      } else {
-        userInfo.style.display = 'none';
-      }
     });
 
 

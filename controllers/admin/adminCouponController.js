@@ -15,7 +15,7 @@ exports.getCouponPage = async (req, res) => {
 };
 
 exports.postCoupon = async (req, res) => {
-    const { description, couponCode, discount, expiryDate, minAmount } = req.body;
+    const { description, couponCode, discount, expiryDate, minAmount, maxAmount } = req.body;
 
     if (!couponCode || couponCode.trim() === '') {
         return res.status(400).json({ message: 'Coupon code is required' });
@@ -35,6 +35,7 @@ exports.postCoupon = async (req, res) => {
             discount: Number(discount),
             expiryDate: new Date(expiryDate),
             minAmount: minAmount ? Number(minAmount) : undefined, 
+            maxAmount: maxAmount ? Number(maxAmount) : undefined, 
         });
 
         const newCoupon = await coupon.save();

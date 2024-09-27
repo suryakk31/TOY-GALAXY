@@ -105,7 +105,9 @@ exports.getCheckout = async (req, res) => {
     }, 0);
 
  
-    const deliveryFee = 50;
+    const deliveryFee = originalTotal > 500 ? 0 : 50;
+    const deliveryFeeDisplay = deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`;
+    
     const total = (originalTotal - categoryOffer + deliveryFee).toFixed(2);
 
     res.render("user/checkout", {
@@ -117,6 +119,7 @@ exports.getCheckout = async (req, res) => {
       originalTotal: originalTotal.toFixed(2),
       categoryOffer: categoryOffer.toFixed(2),
       deliveryFee,
+      deliveryFeeDisplay,
       total,
       coupon,
     });
@@ -195,7 +198,7 @@ exports.postCheckout = async (req, res) => {
       return sum;
     }, 0);
 
-    const deliveryFee = 50;
+    const deliveryFee = originalTotal > 500 ? 0 : 50;
     const totalPrice = (originalTotal - categoryOffer + deliveryFee).toFixed(2);
     const totalQuantity = cart.items.reduce(
       (sum, item) => sum + item.quantity,

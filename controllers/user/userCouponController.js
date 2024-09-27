@@ -23,26 +23,44 @@ exports.getCoupon = async(req,res) => {
 }
 
 
-// exports.applyCoupon = async (req, res) => {
-//   const { couponCode } = req.body;
-
-//   try {
+exports.applyCoupon = async (req, res) => {
+    const { couponCode, totalAmount } = req.body;
   
-//     const coupon = await Coupon.findOne({ couponCode: couponCode });
-
-//     if (coupon && new Date() < new Date(coupon.expiryDate)) {
- 
-//       res.json({
-//         isValid: true,
-//         discount: coupon.discount,
-//         minAmount: coupon.minAmount
-//       });
-//     } else {
-    
-//       res.json({ isValid: false, message: 'Coupon is invalid or expired' });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
+    try {
+      const coupon = await Coupon.findOne({ couponCode: couponCode });
+  
+      if (!coupon || new Date() >= new Date(coupon.expiryDate)) {
+        return res.json({ isValid: false, message: 'Coupon is invalid or expired' });
+      }
+  
+      const { discount, minAmount, maxAmount } = coupon;
+  
+      if (totalAmount < minAmount) {
+        return res.json({ 
+          isValid: false, 
+          message: `The minimum amount to apply this coupon is ₹${minAmount}.`
+        });
+      }
+  
+      if (totalAmount > maxAmount) {
+        return res.json({ 
+          isValid: false, 
+          message: `This coupon can only be applied to orders up to ₹${maxAmount}.`
+        });
+      }
+  
+      const discountAmount = Math.min((discount / 100) * totalAmount, maxAmount - minAmount);
+  
+      res.json({
+        isValid: true,
+        discount,
+        discountAmount,
+        minAmount,
+        maxAmount
+      });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };

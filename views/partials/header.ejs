@@ -1,37 +1,170 @@
+<link rel="stylesheet" href="/css/partials/nav_foot.css">
+
+<div class="nav-overlay"></div>
 
 <nav class="navbar">
-    <ul class="navbar-menu">
-      <li><a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Home</a></li>
-      <li class="dropdown">
-        <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>">Categories</a>
-        <ul class="dropdown-menu">
-          <% categories.forEach(category => { %>
-            <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
-          <% }) %>
-        </ul>
+  <div class="logo">
+      <i class='bx bxs-castle'></i>
+      <h1>Kids Kastle</h1>
+  </div>
+  <div class="search-container">
+      <form action="#" method="get">
+          <input type="text" placeholder="Search..." name="search">
+          <button type="submit"><i class='bx bx-search'></i></button>
+      </form>
+  </div>
+  <ul class="nav-menu">
+      <li class="nav-item">
+          <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>" class="nav-link"><i class='bx bx-home'></i> Home</a>
       </li>
-      <li><a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>">Shop</a></li>
-      <li><a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>">Blog</a></li>
-    </ul>
-    <div class="logo">
-      <i class='bx bxs-castle'></i><h1>Kids Kastle</h1>
-    </div>
-    <div class="navbar-right">
-      <div class="navbar-search">
-        <input type="text" placeholder="Search...">
-        <button type="submit"><i class="bx bx-search"></i></button>
-      </div>
-      <div class="navbar-icons">
-        <a href="<%= isLoggedIn ? 'javascript:void(0);' : '/auth/login' %>" id="user-icon"><i class="bx bx-user"></i></a>
-        <% if (isLoggedIn && userDatabase) { %>
-          <div class="user-info" id="user-info" style="display: none;">
-            <a href="/auth/profile"><p>Hello, <%= userDatabase.firstName %></p></a>
-            <a href="/auth/logout" id="logout-button">Log out</a>
+      <li class="nav-item dropdown">
+          <a href="#" class="nav-link"><i class='bx bx-category'></i> Categories <i class='bx bx-chevron-down'></i></a>
+          <div class="dropdown-content">
+              <ul class="dropdown-menu">
+                <% categories.forEach(category => { %>
+                  <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
+                <% }) %>
+              </ul>
           </div>
-        <% } %>
-        <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>"><i class="bx bx-heart"></i></a>
-        <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>"><i class="bx bx-cart"></i></a>
-      </div>
-    </div>
-  </nav>
+      </li>
+      
+      <li class="nav-item">
+          <a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>" class="nav-link"><i class='bx bx-store'></i> Shop</a>
+      </li>
+      <li class="nav-item">
+          <a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>" class="nav-link"><i class='bx bx-book-content'></i> Blog</a>
+      </li>
+      <li class="nav-item user-dropdown">
+          <a href="javascript:void(0);" class="nav-link" id="user-icon"><i class="bx bx-user"></i> Account <i class='bx bx-chevron-down'></i></a>
+          
+          <% if (isLoggedIn && userDatabase) { %>
+            <div class="user-dropdown-content" id="user-info">
+              <a href="/auth/profile"><i class='bx bx-user-circle'></i> Hello, <%= userDatabase.firstName %></a>
+              <a href="/auth/logout" id="logout-button"><i class='bx bx-log-out'></i> Log out</a>
+            </div>
+          <% } else { %>
+            <div class="user-dropdown-content">
+              <a href="/auth/login"><i class='bx bx-user-circle'></i> Login</a>
+              <a href="#"><i class='bx bx-cog'></i> Settings</a>
+            </div>
+          <% } %>
+      </li>
+      
+      <li class="nav-item">
+          <a href="<%= isLoggedIn ? '/auth/wishlist' : '/wishlist' %>" class="nav-link"><i class="bx bx-heart"></i> Wishlist</a>
+      </li>
+      <li class="nav-item">
+          <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>" class="nav-link"><i class="bx bx-cart"></i> Cart</a>
+      </li>
+  </ul>
+  <div class="hamburger">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+  </div>
+</nav>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+   
+ 
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('.nav-menu');
+  const navOverlay = document.querySelector('.nav-overlay');
+  const dropdowns = document.querySelectorAll(".dropdown, .user-dropdown");
+
+  // Toggle hamburger menu and overlay
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    navOverlay.classList.toggle('active');
+  });
+
+  // Close menu when clicking overlay
+  navOverlay.addEventListener('click', () => {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+  });
+
+  // Close menu when clicking nav links (excluding dropdowns)
+  document.querySelectorAll(".nav-link:not(.dropdown .nav-link):not(.user-dropdown .nav-link)").forEach(n => n.addEventListener("click", () => {
+    hamburger.classList.remove("active");
+    navMenu.classList.remove("active");
+    navOverlay.classList.remove('active');
+  }));
+
+  // Toggle dropdowns on click for both mobile and desktop
+  dropdowns.forEach(dropdown => {
+    const link = dropdown.querySelector('.nav-link');
+    const content = dropdown.querySelector('.dropdown-content, .user-dropdown-content');
+    
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropdown.classList.toggle("active");
+      
+      // Close other open dropdowns
+      dropdowns.forEach(otherDropdown => {
+        if (otherDropdown !== dropdown && otherDropdown.classList.contains("active")) {
+          otherDropdown.classList.remove("active");
+        }
+      });
+    });
+    
+    // Prevent closing when clicking inside the dropdown content
+    content.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  });
+
+  // Close dropdowns when clicking outside, but keep hamburger menu open
+  document.addEventListener("click", (e) => {
+    if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+      dropdowns.forEach(dropdown => {
+        dropdown.classList.remove("active");
+      });
+    }
+  });
+});
+
+
+document.getElementById('user-icon').addEventListener('click', function(event) {
+  <% if (isLoggedIn) { %>
+    event.preventDefault();
+    var userInfo = document.getElementById('user-info');
+    if (userInfo.style.display === 'none' || userInfo.style.display === '') {
+      userInfo.style.display = 'block';
+    } else {
+      userInfo.style.display = 'none';
+    }
+  <% } %>
+});
+
+document.getElementById('logout-button').addEventListener('click', function(event) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Are you sure you want to logout?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, logout',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = '/auth/logout';
+    }
+  });
+});
+
+
+
+
+
+
+</script>
   
