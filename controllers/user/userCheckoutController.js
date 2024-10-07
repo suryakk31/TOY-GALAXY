@@ -251,6 +251,8 @@ exports.postCheckout = async (req, res) => {
       createdAt: new Date(),
     });
 
+  
+
     await newOrder.save();
     await Cart.deleteOne({ userId: user._id });
 

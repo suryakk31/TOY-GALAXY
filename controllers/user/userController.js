@@ -39,12 +39,13 @@ exports.getHomepage = async (req, res) => {
                 req.session.destroy(); 
                 return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
             }
+            
         }
 
-        const categories = await Category.find();
+        const categories = await Category.find({ isBlocked: false });
         const products = await Product.find({ isBlocked: false }); 
 
-        res.render('user/homepage', { title: 'Home Page', isLoggedIn, userDatabase, categories, products });
+        res.render('user/homepage', {isLoggedIn, userDatabase, categories, products });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');

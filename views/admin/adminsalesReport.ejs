@@ -51,6 +51,66 @@
     outline: none;
   }
 
+
+  .filter-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-form select,
+        .filter-form input[type="date"],
+        .filter-form button {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .filter-form button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        .filter-form button:hover {
+            background-color: #45a049;
+        }
+        
+        #clearFilter {
+            background-color: #f44336;
+        }
+        
+        #clearFilter:hover {
+            background-color: #da190b;
+        }
+
+        .filter-active {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+        
+        .filter-feedback {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            display: none;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .date-range.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
   </style>
 </head>
 <body>
@@ -85,11 +145,36 @@
   </nav>
   <div class="order-table-container">
     <h2>SALES REPORT</h2>
-    <a href="/admin/sales-report/pdf" class="btn btn-primary">Download PDF</a>
-    <a href="/admin/sales-report/excel" class="btn btn-primary">Download Excel</a>
-
+    <div class="filter-feedback" id="filterFeedback"></div>
+    <form id="filterForm" class="filter-form" action="/admin/sales-report">
+      <select id="reportType" name="reportType" required>
+        <option value="">Select Report Type</option>
+        <option value="daily" <%= reportType === 'daily' ? 'selected' : '' %>>Daily</option>
+        <option value="weekly" <%= reportType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+        <option value="monthly" <%= reportType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+        <option value="yearly" <%= reportType === 'yearly' ? 'selected' : '' %>>Yearly</option>
+        <option value="custom" <%= reportType === 'custom' ? 'selected' : '' %>>Custom Date Range</option>
+    </select>
+    <div class="date-range" id="dateRangeInputs">
+      <input type="date" id="startDate" name="startDate" 
+          value="<%= startDate %>" 
+          <%= reportType !== 'custom' ? 'disabled' : '' %>>
+      <span>to</span>
+      <input type="date" id="endDate" name="endDate" 
+          value="<%= endDate %>" 
+          <%= reportType !== 'custom' ? 'disabled' : '' %>>
+  </div>
+  
+  <button type="submit" id="applyFilter">Apply Filter</button>
+  <button type="button" id="clearFilter">Clear Filter</button>
+  </form>
+  <div id="downloadLinks">
+    <a href="/admin/sales-report/pdf" id="pdfLink">Download PDF</a>
+    <a href="/admin/sales-report/excel" id="excelLink">Download Excel</a>
+</div>
     <table id="orderTable">
         <thead>
+          
             <tr>
                 <th>Name</th>
                 <th>Phone Number</th>
@@ -108,36 +193,182 @@
         </thead>
         <tbody>
           <% orders.forEach(order => { %>
+            <!-- Iterate through each item in the order -->
+            <% order.items.forEach(item => { %>
               <tr>
-                  <td><%= order.userId.firstName %></td>
-                  <td><%= order.userId.phone %></td>
-                  <td>
-                      <%= order.address.name %>, <%= order.address.locality %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
-                  </td>
-                 
-                  <td>
-                      <% if(order.items && order.items.length > 0) { %>
-                          <%= order.items[0].productName %>
-                      <% } else { %>
-                          <span>No Product Name Available</span>
-                      <% } %>
-                  </td>
-                  <td><%= order.totalQuantity %></td>
-                  <td>₹<%= order.totalPrice.toFixed(2) %></td>
-                  <td><%= order.paymentMethod %></td>
-                  <td><%= order.orderDate.toDateString() %></td>
-            
-                  <td><%= order.orderStatus %></td>
+                <!-- Customer Details -->
+                <td><%= order ? order.address.name : 'Unknown' %></td>
+                <td><%= order ? order.address.phone : 'Unknown' %></td>
+                
+                <!-- Address Details -->
+                <td>
+                  <%= order.address.name %>, <%= order.address.locality %>, 
+                  <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
+                </td>
+      
+        
+                <!-- Product Details -->
+                <td><%= item.productName %></td>
+                <td><%= item.quantity %></td>
+        
+                <!-- Order Total Price -->
+                <td>₹<%= order.totalPrice.toFixed(2) %></td>
+        
+                <!-- Payment Method -->
+                <td><%= order.paymentMethod %></td>
+        
+                <!-- Order Date -->
+                <td><%= order.orderDate ? order.orderDate.toDateString() : 'N/A' %></td>
+        
+                <!-- Order Status -->
+                <td>
+                  <%= item.orderStatus ? item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1) : 'Unknown' %>
+                </td>
               </tr>
-          <% }) %>
+            <% }); %> <!-- End of item loop -->
+          <% }); %> <!-- End of order loop -->
         </tbody>
+        
         
       
     </table>
 </div>
 
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const filterForm = document.getElementById('filterForm');
+      const reportType = document.getElementById('reportType');
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+      const clearFilterBtn = document.getElementById('clearFilter');
+      const dateRangeInputs = document.getElementById('dateRangeInputs');
+      const filterFeedback = document.getElementById('filterFeedback');
 
+      // Set initial dates if not set
+      function setInitialDates() {
+          const today = new Date();
+          const lastMonth = new Date();
+          lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+          if (!startDate.value) {
+              startDate.value = lastMonth.toISOString().split('T')[0];
+          }
+          if (!endDate.value) {
+              endDate.value = today.toISOString().split('T')[0];
+          }
+      }
+
+      // Handle report type changes
+      reportType.addEventListener('change', function() {
+          const isCustom = this.value === 'custom';
+          dateRangeInputs.classList.toggle('disabled', !isCustom);
+          startDate.disabled = !isCustom;
+          endDate.disabled = !isCustom;
+
+          if (isCustom) {
+              setInitialDates();
+          } else {
+              // Set dates based on report type
+              const today = new Date();
+              let start = new Date();
+              
+              switch(this.value) {
+                  case 'daily':
+                      start = today;
+                      break;
+                  case 'weekly':
+                      start.setDate(today.getDate() - 7);
+                      break;
+                  case 'monthly':
+                      start.setMonth(today.getMonth() - 1);
+                      break;
+                  case 'yearly':
+                      start.setFullYear(today.getFullYear() - 1);
+                      break;
+              }
+              
+              startDate.value = start.toISOString().split('T')[0];
+              endDate.value = today.toISOString().split('T')[0];
+          }
+      });
+
+      // Form submission handler
+      filterForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          if (!reportType.value) {
+              alert('Please select a report type');
+              return;
+          }
+
+          if (reportType.value === 'custom' && (!startDate.value || !endDate.value)) {
+              alert('Please select both start and end dates for custom range');
+              return;
+          }
+
+          // Update download links before submitting
+          updateDownloadLinks();
+
+          // Show filter feedback
+          filterFeedback.style.display = 'block';
+          filterFeedback.textContent = `Showing ${reportType.value} report ${
+              reportType.value === 'custom' 
+                  ? `from ${startDate.value} to ${endDate.value}` 
+                  : ''
+          }`;
+
+          // Submit the form
+          this.submit();
+      });
+
+      // Clear filter handler
+      clearFilterBtn.addEventListener('click', function() {
+          reportType.value = '';
+          startDate.value = '';
+          endDate.value = '';
+          dateRangeInputs.classList.add('disabled');
+          startDate.disabled = true;
+          endDate.disabled = true;
+          filterFeedback.style.display = 'none';
+          
+          // Update download links
+          updateDownloadLinks();
+          
+          // Submit the form to reset filters
+          filterForm.submit();
+      });
+
+      // Update download links
+      function updateDownloadLinks() {
+          const params = new URLSearchParams(new FormData(filterForm));
+          const baseUrl = '/admin/sales-report';
+          
+          document.getElementById('pdfLink').href = `${baseUrl}/pdf?${params.toString()}`;
+          document.getElementById('excelLink').href = `${baseUrl}/excel?${params.toString()}`;
+      }
+
+      // Initialize the form
+      if (reportType.value === 'custom') {
+          dateRangeInputs.classList.remove('disabled');
+          startDate.disabled = false;
+          endDate.disabled = false;
+      }
+
+      // Show active filters if any
+      if (reportType.value) {
+          filterFeedback.style.display = 'block';
+          filterFeedback.textContent = `Showing ${reportType.value} report ${
+              reportType.value === 'custom' 
+                  ? `from ${startDate.value} to ${endDate.value}` 
+                  : ''
+          }`;
+      }
+
+      // Initialize download links
+      updateDownloadLinks();
+  });
+</script>
 
 
   

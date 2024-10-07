@@ -3,142 +3,338 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop</title>
+  <meta name="description" content="Shop our latest products">
+  <title>Shop - Kids kastle</title>
   <link rel="stylesheet" href="/css/user/shop.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  
+
   <style>
-    
-    .bxs-heart {
-      color: red;
-    }
+    .wishlist-btn .bxs-heart {
+  color: #FF6600;
+}
   </style>
+  
 </head>
 <body>
   <%- include('../partials/header') %>
 
-  <div class="filter-navbar">
-    <div class="filter-options">
-      <h3></h3>
-      <ul>
-        <li><a href="#" onclick="applyCombinedFilter('popularity')">Popularity</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('price-asc')">Price: Low to High</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('price-desc')">Price: High to Low</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('ratings')">Average Ratings</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('featured')">Featured</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('new-arrivals')">New Arrivals</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('a-z')">A-Z</a></li>
-        <li><a href="#" onclick="applyCombinedFilter('z-a')">Z-A</a></li>
-      </ul>
-    </div>
-    <div class="filter-categories">
-      <h3></h3>
-      <ul>
-        <% categories.forEach(category => { %>
-          <li><a href="#" onclick="applyCategoryFilter('<%= category._id %>')"><%= category.name %></a></li>
-        <% }) %>
-      </ul>
-    </div>
-  </div>
-  
-    
-
-  <section class="products">
-    <% products.forEach(product => { 
-      const discountedPrice = product.price - (product.price * product.discount / 100); 
-    %>
-      <div class="product">
-        <div class="product-image-container">
-          <a href="/auth/product/<%= product._id %>">
-            <% if (product.image && product.image.length > 0) { %>
-              <img src="<%= product.image[0] %>" alt="Product Image">
-            <% } else { %>
-              No Image
-            <% } %>
-          </a>
-          <i class="bx bx-heart heart-icon" data-product-id="<%= product._id %>"></i>
-
+  <main class="shop-container">
+    <aside class="filters">
+      <div class="filter-section">
+        <div class="filter-heading">
+          <span>Filters</span>
+          <button id="clearAllFilters" class="clear-filters">Clear All</button>
         </div>
-        <h3><a href="/product/<%= product._id %>"><%= product.name %></a></h3>
-        <p>
-          <span style="text-decoration: line-through;">₹<%= product.price %></span> 
-          ₹<%= discountedPrice.toFixed(2) %> (<%= product.discount %>% off)
-        </p>
-        <p><%= product.description %></p>
-        <% if (product.stock === 0) { %>
-          <p style="color: red;">Not available</p>
-      <% } else if (product.stock < 5) { %>
-          <p style="color: red;">Only <%= product.stock %> left in stock!</p>
-      <% } %>
-      
-      
       </div>
-    <% }); %>
-  </section>
 
- <%- include('../partials/footer') %>
+      <div class="filter-section">
+        <h2 class="filter-heading">Categories</h2>
+        <ul class="filter-list" id="categoryList">
+          <!-- Categories will be populated dynamically -->
+          <% categories.forEach(category => { %>
+            <li class="filter-item">
+              <input type="checkbox" id="category<%= category._id %>" class="filter-checkbox category-checkbox" value="<%= category._id %>" onchange="applyFilters()">
+              <label for="category<%= category._id %>" class="filter-label">
+                <span class="custom-checkbox"></span>
+                <%= category.name %>
+              </label>
+            </li>
+          <% }) %>
+        </ul>
+        <button class="show-more" id="showMoreCategories">
+          Show More <i class='bx bx-chevron-down'></i>
+        </button>
+      </div>
+      
 
+      <div class="filter-section">
+        <h2 class="filter-heading">Price Range</h2>
+        <ul class="filter-list">
+          <li class="filter-item">
+            <input type="checkbox" id="price1" class="filter-checkbox price-checkbox" value="0-500" onchange="applyFilters()">
+            <label for="price1" class="filter-label">
+              <span class="custom-checkbox"></span>
+              ₹0 - ₹500
+            </label>
+          </li>
+          <li class="filter-item">
+            <input type="checkbox" id="price2" class="filter-checkbox price-checkbox" value="501-1000" onchange="applyFilters()">
+            <label for="price2" class="filter-label">
+              <span class="custom-checkbox"></span>
+              ₹501 - ₹1000
+            </label>
+          </li>
+          <li class="filter-item">
+            <input type="checkbox" id="price3" class="filter-checkbox price-checkbox" value="1001-2000" onchange="applyFilters()">
+            <label for="price3" class="filter-label">
+              <span class="custom-checkbox"></span>
+              ₹1001 - ₹2000
+            </label>
+          </li>
+          <li class="filter-item">
+            <input type="checkbox" id="price4" class="filter-checkbox price-checkbox" value="2001+" onchange="applyFilters()">
+            <label for="price4" class="filter-label">
+              <span class="custom-checkbox"></span>
+              ₹2001+
+            </label>
+          </li>
+        </ul>
+      </div>
+
+      <div class="filter-section">
+        <h2 class="filter-heading">Sort By</h2>
+        <ul class="filter-list">
+          <li class="filter-item">
+            <input type="radio" id="sort1" name="sort" class="filter-checkbox" value="popularity" onchange="applyFilters()">
+            <label for="sort1" class="filter-label">
+              <span class="custom-checkbox"></span>
+              Popularity
+            </label>
+          </li>
+          <li class="filter-item">
+            <input type="radio" id="sort2" name="sort" class="filter-checkbox" value="price-low-high" onchange="applyFilters()">
+            <label for="sort2" class="filter-label">
+              <span class="custom-checkbox"></span>
+              Price: Low to High
+            </label>
+          </li>
+          <li class="filter-item">
+            <input type="radio" id="sort3" name="sort" class="filter-checkbox" value="price-high-low" onchange="applyFilters()">
+            <label for="sort3" class="filter-label">
+              <span class="custom-checkbox"></span>
+              Price: High to Low
+            </label>
+          </li>
+          <li class="filter-item">
+            <input type="radio" id="sort4" name="sort" class="filter-checkbox" value="newest" onchange="applyFilters()">
+            <label for="sort4" class="filter-label">
+              <span class="custom-checkbox"></span>
+              Newest First
+            </label>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+
+    <section class="products-grid">
+      <% products.forEach(product => { 
+        const discountedPrice = product.price - (product.price * product.discount / 100);
+      %>
+        <article class="product-card">
+          <div class="product-image">
+            <a href="/auth/product/<%= product._id %>">
+              <% if (product.image && product.image.length > 0) { %>
+                <img src="<%= product.image[0] %>" alt="<%= product.name %>" loading="lazy">
+              <% } else { %>
+                <div class="no-image">No Image Available</div>
+              <% } %>
+            </a>
+            <button class="wishlist-btn" data-product-id="<%= product._id %>">
+              <% if (isLoggedIn && userWishlist.some(item => item.toString() === product._id.toString())) { %>
+                <i class="bx bxs-heart"></i>
+              <% } else { %>
+                <i class="bx bx-heart"></i>
+              <% } %>
+            </button>
+          </div>
+          
+          <div class="product-info">
+            <h2 class="product-title">
+              <a href="/product/<%= product._id %>"><%= product.name %></a>
+            </h2>
+            
+            <div class="product-price">
+              <span class="original-price">₹<%= product.price %></span>
+              <span class="discounted-price">₹<%= discountedPrice.toFixed(2) %></span>
+              <span class="discount-tag"><%= product.discount %>% off</span>
+            </div>
+            
+            <p class="product-description"><%= product.description %></p>
+            
+            <% if (product.stock === 0) { %>
+              <p class="stock-status out-of-stock">Not available</p>
+            <% } else if (product.stock < 5) { %>
+              <p class="stock-status low-stock">Only <%= product.stock %> left in stock!</p>
+            <% } %>
+          </div>
+        </article>
+      <% }); %>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
 
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
   <script>
   
 
 
+// Function to show loading indicator
+function showLoading() {
+  document.body.classList.add('loading');
+      document.querySelector('.shop-container').classList.add('blur-content');
+      const loadingIndicator = document.createElement('div');
+      loadingIndicator.id = 'loadingIndicator';
+      loadingIndicator.innerHTML = '<div class="loader"></div>';
+      document.body.appendChild(loadingIndicator);
+    }
 
-    function applyCombinedFilter(filter) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get('category') || '';
-    window.location.href = `/shop?filter=${encodeURIComponent(filter)}&category=${encodeURIComponent(categoryId)}`;
+    // Function to hide loading indicator
+    function hideLoading() {
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      if (loadingIndicator) {
+        loadingIndicator.remove();
+      }
+      document.body.classList.remove('loading');
+      document.querySelector('.shop-container').classList.remove('blur-content');
+    }
+
+// Function to fetch and update products
+async function updateProducts(url) {
+  showLoading();
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    const response = await fetch(url);
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const newProductsGrid = doc.querySelector('.products-grid');
+    document.querySelector('.products-grid').innerHTML = newProductsGrid.innerHTML;
+  } catch (error) {
+    console.error('Error updating products:', error);
+  } finally {
+    hideLoading();
   }
+}
 
-  function applyCategoryFilter(categoryId) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const filter = urlParams.get('filter') || '';
-    window.location.href = `/shop?category=${encodeURIComponent(categoryId)}&filter=${encodeURIComponent(filter)}`;
-  }
-  function searchProducts() {
-    var query = document.getElementById('search-input').value;
-    window.location.href = `/shop?search=${encodeURIComponent(query)}`;
-  }
-
-
-
-  // Wait for the DOM to load before attaching event listeners
-document.addEventListener('DOMContentLoaded', () => {
-  const heartIcons = document.querySelectorAll('.heart-icon');
-
-  heartIcons.forEach(icon => {
-    icon.addEventListener('click', async function() {
-      const productId = this.getAttribute('data-product-id');
-
+// Function to apply filters
+async function applyFilters() {
+      showLoading();
       try {
-        // Send an AJAX request to add the product to the wishlist
-        const response = await fetch('/wishlist/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId }),
+        const categories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+        const priceRanges = Array.from(document.querySelectorAll('.price-checkbox:checked')).map(cb => cb.value);
+        const sort = document.querySelector('input[name="sort"]:checked')?.value || '';
+        
+        const searchParams = new URLSearchParams(window.location.search);
+        
+        if (categories.length > 0) {
+          searchParams.set('categories', categories.join(','));
+        } else {
+          searchParams.delete('categories');
+        }
+        
+        if (priceRanges.length > 0) {
+          searchParams.set('price', priceRanges.join(','));
+        } else {
+          searchParams.delete('price');
+        }
+        
+        if (sort) {
+          searchParams.set('sort', sort);
+        } else {
+          searchParams.delete('sort');
+        }
+        
+        const searchInput = document.getElementById('search-input');
+        if (searchInput && searchInput.value) {
+          searchParams.set('search', searchInput.value);
+        } else {
+          searchParams.delete('search');
+        }
+        
+        const newUrl = `/shop?${searchParams.toString()}`;
+        await updateProducts(newUrl);
+        
+        // Update browser's URL without refreshing the page
+        history.pushState(null, '', newUrl);
+      } finally {
+        hideLoading();
+      }
+    }
+
+// Function to clear all filters
+async function clearAllFilters() {
+      showLoading();
+      try {
+        document.querySelectorAll('.category-checkbox, .price-checkbox').forEach(checkbox => {
+          checkbox.checked = false;
         });
 
-        const data = await response.json();
+        document.querySelectorAll('input[name="sort"]').forEach(radio => {
+          radio.checked = false;
+        });
 
-        if (data.success) {
-          Swal.fire('Success', 'Product added to wishlist!', 'success');
-        } else {
-          Swal.fire('Error', data.message, 'error');
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+          searchInput.value = '';
         }
-      } catch (error) {
-        console.error('Error adding product to wishlist:', error);
-        Swal.fire('Error', 'Something went wrong!', 'error');
+
+        await applyFilters();
+      } finally {
+        hideLoading();
       }
-    });
+    }
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const clearAllButton = document.getElementById('clearAllFilters');
+  if (clearAllButton) {
+    clearAllButton.addEventListener('click', clearAllFilters);
+  }
+
+  document.querySelectorAll('.category-checkbox, .price-checkbox, input[name="sort"]').forEach(input => {
+    input.addEventListener('change', applyFilters);
   });
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce(applyFilters, 300));
+  }
 });
 
-
-  
+// Debounce function to limit how often a function can fire
+function debounce(func, delay) {
+  let debounceTimer;
+  return function() {
+    const context = this;
+    const args = arguments;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  }
+}
   </script>
+
+<script>
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+  button.addEventListener('click', async function(e) {
+    e.preventDefault();
+    const productId = this.dataset.productId;
+    try {
+      const response = await fetch('/wishlist/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId }),
+      });
+      const data = await response.json();
+      if (data.added) {
+        this.querySelector('i').classList.replace('bx-heart', 'bxs-heart');
+      } else {
+        this.querySelector('i').classList.replace('bxs-heart', 'bx-heart');
+      }
+    } catch (error) {
+      console.error('Error updating wishlist:', error);
+    }
+  });
+});
+</script>
 </body>
 </html>

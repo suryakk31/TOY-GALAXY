@@ -1,5 +1,5 @@
 const Category = require('../../models/category');
-const Product = require('../../models/product'); // Import the Product model
+const Product = require('../../models/product'); 
 
 exports.getProductpage = async (req, res) => {
   try {

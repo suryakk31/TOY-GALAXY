@@ -1,0 +1,181 @@
+/* General Styles */
+body {
+    font-family: 'Roboto', 'Comic Sans MS', sans-serif;
+    background-color: #FFF5E6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 70px auto;
+    padding: 20px;
+}
+
+/* Card Styles */
+.card {
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #FF9933;
+    color: #FFFFFF;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Typography */
+h5 {
+    color: #FF6600;
+    font-weight: bold;
+}
+
+strong {
+    color: #FF6600;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 20px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #FF9933;
+    border-color: #FF9933;
+    color: #FFFFFF;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #FF6600;
+    border-color: #FF6600;
+}
+
+/* Updated: Quantity Button Styles */
+.quantity-btn {
+    background-color: #FF6600;  /* Green color */
+    border-color: #FF6600;
+    color: #FFFFFF;
+    padding: 5px 10px;
+}
+
+.quantity-btn:hover, .quantity-btn:focus {
+    background-color: #FF6600;  /* Darker green on hover */
+    border-color: #FF6600;
+}
+
+/* Updated: Remove Button Styles */
+.remove-btn {
+    background-color: #f44336;  /* Red color */
+    border-color: #f44336;
+    color: #FFFFFF;
+}
+
+.remove-btn:hover, .remove-btn:focus {
+    background-color: #d32f2f;  /* Darker red on hover */
+    border-color: #d32f2f;
+}
+
+/* Updated: Continue Shopping Button Styles */
+.btn-continue-shopping {
+    background-color: #FF6600;  /* Blue color */
+    border-color: #FF6600;
+    color: #FFFFFF;
+}
+
+.btn-continue-shopping:hover, .btn-continue-shopping:focus {
+    background-color: #FF6600;  /* Darker blue on hover */
+    border-color: #FF6600;
+}
+
+/* Cart Item Styles */
+.row.mb-4 {
+    align-items: center;
+}
+
+.bg-image {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.bg-image img {
+    transition: transform 0.3s ease;
+}
+
+.bg-image:hover img {
+    transform: scale(1.05);
+}
+
+/* Quantity Controls */
+input[type="number"] {
+    border: 1px solid #FF9933;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Summary Section */
+.list-group-item {
+    background-color: transparent;
+    border: none;
+    padding: 10px 0;
+}
+
+#goToCheckoutButton {
+    background-color: #FF6600;
+    border-color: #FF6600;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    width: 100%;
+}
+
+#goToCheckoutButton:hover {
+    background-color: #FF3300;
+    border-color: #FF3300;
+}
+
+/* Empty Cart */
+.empty-cart {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-cart p {
+    color: #FF6600;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Payment Methods */
+.payment-methods img {
+    max-height: 30px;
+    margin-right: 10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 15px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    
+    .quantity-btn {
+        padding: 3px 8px;
+    }
+    
+    .row.mb-4 > div {
+        margin-bottom: 15px;
+    }
+}

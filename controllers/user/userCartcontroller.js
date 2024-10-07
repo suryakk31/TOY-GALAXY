@@ -56,7 +56,7 @@ exports.getCart = async (req, res) => {
       return sum; 
     }, 0);
     
-    // Calculate delivery fee based on original total
+  
     const deliveryFee = originalTotal > 500 ? 0 : 50;
     const deliveryFeeDisplay = deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`;
     

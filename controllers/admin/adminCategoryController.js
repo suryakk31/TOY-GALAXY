@@ -41,35 +41,44 @@ exports.addCategory = (req, res) => {
 exports.postAddCategoryPage = async (req, res) => {
   try {
     const { name, description, offer } = req.body;
-    console.log('Received name:', name);
-    console.log(description)
 
-    if (!name || name.length < 3) {
-      req.flash('errorMessage', 'Name must be at least 3 characters long');
+    let errors = [];
+
+    if (!name || name.trim().length < 3 || name.trim().length > 50) {
+      errors.push('Category name must be between 3 and 50 characters.');
+    }
+    if (!/^[a-zA-Z0-9\s-]+$/.test(name)) {
+      errors.push('Category name can only contain letters, numbers, spaces, and hyphens.');
+    }
+
+ 
+    if (offer !== undefined && offer !== '') {
+      const offerNum = parseFloat(offer);
+      if (isNaN(offerNum) || offerNum < 0 || offerNum > 100) {
+        errors.push('Offer must be a number between 0 and 100.');
+      }
+    }
+
+   
+    if (!description || description.trim().length < 10 || description.trim().length > 500) {
+      errors.push('Description must be between 10 and 500 characters.');
+    }
+
+    if (errors.length > 0) {
+      req.flash('errorMessage', errors);
       return res.redirect('/admin/category/addCategory');
     }
 
-    if (offer && (isNaN(offer) || offer < 0 || offer > 100)) {
-      req.flash('errorMessage', 'Offer must be a number between 0 and 100');
-      return res.redirect('/admin/category/addCategory');
-    }
-
-
-    if (!description || description.length < 10) {
-      req.flash('errorMessage', 'Description must be at least 10 characters long');
-      return res.redirect('/admin/category/addCategory');
-    }
-
-    const existingCategory = await Category.findOne({ name });
+     const existingCategory = await Category.findOne({ name: { $regex: new RegExp('^' + name.trim() + '$', 'i') } });
     if (existingCategory) {
       req.flash('errorMessage', 'Category already exists');
       return res.redirect('/admin/category/addCategory');
     }
 
     const newCategory = new Category({
-      name,
-      description,
-      offer: offer || 0,
+      name: name.trim(),
+      description: description.trim(),
+      offer: offer ? parseFloat(offer) : 0,
     });
 
     await newCategory.save();
@@ -82,7 +91,6 @@ exports.postAddCategoryPage = async (req, res) => {
     res.redirect('/admin/category/addCategory');
   }
 };
-
 
 exports.blockCategory = async (req, res) => {
   try {
@@ -123,15 +131,53 @@ exports.editCategory = async(req,res) => {
 
 }
 
-
 exports.updateCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
-    const updates = req.body;
+    const { name, description, offer } = req.body;
+    
 
-    if (updates.offer && (isNaN(updates.offer) || updates.offer < 0 || updates.offer > 100)) {
-      return res.status(400).json({ success: false, message: 'Offer must be a number between 0 and 100' });
+    let errors = [];
+
+    if (!name || name.trim().length < 3 || name.trim().length > 50) {
+      errors.push('Category name must be between 3 and 50 characters.');
     }
+    if (!/^[a-zA-Z0-9\s-]+$/.test(name)) {
+      errors.push('Category name can only contain letters, numbers, spaces, and hyphens.');
+    }
+
+
+    if (name && name.trim()) {
+      const existingCategory = await Category.findOne({
+        name: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
+        _id: { $ne: categoryId }
+      });
+      
+      if (existingCategory) {
+        errors.push('A category with this name already exists.');
+      }
+    }
+
+    if (offer !== undefined && offer !== '') {
+      const offerNum = parseFloat(offer);
+      if (isNaN(offerNum) || offerNum < 0 || offerNum > 100) {
+        errors.push('Offer must be a number between 0 and 100.');
+      }
+    }
+
+    if (!description || description.trim().length < 10 || description.trim().length > 500) {
+      errors.push('Description must be between 10 and 500 characters.');
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, errors });
+    }
+
+    const updates = {
+      name: name.trim(),
+      description: description.trim(),
+      offer: offer ? parseFloat(offer) : 0,
+    };
 
     const updatedCategory = await Category.findByIdAndUpdate(categoryId, updates, { new: true });
 
@@ -145,5 +191,3 @@ exports.updateCategory = async (req, res) => {
     res.status(500).json({ success: false, message: 'An error occurred while updating the category' });
   }
 };
-
-

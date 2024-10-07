@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router();
 
 
-const userAuth = require('../middleware/userMiddlewear')
+const userAuth = require('../middleware/userMiddleware')
 
 const userController =  require('../controllers/user/userController')
 
@@ -62,12 +62,13 @@ router.delete('/auth/cart', cartController.removeProductFromCart)
 router.get('/auth/checkout',userCheckoutController.getCheckout)
 router.post('/auth/checkout',userCheckoutController.postCheckout)
 router.post('/create-razorpay-order',userCheckoutController.createRazorpayOrder)
+router.post('/process-wallet-payment',userWalletController.processWalletPayment)
 
 router.get('/auth/order',userOrderController.getOrderPage)
 
 router.get('/auth/orderDetails/:orderId', userOrderdetailsController.getOrderdetails);
 router.post('/cancel-order-item/:itemId',userOrderdetailsController.cancelOrder)
-router.post('/returnOrder', userOrderdetailsController.returnOrder)
+router.post('/auth/return-order-item/:itemId', userOrderdetailsController.returnOrder)
 
 router.get('/auth/coupon',userCouponController.getCoupon)
 router.post('/validateCoupon',userCouponController.applyCoupon)
@@ -76,9 +77,8 @@ router.get('/auth/wallet',userWalletController.getWallet)
 router.post('/create-razorpay-order',userWalletController.createRazorPayorder)
 router.post('/update-wallet',userWalletController.updateWallet)
 
+
 router.get('/auth/wishlist',userwishlistController.getWishlist)
 router.post('/wishlist/add',userwishlistController.addToWishlist)
-
-
-
+router.post('/auth/wishlist/remove', userwishlistController.removeFromWishlist);
 module.exports = router;

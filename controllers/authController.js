@@ -3,6 +3,7 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
+const Wallet = require('../models/wallet');
 
 dotenv.config();
 
@@ -22,22 +23,25 @@ exports.getSignupPage = (req, res) => {
 
 exports.postSignup = async (req, res) => {
     try {
-        const { firstName, lastName, email, phone, password, confirmPassword } = req.body;
+        const { firstName, lastName, email, phone, password, confirmPassword, referralCode } = req.body;
+        console.log("Entire request body:", req.body);
 
+  
         if (password !== confirmPassword) {
             return res.render('auth/signup', { errorMessage: 'Passwords do not match' });
         }
-
         if (!password) {
             return res.render('auth/signup', { errorMessage: 'Password is required' });
         }
-
+        
+      
         const existingUser = await User.findOne({ email });
         if(existingUser) {
-            return res.render('auth/signup',{errorMessage:'User with this email already exists'})
+            return res.render('auth/signup', {errorMessage: 'User with this email already exists'});
         }
         
-        const hash = await bcrypt.hash(password,10)
+  
+        const hash = await bcrypt.hash(password, 10);
         const newUser = new User({
             firstName,
             lastName,
@@ -45,30 +49,169 @@ exports.postSignup = async (req, res) => {
             phone,
             password: hash,
         });
+        
+        await newUser.generateReferralCode();
+        let retries = 5;
+        while (retries > 0) {
+            try {
+                await newUser.save();
+                break;
+            } catch (error) {
+                if(error.code === 11000 && error.keyPattern.referralCode) {
+                    console.log("Duplicate referral code detected, generating a new one...");
+                    await newUser.generateReferralCode();
+                    retries--;
+                } else {
+                    throw error;
+                }
+            }
+        }
+        if (retries === 0) {
+            throw new Error('Failed to generate a unique referral code after multiple attempts');
+        }
 
+    
+        let newUserBonus = 0;
+        let referralBonusText = '';
+        
+     
+        const newUserWallet = new Wallet({
+            userId: newUser._id,
+            balance: 0,
+            transactions: []
+        });
+
+      
+        if(referralCode) {
+            const referringUser = await User.findOne({ referralCode });
+            if (referringUser) {
+                console.log('Valid referral code detected. Processing referral bonuses...');
+                
+               
+                newUserBonus = 50;
+                newUserWallet.balance = newUserBonus;
+                newUserWallet.transactions.push({
+                    type: 'deposit',
+                    amount: newUserBonus,
+                    description: `Signup bonus for using referral code `
+                });
+                
+               
+                let referringUserWallet = await Wallet.findOne({ userId: referringUser._id });
+                if (!referringUserWallet) {
+                    referringUserWallet = new Wallet({ userId: referringUser._id, balance: 0 });
+                }
+                const referrerBonus = 100;
+                referringUserWallet.balance += referrerBonus;
+                referringUserWallet.transactions.push({
+                    type: 'deposit',
+                    amount: referrerBonus,
+                    description: `Referral bonus for user  signing up with your referral code`
+                });
+                await referringUserWallet.save();
+                
+                referralBonusText = `You've received a ${newUserBonus} rupees bonus for using a referral code!`;
+                console.log(`Referral bonus of ${referrerBonus} rupees added to referring user's wallet.`);
+            } else {
+                console.log('Invalid referral code provided.');
+                referralBonusText = 'The referral code you provided was invalid.';
+            }
+        }
+
+        
+        await newUserWallet.save();
+
+     
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         newUser.otp = otp;
         newUser.otpExpiry = Date.now() + 3600000; // 1 hour expiry
         await newUser.save();
-
+        
         req.session.email = email;
-
+        
+      
         const mailOptions = {
             from: process.env.EMAIL,
             to: email,
-            subject: 'OTP Verification',
-            text: `Your OTP is ${otp}`
+            subject: '🏰 Welcome to Kids Kastle! ',
+            html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Welcome to Kids Kastle</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background-color: #FF6600; padding: 20px; border-radius: 10px 10px 0 0;">
+                    <h1 style="color: white; margin: 0; text-align: center; font-size: 28px;">Welcome to Kids Kastle! 🏰</h1>
+                </div>
+                
+                <div style="background-color: #FFF2E6; padding: 20px; border-radius: 0 0 10px 10px; border: 2px solid #FF6600; border-top: none;">
+                    <p style="font-size: 18px; color: #333333; margin-bottom: 20px;">
+                        Hello <span style="color: #FF6600; font-weight: bold;">${firstName}</span>!
+                    </p>
+                    
+                    <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #FF6600;">
+                        <p style="font-size: 16px; margin: 0;">Your OTP for account verification is:</p>
+                        <h2 style="color: #FF6600; font-size: 32px; margin: 10px 0; text-align: center;">${otp}</h2>
+                        <p style="font-size: 14px; color: #666666; margin: 0; text-align: center;">This OTP will expire in 1 hour</p>
+                    </div>
+                    
+                    ${referralBonusText ? `
+                    <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #FF6600;">
+                        <p style="color: #FF6600; font-size: 18px; font-weight: bold; margin: 0;">${referralBonusText}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #FF6600;">
+                        <p style="font-size: 16px; margin-bottom: 10px;">Your unique referral code is:</p>
+                        <h3 style="color: #FF6600; font-size: 24px; text-align: center; margin: 10px 0; padding: 10px; background-color: #FFF2E6; border-radius: 5px;">${newUser.referralCode}</h3>
+                        <p style="font-size: 16px; color: #333333; margin-top: 15px; text-align: center;">
+                            Share this code with others and earn <span style="color: #FF6600; font-weight: bold;">100 rupees</span> for each successful referral!
+                        </p>
+                    </div>
+                    
+                    <p style="font-size: 16px; color: #666666; margin-top: 20px; text-align: center;">
+                        Thank you for joining Kids Kastle! We're excited to have you with us.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; color: #666666; font-size: 14px;">
+                    <p>If you have any questions, feel free to contact our support team.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+            `,
+            text: `
+        Hello ${firstName}!
+        
+        Welcome to Kids Kastle!
+        
+        Your OTP for account verification is: ${otp}
+        
+        ${referralBonusText}
+        
+        Your unique referral code is: ${newUser.referralCode}
+        
+        Share this code with others and earn 500 rupees for each successful referral!
+        
+        This OTP will expire in 1 hour.
+        
+        Thank you for joining Kids Kastle! We're excited to have you with us.
+            `
         };
-
+        
+        
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error("Error sending OTP email:", error);
                 return res.status(500).send('Error sending OTP email');
             }
-          
+            
             res.redirect('/auth/verify-otp');
         });
-
     } catch (error) {
         console.error("Error during signup:", error);
         res.status(500).send('Internal Server Error');
@@ -175,8 +318,10 @@ exports.postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+   
         const user = await User.findOne({ email });
 
+    
         if (!user) {
             return res.render('auth/login', { errorMessage: 'Invalid email or password' });
         }

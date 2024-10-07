@@ -260,23 +260,21 @@ strong {
                     
 
                 
- <% if (item.orderStatus === 'delivered') { %>
-  <button type="button" onclick="openModal('<%= item._id %>')" style="padding: 10px; background-color: #f0ad4e; border: none; color: white; cursor: pointer;">Return Order</button>
-<% } %>
-
-<!-- Modal -->
-<div id="returnModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background-color:rgba(0, 0, 0, 0.7); justify-content:center; align-items:center; z-index: 1000;">
-    <div style="background:white; padding:20px; border-radius:8px; width:400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-        <h4 style="margin: 0 0 15px; font-family: Arial, sans-serif;">Return Order</h4>
-        <form id="returnForm" action="/auth/returnOrder" method="POST">
-            <input type="hidden" name="itemId" id="itemId">
-            <textarea name="returnMessage" placeholder="Reason for return" required style="width: 100%; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 10px; font-family: Arial, sans-serif;"></textarea>
-            <br>
-            <button type="submit" style="margin-top:15px; padding: 10px 15px; background-color: #5cb85c; border: none; color: white; cursor: pointer; border-radius: 5px;">Submit</button>
-            <button type="button" onclick="closeModal()" style="margin-top:15px; padding: 10px 15px; background-color: #d9534f; border: none; color: white; cursor: pointer; border-radius: 5px;">Cancel</button>
-        </form>
-    </div>
-</div>
+<!-- Return Order Button (visible only for delivered items) -->
+<% if (item.orderStatus === 'delivered') { %>
+    <button type="button" class="return-button" data-item-id="<%= item._id %>" data-product-id="<%= item.productId %>" style="padding: 10px; background-color: #f0ad4e; border: none; color: white; cursor: pointer;">Return Order</button>
+  <% } %>
+  
+  <!-- Return Order Modal -->
+  <div id="returnModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background-color:rgba(0, 0, 0, 0.7); justify-content:center; align-items:center; z-index: 1000;">
+      <div style="background:white; padding:20px; border-radius:8px; width:400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+          <h4 style="margin: 0 0 15px; font-family: Arial, sans-serif;">Return Order</h4>
+          <textarea id="returnReason" placeholder="Reason for return" required style="width: 100%; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 10px; font-family: Arial, sans-serif;"></textarea>
+          <br>
+          <button id="confirmReturnBtn" style="margin-top:15px; padding: 10px 15px; background-color: #5cb85c; border: none; color: white; cursor: pointer; border-radius: 5px;">Submit</button>
+          <button id="cancelReturnBtn" style="margin-top:15px; padding: 10px 15px; background-color: #d9534f; border: none; color: white; cursor: pointer; border-radius: 5px;">Cancel</button>
+      </div>
+  </div>
 
                 </div>
                 <% if (order.address) { %>
@@ -304,7 +302,7 @@ strong {
                     <button class="cancel-button" 
                     data-item-id="<%= item._id %>" 
                     data-product-id="<%= item.productId %>" 
-                    <% if (item.orderStatus === 'cancelled' || item.orderStatus === 'delivered' || item.orderStatus === 'Out for delivery' || item.orderStatus === 'return requested') { %> 
+                    <% if (item.orderStatus === 'cancelled' || item.orderStatus === 'delivered' || item.orderStatus === 'Out for delivery' || item.orderStatus === 'returned') { %> 
                         style="display: none;" 
                     <% } %>>
                     Cancel
@@ -386,10 +384,7 @@ strong {
 
 
 
- <footer>
-    <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
-  </footer>
-
+<%- include('../partials/footer') %>
 
 
 
@@ -514,6 +509,91 @@ function openModal(itemId) {
     }
 
 </script>
+
+<script>
+    const returnModal = document.getElementById('returnModal');
+    const returnButtons = document.querySelectorAll('.return-button');
+    const confirmReturnBtn = document.getElementById('confirmReturnBtn');
+    const cancelReturnBtn = document.getElementById('cancelReturnBtn');
+    
+   
+    returnButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-item-id');
+            const productId = this.getAttribute('data-product-id');
+            confirmReturnBtn.setAttribute('data-item-id', itemId);
+            confirmReturnBtn.setAttribute('data-product-id', productId);
+            returnModal.style.display = 'flex';
+        });
+    });
+    
+    // Handle return order submission
+    confirmReturnBtn.addEventListener('click', async function() {
+        const itemId = this.getAttribute('data-item-id');
+        const productId = this.getAttribute('data-product-id');
+        const returnMessage = document.getElementById('returnReason').value;
+    
+        try {
+            const response = await fetch(`/auth/return-order-item/${itemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reason: returnMessage, productId })
+            });
+    
+            const result = await response.json();
+            if (result.success) {
+                showFeedbackMessage('Return request has been submitted successfully.');
+    
+                const returnButton = document.querySelector(`.return-button[data-item-id="${itemId}"]`);
+                if (returnButton) {
+                    returnButton.style.display = 'none';
+                }
+    
+                const statusBar = document.querySelector(`.status-bar[data-item-id="${itemId}"]`);
+                if (statusBar) {
+                    statusBar.querySelectorAll('.status-item').forEach(statusItem => {
+                        statusItem.classList.remove('active');
+                    });
+    
+                    const returnedStatus = statusBar.querySelector('.status-item:nth-child(7)'); // Assuming "Returned" is the 7th status
+                    if (returnedStatus) {
+                        returnedStatus.classList.add('active');
+                    }
+                }
+    
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            } else {
+                showFeedbackMessage('Failed to submit return request.', true);
+            }
+        } catch (error) {
+            showFeedbackMessage('An error occurred. Please try again.', true);
+        }
+    
+        returnModal.style.display = 'none';
+    });
+    
+    // Close modal when cancel button is clicked
+    cancelReturnBtn.addEventListener('click', function() {
+        returnModal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === returnModal) {
+            returnModal.style.display = 'none';
+        }
+    });
+    
+    function showFeedbackMessage(message, isError = false) {
+        // Implement this function to show feedback to the user
+        // You can use a toast notification or update a specific element on the page
+        console.log(message);
+    }
+    </script>
 
 
   

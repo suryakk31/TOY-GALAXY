@@ -1,15 +1,4 @@
 
-  /* Footer styles */
-  .footer {
-    position: fixed;
-    bottom: -20px; /* Fixes the footer to the bottom of the viewport */
-    background-color: #f4e3ff; /* Light background color for the footer */
-    
-    text-align: center; /* Center-align the text */
-    padding: 20px; /* Padding around the text */
-    border-top: 1px solid #ddd; /* Optional border to separate footer from content */
-    width: 100%; /* Ensure the footer spans the full width of the page */
-  }
   
   
   
@@ -19,8 +8,8 @@
 .main-content {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px;
-    margin-left: 40PX;
+    margin-top: 150px;
+    margin-left: 100PX;
 }
 
 .checkout-section {
@@ -52,7 +41,7 @@
 }
 
 .btn-primary {
-    background-color: #9D51FF;
+    background-color: #FF9933;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -61,11 +50,11 @@
 }
 
 .btn-primary:hover {
-    background-color: #9D51FF;
+    background-color: #FF9933;
 }
 
 .btn-primary1 {
-    background-color: #9D51FF;
+    background-color: #FF9933;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -75,7 +64,7 @@
 }
 
 .btn-primary1:hover {
-    background-color: #9D51FF;
+    background-color: #FF9933;
 }
 
 .savings {
@@ -179,7 +168,7 @@
 
 .address-actions .edit-btn:hover,
 .address-actions .delete-btn:hover {
-    background-color: #007bff;
+    background-color: #FF9933;
     color: #fff;
 }
 
@@ -213,7 +202,7 @@
 }
 
 .address-form button.btn-primary {
-    background-color: #2874f0;
+    background-color: #FF9933;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -222,8 +211,10 @@
 }
 
 .address-form button.btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #FF9933;
 }
+
+
 
 /* Responsive Design for Smaller Screens */
 @media (max-width: 768px) {
@@ -271,7 +262,7 @@
 }
 
 .modal-body1 button {
-    background-color: #2874f0;
+    background-color: #FF9933;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -286,15 +277,15 @@
       .header, .footer { text-align: center; margin: 20px 0; }
       .main-content { display: flex; justify-content: space-between; }
       .checkout-section { width: 70%; }
-      .btn-primary3 { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
+      .btn-primary3 { background-color: #FF9933; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
       .section { border: 1px solid #ddd; margin-bottom: 10px; padding: 15px; border-radius: 5px; }
       .section-header { display: flex; justify-content: space-between; align-items: center; }
       .step-content { display: none; } /* Initially hide all sections */
       .step-content.active { display: block; } /* Show the active section */
-      .btn-primary { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;}
-      .btn-primary1 { background-color: #9D51FF; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; }
+      .btn-primary { background-color: #FF9933; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;}
+      .btn-primary1 { background-color: #FF9933; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; }
       .savings { color: green; font-weight: bold; }
-      .change-link { font-size: 14px; color: #9D51FF; cursor: pointer; text-decoration: underline; }
+      .change-link { font-size: 14px; color: #FF9933; cursor: pointer; text-decoration: underline; }
       .address-form { display: none; } /* Initially hide the address form */
 
 
@@ -339,7 +330,7 @@
           width: 100%;
           padding: 10px 15px;
           background-color: transparent;
-          color: #333;
+          color: #FF9933;
           border: 1px solid #ccc;
           border-radius: 4px;
           cursor: pointer;
@@ -408,7 +399,7 @@
       .modal button {
           width: 100%;
           padding: 12px;
-          background-color: #9D51FF;
+          background-color: #FF9933;
           color: white;
           border: none;
           border-radius: 4px;
@@ -417,7 +408,7 @@
           transition: background-color 0.3s;
       }
       .modal button:hover {
-          background-color: #9D51FF;
+          background-color: #FF9933;
       }
 
 
@@ -435,7 +426,7 @@
       }
       .coupon-input button {
           padding: 10px 20px;
-          background-color: #ff5722;
+          background-color: #FF9933;
           color: white;
           border: none;
           border-radius: 0 4px 4px 0;
@@ -463,7 +454,7 @@
           margin-bottom: 5px;
       }
       .more-info {
-          color: #1a73e8;
+          color: #FF9933;
           font-size: 12px;
           cursor: pointer;
       }

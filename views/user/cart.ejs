@@ -52,20 +52,18 @@
                     <p><strong><%= item.productId.name %></strong></p>
                     <p>Category: <%= item.productId.category.name %></p>
                     <p>Description: <%= item.productId.description %></p>
-                    <button type="button" class="btn btn-primary btn-sm me-1 mb-2 remove-btn" data-product-id="<%= item.productId._id %>" data-mdb-tooltip-init title="Remove item">
+                    <button type="button" class="btn btn-primary btn-sm me-1 mb-2 remove-btn" data-product-id="<%= item.productId._id %>" data-mdb-tooltip-init title="Remove item" >
                       <i class="fas fa-trash"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-sm mb-2" data-mdb-tooltip-init title="Move to the wish list">
-                      <i class="fas fa-heart"></i>
-                    </button>
+                  
                   </div>
                   <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                     <div class="d-flex mb-4" style="max-width: 300px">
-                      <button class="btn btn-primary px-3 me-2 quantity-btn" data-product-id="<%= item.productId._id %>" data-change="-1" <%= item.quantity === 1 ? 'disabled' : '' %>>
+                      <button class=" px-3 me-2 quantity-btn" data-product-id="<%= item.productId._id %>" data-change="-1" <%= item.quantity === 1 ? 'disabled' : '' %>>
                         <i class="fas fa-minus"></i>
                       </button>
                       <input id="form1" min="1" name="quantity" value="<%= item.quantity %>" type="number" class="form-control text-center" readonly />
-                      <button class="btn btn-primary px-3 ms-2 quantity-btn" data-product-id="<%= item.productId._id %>" data-change="1">
+                      <button class="px-3 ms-2 quantity-btn" data-product-id="<%= item.productId._id %>" data-change="1">
                         <i class="fas fa-plus"></i>
                       </button>
                     </div>
@@ -100,7 +98,7 @@
                   <img class="me-2" width="70px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRugu--LkxJz7vatGEphcyncDsm1rFyGc30pA&s" alt="cash on delivery" />
                 </div>
                 <div>
-                  <a href="/auth/shop" class="btn btn-primary btn-lg btn-block">Continue Shopping</a>
+                  <a href="/auth/shop" class=" btn-lg btn-block">Continue Shopping</a>
                 </div>
               </div>
             </div>
@@ -253,14 +251,7 @@
       if (data.success) {
         window.location.reload();
         
-        // const cartItem = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
-        // cartItem.remove();
-
-       
-        // document.querySelector('.summary-detail.original-total').textContent = `Original Price: ₹${data.originalTotal.toFixed(2)}`;
-        // document.querySelector('.summary-detail.discount').textContent = `Discount: ₹${data.discount.toFixed(2)}`;
-        // document.querySelector('.summary-detail.delivery-fee').textContent = `Delivery Fee: ₹${data.deliveryFee.toFixed(2)}`;
-        // document.querySelector('.total-amount').textContent = `Total: ₹${data.total.toFixed(2)}`;
+        
      Swal.fire({
         icon: 'success',
         title: 'Removed!',

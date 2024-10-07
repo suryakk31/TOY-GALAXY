@@ -25,6 +25,7 @@
       <li><a href="/auth/order">Orders</a></li>
       <li><a href="/auth/wallet">Wallet</a></li>
       <li><a href="/auth/coupon">Coupons</a></li>
+      <li><a href="/auth/wishlist">Wishlist</a></li>
       <li><a href="/auth/reviewsRatings">Reviews</a></li>
       <li><a href="/auth/changePassword">Password</a></li>
     </ul>
@@ -34,7 +35,7 @@
 
     
 
-      <!-- Display User's Addresses -->
+
 <div id="addresses">
   <% if (addresses && addresses.length > 0) { %>
     <% addresses.forEach(function(address) { %>
@@ -161,10 +162,7 @@
 </div>
 
 
-<footer>
-  <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
-</footer>
-
+<%- include('../partials/footer') %>
 
 
 
@@ -207,51 +205,49 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     let isValid = true;
 
-    // Name validation
     if (name === '') {
       Swal.fire('Validation Error', 'Name is required.', 'error');
       isValid = false;
     }
 
-    // Address validation
+
     if (address === '') {
       Swal.fire('Validation Error', 'Address is required.', 'error');
       isValid = false;
     }
 
-    // Phone validation
+   
     const phonePattern = /^[0-9]{10}$/;
     if (!phonePattern.test(phone)) {
       Swal.fire('Validation Error', 'Please enter a valid 10-digit phone number.', 'error');
       isValid = false;
     }
 
-    // Locality validation
+
     if (locality === '') {
       Swal.fire('Validation Error', 'Locality is required.', 'error');
       isValid = false;
     }
 
-    // Pincode validation
+ 
     const pincodePattern = /^[0-9]{6}$/;
     if (!pincodePattern.test(pincode)) {
       Swal.fire('Validation Error', 'Please enter a valid 6-digit pincode.', 'error');
       isValid = false;
     }
 
-    // State validation
+
     if (state === '') {
       Swal.fire('Validation Error', 'State is required.', 'error');
       isValid = false;
     }
 
-    // City validation
     if (city === '') {
       Swal.fire('Validation Error', 'City is required.', 'error');
       isValid = false;
     }
 
-    // If all validations pass, send the data to the backend
+
     if (isValid) {
       const formData = {
         name,

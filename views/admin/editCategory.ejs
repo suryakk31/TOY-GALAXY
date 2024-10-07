@@ -7,11 +7,39 @@
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <title>Edit Category</title>
   <style>
-   
-  </style>
+    .error-message {
+      color: #ff0000;
+      font-size: 14px;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #666;
+    }
+    
+    .form-group.has-error input,
+    .form-group.has-error textarea {
+      border-color: #ff0000;
+    }
+    </style>
 </head>
 <body>
-  <!-- Header and Navigation -->
+  <!-- Header and Navigation remain unchanged -->
   <header>
     <div class="top-nav">
       <div class="logo">
@@ -42,65 +70,154 @@
       <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
     </ul>
   </nav>
-  <!-- Form Container -->
+
+  <!-- Form Container with validation -->
   <div class="form-container">
     <form id="edit-category-form" enctype="multipart/form-data">
       <div class="form-group">
         <label for="name">Category Name:</label>
-        <input type="text" id="name" name="name" value="<%= category.name %>" >
+        <input type="text" id="name" name="name" value="<%= category.name %>" required minlength="3" maxlength="50">
+        <div id="name-error" class="error-message"></div>
       </div>
 
       <div class="form-group">
-        <label for="offer">Offer:</label>
-        <input type="text" id="offer" name="offer" value="<%= category.offer %>">
+        <label for="offer">Offer (%):</label>
+        <input type="number" id="offer" name="offer" value="<%= category.offer %>" min="0" max="100" step="0.01">
+        <div id="offer-error" class="error-message"></div>
       </div>
 
       <div class="form-group">
         <label for="description">Description:</label>
-        <input type="text" id="description" name="description" value="<%= category.description %>" >
+        <textarea id="description" name="description" required minlength="10" maxlength="500"><%= category.description %></textarea>
+        <div id="description-error" class="error-message"></div>
       </div>
    
-    
       <button type="submit" class="submit-btn">Save Changes</button>
       <button type="button" class="cancel-btn" onclick="window.location.href='/admin/category'">Cancel</button>
     </form>
   </div>
- 
   <script>
-    document.getElementById('edit-category-form').addEventListener('submit', async function(event) {
-      event.preventDefault();
-      const formData = new FormData(this);
-  
-      // Convert FormData to a plain object
-      const plainFormData = Object.fromEntries(formData.entries());
-  
-      // Log plain form data for debugging
-      console.log('Plain form data:', plainFormData);
-  
-      try {
-        const response = await fetch(`/admin/category/<%= category._id %>/edit`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(plainFormData)
-        });
-  
-        const result = await response.json();
-        console.log(result); // Log server response for debugging
-  
-        if (result.success) {
-          window.location.href = '/admin/category';
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('edit-category-form');
+  const nameInput = document.getElementById('name');
+  const offerInput = document.getElementById('offer');
+  const descriptionInput = document.getElementById('description');
+  const currentCategoryId = '<%= category._id %>';
+
+  const nameError = document.getElementById('name-error');
+  const offerError = document.getElementById('offer-error');
+  const descriptionError = document.getElementById('description-error');
+
+  function showError(element, message) {
+    element.textContent = message;
+    element.style.color = '#ff0000';
+    element.style.fontSize = '14px';
+    element.style.marginTop = '5px';
+  }
+
+  function clearError(element) {
+    element.textContent = '';
+  }
+
+  function validateName() {
+    const name = nameInput.value.trim();
+    if (name.length < 3 || name.length > 50) {
+      showError(nameError, 'Category name must be between 3 and 50 characters.');
+      return false;
+    }
+    if (!/^[a-zA-Z0-9\s-]+$/.test(name)) {
+      showError(nameError, 'Category name can only contain letters, numbers, spaces, and hyphens.');
+      return false;
+    }
+    clearError(nameError);
+    return true;
+  }
+
+  function validateOffer() {
+    const offer = offerInput.value.trim();
+    if (offer && (isNaN(offer) || offer < 0 || offer > 100)) {
+      showError(offerError, 'Offer must be a number between 0 and 100.');
+      return false;
+    }
+    clearError(offerError);
+    return true;
+  }
+
+  function validateDescription() {
+    const description = descriptionInput.value.trim();
+    if (description.length < 10 || description.length > 500) {
+      showError(descriptionError, 'Description must be between 10 and 500 characters.');
+      return false;
+    }
+    clearError(descriptionError);
+    return true;
+  }
+
+  nameInput.addEventListener('input', validateName);
+  offerInput.addEventListener('input', validateOffer);
+  descriptionInput.addEventListener('input', validateDescription);
+
+  form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const isNameValid = validateName();
+    const isOfferValid = validateOffer();
+    const isDescriptionValid = validateDescription();
+
+    if (!(isNameValid && isOfferValid && isDescriptionValid)) {
+      return;
+    }
+
+    const formData = new FormData(this);
+    const plainFormData = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch(`/admin/category/${currentCategoryId}/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(plainFormData)
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        window.location.href = '/admin/category';
+      } else {
+        // Handle server-side validation errors
+        if (result.errors && Array.isArray(result.errors)) {
+          result.errors.forEach(error => {
+            if (error.toLowerCase().includes('name')) {
+              showError(nameError, error);
+            } else if (error.toLowerCase().includes('offer')) {
+              showError(offerError, error);
+            } else if (error.toLowerCase().includes('description')) {
+              showError(descriptionError, error);
+            }
+          });
         } else {
-          alert('Failed to update category. Please try again.');
+          // Show general error message
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'error-message';
+          errorDiv.style.color = '#ff0000';
+          errorDiv.style.marginBottom = '10px';
+          errorDiv.textContent = result.message || 'Failed to update category. Please try again.';
+          form.insertBefore(errorDiv, form.firstChild);
         }
-      } catch (error) {
-        console.error('Error:', error); // Log error for debugging
-        alert('An error occurred. Please try again.');
       }
-    });
-  </script>
-  
+    } catch (error) {
+      console.error('Error:', error);
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.style.color = '#ff0000';
+      errorDiv.style.marginBottom = '10px';
+      errorDiv.textContent = 'An error occurred. Please try again.';
+      form.insertBefore(errorDiv, form.firstChild);
+    }
+  });
+});
+    </script>
 </body>
 </html>

@@ -58,6 +58,7 @@ exports.getOrderdetails = async (req, res) => {
     res.status(500).send("An error occurred while loading the order page.");
   }
 };
+
 exports.cancelOrder = async (req, res) => {
   const { itemId } = req.params;
   const { reason, productId } = req.body;
@@ -100,7 +101,7 @@ exports.cancelOrder = async (req, res) => {
     const productDiscountedPrice = product.price - (product.price * product.discount / 100);
 
     const categoryOffer = product.category ? product.category.offer : 0;
-    console.log(categoryOffer)
+
     const categoryOfferAmount = (productDiscountedPrice * (categoryOffer / 100));
     
     const finalPriceAfterDiscounts = productDiscountedPrice - categoryOfferAmount;
@@ -109,8 +110,9 @@ exports.cancelOrder = async (req, res) => {
 
     await order.save();
 
-    if (order.paymentMethod === 'Online payment' && item.orderStatus === 'cancelled') {
-     
+    if (item.orderStatus === 'cancelled' && 
+    (order.paymentMethod === 'Online payment' || order.paymentMethod === 'Wallet')) {
+  
     
 
       if (typeof refundAmount !== 'number' || isNaN(refundAmount) || refundAmount <= 0) {
@@ -163,26 +165,96 @@ exports.cancelOrder = async (req, res) => {
   }
 };
 
-
 exports.returnOrder = async (req, res) => {
-  const { itemId } = req.body;
+  const { itemId } = req.params;
+  const { reason, productId } = req.body;
+
+  let order;
 
   try {
-      const updatedOrder = await Orders.findOneAndUpdate(
-          { 'items._id': itemId },
-          { $set: { 'items.$.orderStatus': 'return requested' } },
-          { new: true }
-      );
-  
-      if (!updatedOrder) {
-          return res.status(404).send('Order or Item not found');
+    // Find the order containing the item to be returned
+    order = await Orders.findOne({ 'items._id': itemId });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found.', itemId });
+    }
+
+    const item = order.items.id(itemId);
+    if (!item) {
+      return res.status(404).json({ success: false, message: 'Item not found.', itemId });
+    }
+
+    const returnPeriod = 14; 
+    const deliveryDate = new Date(item.deliveryDate);
+    const currentDate = new Date();
+    const daysSinceDelivery = (currentDate - deliveryDate) / (1000 * 60 * 60 * 24);
+
+    if (daysSinceDelivery > returnPeriod) {
+      return res.status(400).json({ success: false, message: 'Return period has expired.' });
+    }
+
+    item.orderStatus = 'returned';
+    item.returnReason = reason;
+
+    const product = await Products.findById(item.productId).populate('category');
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found.' });
+    }
+
+    product.stock += item.quantity;
+    await product.save();
+
+    const productDiscountedPrice = product.price - (product.price * product.discount / 100);
+    const categoryOffer = product.category ? product.category.offer : 0;
+    const categoryOfferAmount = (productDiscountedPrice * (categoryOffer / 100));
+    const finalPriceAfterDiscounts = productDiscountedPrice - categoryOfferAmount;
+    const refundAmount = finalPriceAfterDiscounts * item.quantity;
+
+    await order.save();
+
+    // Process refund
+    if (order.paymentMethod === 'Online payment' || order.paymentMethod === 'Wallet') {
+      if (typeof refundAmount !== 'number' || isNaN(refundAmount) || refundAmount <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid refund amount. Cannot proceed with wallet refund.',
+        });
       }
 
-     
-      res.redirect('/auth/order');
+      let userWallet = await Wallet.findOne({ userId: order.userId });
+      if (!userWallet) {
+        userWallet = new Wallet({ userId: order.userId, balance: 0 });
+      }
+
+      userWallet.balance += refundAmount;
+      userWallet.transactions.push({
+        type: 'refund',
+        amount: refundAmount,
+        description: `Refund for returned item in order #${order._id}`,
+      });
+
+      await userWallet.save();
+
+      return res.status(200).json({
+        success: true,
+        message: 'Item has been returned and refund has been added to the wallet successfully.',
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: 'Item has been returned successfully. Refund will be processed for COD payment.',
+      });
+    }
+
   } catch (error) {
-      console.error('Error returning order:', error);
-      res.status(500).send('Server Error');
+    console.error('Error while processing the return:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while processing the return.',
+      error: error.message,
+      itemId,
+      productId,
+      orderId: order ? order._id : null,
+    });
   }
 };
-

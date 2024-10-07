@@ -34,8 +34,7 @@ exports.getWallet = async (req, res) => {
     const products = await Product.find({ isBlocked: false });
 
     // Fetch the wallet for the user
-    let wallet = await Wallet.findOne({ userId: userDatabase._id });  // Change const to let here
-
+    let wallet = await Wallet.findOne({ userId: userDatabase._id });  
     // If wallet doesn't exist, create a new one
     if (!wallet) {
       const newWallet = new Wallet({ userId: userDatabase._id });
@@ -79,32 +78,35 @@ exports.createRazorPayorder = async (req, res) => {
 
 
 exports.updateWallet = async (req, res) => {
-  console.log('updateWallet function called');
-  console.log('Request body:', req.body);
-
   try {
     const secret = process.env.RAZORPAY_KEY_SECRET;
-    console.log('Secret:', secret); // Be careful not to log this in production
 
+    // Create HMAC SHA256 digest for verification
     const shasum = crypto.createHmac('sha256', secret);
     shasum.update(req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id);
     const digest = shasum.digest('hex');
 
+
     if (digest === req.body.razorpay_signature) {
-      console.log('Signature verified');
-      const userId = req.user.id;
-      console.log('User ID:', userId);
+    
+      const email = req.session.email; 
+      const user = await User.findOne({ email: email });
+
+      if (!user) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      const userId = user._id;
       const amount = req.body.amount;
-      console.log('Amount:', amount);
+
 
       let wallet = await Wallet.findOne({ userId: userId });
-      console.log('Existing wallet:', wallet);
 
       if (!wallet) {
-        console.log('Creating new wallet');
         wallet = new Wallet({ userId: userId });
       }
 
+   
       wallet.balance += parseFloat(amount);
       wallet.transactions.push({
         type: 'deposit',
@@ -123,5 +125,44 @@ exports.updateWallet = async (req, res) => {
   } catch (error) {
     console.error('Error in updateWallet:', error);
     res.status(500).json({ success: false, error: 'Failed to update wallet' });
+  }
+};
+
+exports.processWalletPayment = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const isLoggedIn = req.session.email ? true : false;
+    let userDatabase = null;
+
+    if (isLoggedIn) {
+      userDatabase = await User.findOne({ email: req.session.email });
+
+      if (userDatabase.isBlocked) {
+        req.session.destroy();
+        return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
+      }
+    }
+
+    let wallet = await Wallet.findOne({ userId: userDatabase._id });  
+  
+
+    if (!wallet || wallet.balance < amount) {
+      return res.status(400).json({ success: false, message: 'Insufficient balance' });
+    }
+
+    wallet.balance -= parseFloat(amount);
+    wallet.transactions.push({
+      type: 'debit',
+      amount: parseFloat(amount),
+      description: 'Payment for order',
+      timestamp: new Date()
+    });
+
+    await wallet.save();
+
+    res.json({ success: true, message: 'Payment processed successfully', newBalance: wallet.balance, transactionId: wallet.transactions[wallet.transactions.length - 1]._id });
+  } catch (error) {
+    console.error('Error processing wallet payment:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };

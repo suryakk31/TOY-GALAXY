@@ -51,6 +51,46 @@
       cursor: pointer;
     }
     
+    .edit {
+      display: none; 
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5); 
+      padding-top: 50px; 
+    }
+    
+    /* Modal Content */
+    .edit-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+      width: 90%;
+      max-width: 500px;
+      animation: fadeIn 0.3s ease; 
+    }
+    
+    /* Close Button */
+    .close {
+      color: #666;
+      float: right;
+      font-size: 24px; 
+      font-weight: bold;
+      transition: color 0.3s; 
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #333; 
+      text-decoration: none;
+      cursor: pointer;
+    }
     /* Fade-in Animation */
     @keyframes fadeIn {
       from {
@@ -122,11 +162,10 @@
                 day: 'numeric' 
               }) %>
             </td>
-            <td>
-              <form action="/admin/coupons/<%= coupon._id %>/delete" method="POST" class="delete-form" style="display: inline;">
-                <i class="bx bx-trash delete-icon" onclick="this.closest('form').submit()"></i>
-              </form>
-            </td>
+          <td class="action-icons">
+                            <i class='bx bx-edit edit-icon' onclick="openEditModal('<%= coupon._id %>')"></i>
+                            <i class='bx bx-trash delete-icon' onclick="deleteCoupon('<%= coupon._id %>')"></i>
+                        </td>
           </tr>
         <% }); %>
       </tbody>
@@ -134,34 +173,66 @@
   </div>
 
   <!-- Coupon Modal -->
-  <div id="couponModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Add Coupon</h2>
-      <form id="couponForm">
-        <!-- Coupon Description -->
-        <label for="description">Coupon Description:</label>
-        <input type="text" id="description" name="description" required>
-        
-        <label for="couponCode">Coupon Code:</label>
-        <input type="text" id="couponCode" name="couponCode" required>
-        
-        <label for="discount">Coupon Discount (%):</label>
-        <input type="number" id="discount" name="discount" required min="0" max="100">
-        
-        <label for="expiryDate">Expiry Date:</label>
-        <input type="date" id="expiryDate" name="expiryDate" required>
+  <!-- Add Coupon Modal -->
+<div id="couponModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Add Coupon</h2>
+    <form id="couponForm">
+      <!-- Form Fields for Add Coupon -->
+      <label for="description">Coupon Description:</label>
+      <input type="text" id="description" name="description" required>
+      
+      <label for="couponCode">Coupon Code:</label>
+      <input type="text" id="couponCode" name="couponCode" required>
+      
+      <label for="discount">Coupon Discount (%):</label>
+      <input type="number" id="discount" name="discount" required min="0" max="100">
+      
+      <label for="expiryDate">Expiry Date:</label>
+      <input type="date" id="expiryDate" name="expiryDate" required>
 
-        <label for="minAmount">Minimum Amount:</label>
-        <input type="number" id="minAmount" name="minAmount">
+      <label for="minAmount">Minimum Amount:</label>
+      <input type="number" id="minAmount" name="minAmount">
 
-        <label for="maxAmount">Maximum Amount:</label>
-        <input type="number" id="maxAmount" name="maxAmount">
-        
-        <button type="submit">Add Coupon</button>
-      </form>
-    </div>
+      <label for="maxAmount">Maximum Amount:</label>
+      <input type="number" id="maxAmount" name="maxAmount">
+      
+      <button type="submit">Add Coupon</button>
+    </form>
   </div>
+</div>
+
+<!-- Edit Coupon Modal -->
+<div id="editCouponModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Edit Coupon</h2>
+    <form id="editCouponForm">
+      <input type="hidden" id="editCouponId" name="couponId">
+      <label for="editDescription">Coupon Description:</label>
+      <input type="text" id="editDescription" name="description" required>
+      
+      <label for="editCouponCode">Coupon Code:</label>
+      <input type="text" id="editCouponCode" name="couponCode" required>
+      
+      <label for="editDiscount">Coupon Discount (%):</label>
+      <input type="number" id="editDiscount" name="discount" required min="0" max="100">
+      
+      <label for="editExpiryDate">Expiry Date:</label>
+      <input type="date" id="editExpiryDate" name="expiryDate" required>
+
+      <label for="editMinAmount">Minimum Amount:</label>
+      <input type="number" id="editMinAmount" name="minAmount">
+
+      <label for="editMaxAmount">Maximum Amount:</label>
+      <input type="number" id="editMaxAmount" name="maxAmount">
+      
+      <button type="submit">Update Coupon</button>
+    </form>
+  </div>
+</div>
+
 
   <script>
   
@@ -250,6 +321,7 @@
               couponForm.reset();
               modal.style.display = "none";
               Swal.fire("Success", "Coupon added successfully!", "success");
+              location.reload()
           } else {
               const errorData = await response.json();
               Swal.fire("Error", errorData.message || "Failed to add coupon", "error");
@@ -259,6 +331,141 @@
           Swal.fire("Error", "Failed to add coupon. Please try again.", "error");
       }
     });
+
+   
+    
+  
   </script>
+
+<script>
+  // ... (previous JavaScript code remains the same) ...
+
+  const editModal = document.getElementById("editCouponModal");
+  const editForm = document.getElementById("editCouponForm");
+  const closeEditModal = editModal.querySelector(".close");
+  
+
+  closeEditModal.addEventListener("click", () => {
+    editModal.style.display = "none";
+  });
+
+  window.addEventListener("click", (event) => {
+    if (event.target === editModal) {
+      editModal.style.display = "none";
+    }
+  });
+
+  async function openEditModal(couponId) {
+    try {
+        const response = await fetch(`/admin/coupon/${couponId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch coupon data');
+        }
+        const coupon = await response.json();
+        
+        // Populate form fields with the coupon data
+        document.getElementById('editCouponId').value = coupon._id;
+        document.getElementById('editDescription').value = coupon.description;
+        document.getElementById('editCouponCode').value = coupon.couponCode;
+        document.getElementById('editDiscount').value = coupon.discount;
+        document.getElementById('editExpiryDate').value = new Date(coupon.expiryDate).toISOString().split('T')[0];
+        document.getElementById('editMinAmount').value = coupon.minAmount;
+        document.getElementById('editMaxAmount').value = coupon.maxAmount;
+
+        editModal.style.display = "block";
+    } catch (error) {
+        console.error("Error fetching coupon data:", error);
+        Swal.fire("Error", "Failed to fetch coupon data. Please try again.", "error");
+    }
+}
+
+
+  editForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(editForm);
+    const couponData = Object.fromEntries(formData.entries());
+    const couponId = couponData.couponId;
+
+    try {
+      const response = await fetch(`/admin/coupon/${couponId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(couponData),
+      });
+
+      if (response.ok) {
+        const updatedCoupon = await response.json();
+        updateCouponInTable(updatedCoupon);
+        editModal.style.display = "none";
+        Swal.fire("Success", "Coupon updated successfully!", "success");
+        location.reload()
+      } else {
+        const errorData = await response.json();
+        Swal.fire("Error", errorData.message || "Failed to update coupon", "error");
+      }
+    } catch (error) {
+      console.error("Error updating coupon:", error);
+      Swal.fire("Error", "Failed to update coupon. Please try again.", "error");
+    }
+  });
+
+  function updateCouponInTable(coupon) {
+    const row = document.querySelector(`tr[data-coupon-id="${coupon._id}"]`);
+    if (row) {
+      row.innerHTML = `
+        <td>${coupon.couponCode}</td>
+        <td>${coupon.discount}%</td>
+        <td>${coupon.minAmount}</td>
+        <td>${coupon.maxAmount}</td>
+        <td>${new Date(coupon.expiryDate).toLocaleDateString()}</td>
+        <td class="action-icons">
+          <i class='bx bx-edit edit-icon' onclick="openEditModal('${coupon._id}')"></i>
+          <i class='bx bx-trash delete-icon' onclick="deleteCoupon('${coupon._id}')"></i>
+        </td>
+      `;
+    }
+  }
+  
+  
+
+
+
+
+</script>
+
+<script>
+     // Delete coupon
+   async function deleteCoupon(couponId) {
+      try {
+        const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
+          const response = await fetch(`/admin/coupon/${couponId}`, {
+            method: 'DELETE',
+          });
+
+          if (!response.ok) throw new Error('Failed to delete coupon');
+
+          location.reload(); // Refresh to show updated list
+          Swal.fire('Deleted!', 'Coupon has been deleted.', 'success');
+        }
+      } catch (error) {
+        console.error('Error deleting coupon:', error);
+        Swal.fire('Error!', 'Failed to delete coupon.', 'error');
+      }
+    }
+ 
+</script>
 </body>
 </html>

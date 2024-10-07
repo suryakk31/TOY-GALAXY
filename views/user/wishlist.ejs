@@ -3,54 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Page</title>
+  <title>My Wishlist</title>
   <link rel="stylesheet" href="/css/user/wishlist.css">
-  
-  <!-- Boxicons -->
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-  <style>
-  
-
-  </style>
 </head>
 <body>
-
-
   <%- include('../partials/header') %>
- 
-
-
-
-  <section class="wishlist-products">
-    <% if (wishlistItems.length > 0) { %>
-      <% wishlistItems.forEach(product => { %>
-        <div class="product">
-          <div class="product-image-container">
-            <a href="/auth/product/<%= product._id %>">
-              <% if (product.image && product.image.length > 0) { %>
-                <img src="<%= product.image[0] %>" alt="Product Image" class="product-image">
-              <% } else { %>
-                No Image
-              <% } %>
-            </a>
-            <i class="bx bx-heart heart-icon"></i>
-          </div>
-          <h3><a href="/product/<%= product._id %>"><%= product.name %></a></h3>
-          <p>₹<%= product.price %> (<%= product.discount %>% off)</p>
-          <p><%= product.description %></p>
-        </div>
-      <% }); %>
-    <% } else { %>
-      <p>Your wishlist is empty.</p>
-    <% } %>
-  </section>
   
+  <div class="profile-container">
+    <div class="profile-header">
 
+      <h2>Hello, <%= userDatabase ? userDatabase.firstName : 'Guest' %></h2>
+    </div>
+    
+    <nav class="profile-nav">
+      <ul>
+        <li><a href="/auth/profile">Profile</a></li>
+        <li><a href="/auth/addresses">Addresses</a></li>
+        <li><a href="/auth/order">Orders</a></li>
+        <li><a href="/auth/wallet">Wallet</a></li>
+        <li><a href="/auth/coupon">Coupons</a></li>
+        <li><a href="/auth/wishlist" class="active">Wishlist</a></li>
+        <li><a href="/auth/reviewsRatings">Reviews</a></li>
+        <li><a href="/auth/changePassword">Password</a></li>
+      </ul>
+    </nav>
 
-<%- include('../partials/footer') %>
+    <div class="container">
+      <div class="wishlist-container">
+        <% if (wishlistItems.length > 0) { %>
+          <% wishlistItems.forEach(product => { %>
+            <div class="wishlist-card">
+              <div class="product-image-container">
+                <a href="/auth/product/<%= product._id %>">
+                  <% if (product.image && product.image.length > 0) { %>
+                    <img src="<%= product.image[0] %>" alt="Product Image" class="product-image">
+                  <% } else { %>
+                    <div class="no-image">No Image</div>
+                  <% } %>
+                </a>
+               
+              </div>
+              <div class="product-details">
+                <h3><a href="/product/<%= product._id %>"><%= product.name %></a></h3>
+                <p class="price">₹<%= product.price %> <span class="discount">(<%= product.discount %>% off)</span></p>
+                <p class="description"><%= product.description %></p>
+                <form action="/auth/cart" method="POST">
+                  <input type="hidden" name="productId" value="<%= product._id %>" />
+                  <button class="cart"
+                    type="submit"
+                    <% if (product.stock <= 0) { %> 
+                      disabled
+                    <% } %>
+                  >
+                    Add to Cart
+                  </button>
+                </form>
+                <button class="remove-from-wishlist" data-product-id="<%= product._id %>">Remove</button>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p class="empty-wishlist">Your wishlist is empty.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
 
-
+  <%- include('../partials/footer') %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.remove-from-wishlist').forEach(button => {
+        button.addEventListener('click', async function(e) {
+          e.preventDefault();
+          const productId = this.dataset.productId;
+          try {
+            const response = await fetch('/auth/wishlist/remove', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ productId }),
+            });
+            const data = await response.json();
+            if (data.removed) {
+              // Remove the item from the DOM
+              const wishlistCard = this.closest('.wishlist-card');
+              wishlistCard.remove();
+              
+              // If the wishlist is now empty, show the empty message
+              const wishlistContainer = document.querySelector('.wishlist-container');
+              if (wishlistContainer.children.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.className = 'empty-wishlist';
+                emptyMessage.textContent = 'Your wishlist is empty.';
+                wishlistContainer.appendChild(emptyMessage);
+              }
+  
+              // Optional: Show a success message
+              Swal.fire({
+                title: 'Removed!',
+                text: 'Item removed from wishlist',
+                icon: 'success',
+                timer: 1500
+              });
+            } else {
+              throw new Error('Failed to remove item from wishlist');
+            }
+          } catch (error) {
+            console.error('Error removing from wishlist:', error);
+            // Show an error message
+            Swal.fire({
+              title: 'Error!',
+              text: 'Failed to remove item from wishlist',
+              icon: 'error',
+            });
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

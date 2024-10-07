@@ -17,6 +17,7 @@
   <div class="profile-container">
     <div class="profile-header">
       <h2>Hello, <%= userDatabase.firstName %></h2>
+      <h5>Referral code : <%= userDatabase.referralCode %></h5>
     </div>
     
     <nav class="profile-nav">
@@ -26,8 +27,10 @@
         <li><a href="/auth/order">Orders</a></li>
         <li><a href="/auth/wallet">Wallet</a></li>
         <li><a href="/auth/coupon">Coupons</a></li>
+        <li><a href="/auth/wishlist">Wishlist</a></li>
         <li><a href="/auth/reviewsRatings">Reviews</a></li>
         <li><a href="/auth/changePassword">Password</a></li>
+       
       </ul>
     </nav>
     
@@ -59,9 +62,7 @@
     </div>
   </div>
 
-  <footer>
-    <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
-  </footer>
+  <%- include('../partials/footer') %>
 
 
   

@@ -125,6 +125,40 @@ button:hover {
     outline: none;
   }
 
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 50px 0;
+  }
+
+  .pagination a {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .pagination a.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+  }
+
+  .pagination a:hover {
+    background-color: #e9ecef;
+  }
+
+  .pagination a:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  }
+
+
   </style>
 </head>
 <body>
@@ -181,8 +215,8 @@ button:hover {
           <% orders.forEach(order => { %>
             <% order.items.forEach(item => { %>
               <tr>
-                <td><%= order.userId ? order.userId.firstName : 'Unknown' %></td>
-                <td><%= order.userId ? order.userId.phone : 'Unknown' %></td>
+                <td><%= order ? order.address.name : 'Unknown' %></td>
+                <td><%= order ? order.address.phone : 'Unknown' %></td>
                 <td>
                   <%= order.address.name %>, <%= order.address.locality %>, 
                   <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
@@ -202,7 +236,7 @@ button:hover {
                 <td>
                   <% if (item.orderStatus === 'delivered') { %>
                     <p style="color: green; font-weight: bold;">This order has been delivered.</p>
-                  <% } else if (item.orderStatus === 'return requested') { %>
+                  <% } else if (item.orderStatus === 'returned') { %>
                     <p style="color: orange; font-weight: bold;">This order has been returned.</p>
                   <% } else if (item.orderStatus === 'cancelled') { %>
                     <select disabled>
@@ -248,6 +282,22 @@ button:hover {
       
     </table>
 </div>
+<% if (totalPages > 1) { %>
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>">Previous</a>
+    <% } %>
+  
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+    <% } %>
+  
+    <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %>">Next</a>
+    <% } %>
+  </div>
+<% } %>
+
 
 <script>
   function updateSelectColor(selectElement) {

@@ -4,15 +4,33 @@ const Order = require('../../models/order')
 
 exports.adminOrder = async (req, res) => {
     try {
+        const perPage = 10;
+        const page = parseInt(req.query.page) || 1;
+        const sortCriteria = req.query.sort || 'createdAt';
+        const sortOrder = req.query.order === 'asc' ? 1 : -1;
+        const skip = (page - 1) * perPage;
+
         const orders = await Order.find()
             .populate('userId')
             .populate({
                 path: 'items.productId',
                 select: 'name image' 
             })
-            .populate('address');
+            .populate('address')
+            .sort({ [sortCriteria] : sortOrder})
+            .skip(skip)
+            .limit(perPage);
 
-        res.render('admin/adminOrder', { orders });
+            const totalOrders = await Order.countDocuments();
+            const totalPages = Math.ceil(totalOrders / perPage);
+    
+        res.render('admin/adminOrder', { orders,
+            currentPage: page,
+            totalPages,
+            sortCriteria,
+            sortOrder
+         });
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');

@@ -1,12 +1,17 @@
+/* Existing keyframes and general styles... */
 
 /* Product details styles */
 .product-details {
   display: flex;
   padding: 20px;
-  background-color: #FFECCF;
+  background-color: #FFF5E6;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 100px auto 0;
+ 
+  border: 0.5px solid #FFB74D; 
+  border-radius: 5px;/* Add this line for border color */
 }
+
 
 .product-gallery {
   display: flex;
@@ -25,12 +30,13 @@
   height: 80px;
   margin-bottom: 10px;
   cursor: pointer;
-  border: 1px solid #ddd;
+  border: 1px solid #FF9933;
   border-radius: 5px;
+  transition: border-color 0.3s ease;
 }
 
 .thumbnails img:hover {
-  border: 1px solid #333;
+  border-color: #FF6600;
 }
 
 .main-image {
@@ -41,7 +47,7 @@
 .main-image img {
   width: 400px;
   height: 400px;
-  border: 1px solid #ddd;
+  border: 1px solid #FF9933;
   border-radius: 5px;
   transition: transform 0.3s ease;
 }
@@ -57,6 +63,7 @@
 .product-info h1 {
   font-size: 2em;
   margin-bottom: 10px;
+  color: #FF6600;
 }
 
 .price-info {
@@ -65,15 +72,21 @@
   margin-bottom: 10px;
 }
 
-.price {
-  font-size: 1.5em;
-  color: #333;
+.original-price {
+  font-size: 1.2em;
+  color: #888;
   margin-right: 10px;
+}
+
+.discounted-price {
+  font-size: 1.5em;
+  color: #FF6600;
+  font-weight: bold;
 }
 
 .free-delivery p {
   margin: 0;
-  color: #388e3c;
+  color: #FF9933;
   font-size: 1em;
 }
 
@@ -85,8 +98,17 @@
 
 .ratings span {
   font-size: 1.2em;
-  color: #fbc02d;
+  color: #FF9933;
   margin-right: 10px;
+}
+
+.category {
+  margin-bottom: 20px;
+}
+
+.category h4 {
+  margin-bottom: 5px;
+  color: #FF6600;
 }
 
 .actions {
@@ -96,18 +118,32 @@
 }
 
 .actions button {
-  background-color: #9D51FF;
-  color: white;
+  background-color: #FF9933;
+  color: #FFFFFF;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 12px;
   margin-right: 10px;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 20px;
   transition: background-color 0.3s ease;
+  font-weight: bold;
 }
 
 .actions button:hover {
-  background-color: #7d3ccf;
+  background-color: #FF6600;
+}
+
+.actions button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.buy-now {
+  background-color: #FF6600 !important;
+}
+
+.buy-now:hover {
+  background-color: #FF3300 !important;
 }
 
 .product-description {
@@ -117,9 +153,39 @@
 .product-description h3 {
   font-size: 1.5em;
   margin-bottom: 10px;
+  color: #FF6600;
 }
 
 .product-description p {
   font-size: 1em;
-  color: #666;
+  color: #333;
+}
+
+
+/* Existing media queries... */
+
+@media (max-width: 768px) {
+  .product-details {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .product-gallery {
+      margin-right: 0;
+      margin-bottom: 20px;
+  }
+
+  .main-image img {
+      width: 100%;
+      height: auto;
+  }
+
+  .actions {
+      flex-direction: column;
+  }
+
+  .actions button {
+      width: 100%;
+      margin-bottom: 10px;
+  }
 }

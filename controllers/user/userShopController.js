@@ -1,12 +1,15 @@
 const Product = require('../../models/product');
 const User = require('../../models/user');
 const Category = require('../../models/category');
+const Wishlist = require('../../models/wishlist'); 
 
 exports.getShopPage = async (req, res) => {
   try {
     const isLoggedIn = !!req.session.email;
     let userDatabase = null;
+    let userWishlist = [];
 
+  
     if (isLoggedIn) {
       userDatabase = await User.findOne({ email: req.session.email });
 
@@ -14,13 +17,17 @@ exports.getShopPage = async (req, res) => {
         req.session.destroy();
         return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
       }
+      const wishlist = await Wishlist.findOne({ userId: userDatabase._id });
+      userWishlist = wishlist ? wishlist.items : [];
     }
+
 
     const categories = await Category.find({ isBlocked: false });
 
-    let filters = req.query.filter ? req.query.filter.split(',') : [];
     let search = req.query.search || '';
-    let categoryIds = req.query.category ? req.query.category.split(',') : [];
+    let categoryIds = req.query.categories ? req.query.categories.split(',').filter(id => id.trim() !== '') : [];
+    let priceRanges = req.query.price ? req.query.price.split(',') : [];
+    let sort = req.query.sort || '';
 
     let filterCriteria = { isBlocked: false };
 
@@ -32,50 +39,71 @@ exports.getShopPage = async (req, res) => {
       filterCriteria.category = { $in: categoryIds };
     }
 
-    let sortCriteria = {};
+    if (priceRanges.length > 0) {
+      let priceCriteria = [];
+      priceRanges.forEach(range => {
+        const [min, max] = range.split('-').map(Number);
+        if (!isNaN(min) && !isNaN(max)) {
+          priceCriteria.push({ price: { $gte: min, $lte: max } });
+        } else if (!isNaN(min)) {
+          priceCriteria.push({ price: { $gte: min } });
+        }
+      });
 
-    filters.forEach(filter => {
-      switch (filter) {
-        case 'popularity':
-          sortCriteria.popularity = -1;
-          break;
-        case 'price-asc':
-          sortCriteria.price = 1;
-          break;
-        case 'price-desc':
-          sortCriteria.price = -1;
-          break;
-        case 'ratings':
-          sortCriteria.ratings = -1;
-          break;
-        case 'featured':
-          filterCriteria.isFeatured = true;
-          break;
-        case 'new-arrivals':
-          sortCriteria.createdAt = -1;
-          break;
-        case 'a-z':
-          sortCriteria.name = 1;
-          break;
-        case 'z-a':
-          sortCriteria.name = -1;
-          break;
-        default:
-         
+      if (priceCriteria.length > 0) {
+        filterCriteria.$or = priceCriteria;
       }
+    }
+
+
+    let sortCriteria = {};
+    switch (sort) {
+      case 'popularity':
+        sortCriteria.popularity = -1;
+        break;
+      case 'price-low-high':
+        sortCriteria.price = 1;
+        break;
+      case 'price-high-low':
+        sortCriteria.price = -1;
+        break;
+      case 'newest':
+        sortCriteria.createdAt = -1;
+        break;
+      default:
+        sortCriteria.createdAt = -1; 
+        break;
+    }
+
+    const products = await Product.find(filterCriteria)
+    .sort(sortCriteria)
+    .populate('category');
+
+
+    const productsWithDiscounts = products.map(product => {
+      const discountedPrice = product.price - (product.price * (product.discount || 0) / 100);
+      return {
+        ...product.toObject(),
+        discountedPrice: Math.round(discountedPrice * 100) / 100  
+      };
     });
 
-    const products = await Product.find(filterCriteria).sort(sortCriteria);
-
     res.render('user/shop', {
-      products,
+      products: productsWithDiscounts,
       userDatabase,
       categories,
-      isLoggedIn
+      isLoggedIn,
+      userWishlist,
+
+      appliedFilters: {
+        search,
+        categoryIds,
+        priceRanges,
+        sort,
+      },
     });
   } catch (error) {
     console.error(error);
     res.status(500).send('Server Error');
   }
 };
-
