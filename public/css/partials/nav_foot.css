@@ -1,12 +1,13 @@
-@keyframes bounce-and-spin {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(-5px) rotate(3deg); }
-    75% { transform: translateY(-3px) rotate(-3deg); }
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 @keyframes color-shift {
-    0%, 100% { color: #FFFF00; }
-    50% { color: #FF6600; }
+    0% { color: #FF6EFF; }
+    33% { color: #00FFFF; }
+    66% { color: #FFFF00; }
+    100% { color: #FF6EFF; }
 }
 
 * {
@@ -17,7 +18,8 @@
 
 body {
     font-family: 'Roboto', 'Comic Sans MS', sans-serif;
-    background-color: #FFF5E6;
+    background-color: #0A0A2A;  /* Deep space blue */
+    color: #FFFFFF;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -26,36 +28,43 @@ body {
 }
 
 .navbar {
-    background-color: #FF9933;
+    background-color: #1A1A4A;  /* Slightly lighter space blue */
     padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    border-bottom: 2px solid #FF6600;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid #FF6EFF;  /* Bright pink */
+    box-shadow: 0 2px 5px rgba(255, 110, 255, 0.3);
     position: fixed;
-    top: 0;           /* Stick to the top */
+    top: 0;
     left: 0;
-    width: 100%;      /* Full width */
-    z-index: 1000; 
+    width: 100%;
+    z-index: 1000;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
-    color: #FFFFFF;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    color: #00FFFF;  /* Yellow for "Galaxy" */
+    text-shadow: 2px 2px 4px rgba(255, 110, 255, 0.5);
+}
+
+.logo .rotating-planet {
+    font-size: 2.5rem;
+    margin-right: 0.5rem;
+    animation: rotate 10s linear infinite;
+    color: #00FFFF;  /* Cyan for the planet */
 }
 
 .logo i {
     margin-right: 0.3rem;
-    font-size: 1.8rem;
+    font-size: 2rem;
     animation: 
         bounce-and-spin 3s infinite ease-in-out,
-        color-shift 5s infinite alternate;
+        color-shift 5s infinite;
 }
 
 .search-container {
@@ -70,6 +79,7 @@ body {
     background-color: #FFFFFF;
     border-radius: 20px;
     overflow: hidden;
+    border: 2px solid #FF6EFF;  /* Bright pink */
 }
 
 .search-container input[type="text"] {
@@ -78,10 +88,12 @@ body {
     border: none;
     outline: none;
     font-size: 0.9rem;
+    background-color: #FFFFFF;
+    color: #0A0A2A;  /* Deep space blue */
 }
 
 .search-container button {
-    background-color: #FF6600;
+    background-color: #FF6EFF;  /* Bright pink */
     color: #FFFFFF;
     border: none;
     padding: 8px 12px;
@@ -90,7 +102,8 @@ body {
 }
 
 .search-container button:hover {
-    background-color: #FF3300;
+    background-color: #00FFFF;  /* Cyan */
+    color: #0A0A2A;  /* Deep space blue */
 }
 
 .nav-menu {
@@ -109,31 +122,40 @@ body {
     color: #FFFFFF;
     display: flex;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: bold;
     transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: #FFFF00;
+    color: #00FFFF;  /* Cyan */
     transform: scale(1.05);
 }
 
 .nav-link i {
     margin-right: 0.3rem;
-    font-size: 1.1rem;
-    background-color: #FFFFFF;
-    color: #FF6600;
+    font-size: 1.2rem;
+    background-color: #FF6EFF;  /* Bright pink */
+    color: #FFFFFF;
     padding: 0.2rem;
     border-radius: 50%;
     transition: all 0.3s ease;
 }
 
 .nav-link:hover i {
-    background-color: #FFFF00;
-    color: #FF6600;
-    transform: rotate(10deg);
+    background-color: #00FFFF;  /* Cyan */
+    color: #0A0A2A;  /* Deep space blue */
+    transform: scale(1.2);
+    transition: transform 0.3s ease;
 }
+
+
+
+.bx {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .dropdown-menu {
     position: relative;
     display: inline;
@@ -147,7 +169,7 @@ body {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #FF9933;
+    background-color: #00FFFF;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
@@ -184,12 +206,12 @@ body {
 
 .dropdown-menu li a:hover {
     background-color: #f5f5f5;
-    color: #FF6600;
+    color: #00FFFF;
 }
 
 
 .dropdown-content a:hover {
-    background-color: #FF6600;
+    background-color: #00FFFF;
 }
 
 .dropdown:hover .dropdown-content {
@@ -204,7 +226,7 @@ body {
     display: none;
     position: absolute;
     right: 0;
-    background-color: #FF9933;
+    background-color: #00FFFF;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
@@ -219,7 +241,8 @@ body {
 }
 
 .user-dropdown-content a:hover {
-    background-color: #FF6600;
+    background-color: #f5f5f5;
+    color: #00FFFF;
 }
 
 .user-dropdown:hover .user-dropdown-content {
@@ -260,14 +283,28 @@ body {
 footer {
     text-align: center;
     padding: 20px 0;
-    background-color: #FF9933;
+    background-color: #1A1A4A;  /* Slightly lighter space blue */
     margin-top: 200px;
-  }
+    border-top: 2px solid #FF6EFF;  /* Bright pink */
+}
 
 footer p {
-    color: white;
+    color: #00FFFF;  /* Cyan */
     font-size: 1rem;
+    text-shadow: 1px 1px 2px rgba(255, 110, 255, 0.5);
 }
+
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF; }
+    50% { text-shadow: 0 0 10px #FF6EFF, 0 0 20px #FF6EFF, 0 0 30px #FF6EFF; }
+}
+
+.logo .rotating-planet {
+    animation: 
+        rotate 10s linear infinite,
+        glow 2s ease-in-out infinite;
+}
+
 
 @media (max-width: 768px) {
     .navbar {
@@ -362,6 +399,8 @@ footer p {
         margin-bottom: 1.5rem;
     }
 }
+
+
 
 @media(max-width : 768px) {
     * {

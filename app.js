@@ -58,7 +58,15 @@ app.use('/auth',userRoutes)
 
 app.use('/admin', adminRoutes);
 
+app.use((req, res, next) => {
+    res.status(404).render('404.ejs', { title: '404: Page Not Found' });
+  });
 
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('500.ejs', { title: '500: Internal Server Error' });
+  });
+  
 
 
 app.use(flash())

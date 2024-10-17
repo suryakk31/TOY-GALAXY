@@ -5,6 +5,7 @@ const Address = require("../../models/address");
 const Category = require("../../models/category");
 const Coupon = require("../../models/coupon");
 const Product = require('../../models/product')
+const Wallet = require('../../models/wallet')
 
 
 const Razorpay = require('razorpay');
@@ -79,6 +80,7 @@ exports.getCheckout = async (req, res) => {
     }
 
     const categories = await Category.find();
+    let wallet = await Wallet.findOne({ userId: userDatabase._id });  
     const addresses = await Address.find({ userId: userDatabase._id });
     const coupon = await Coupon.find();
 
@@ -122,8 +124,10 @@ exports.getCheckout = async (req, res) => {
       deliveryFeeDisplay,
       total,
       coupon,
+      wallet: wallet
+
     });
-    console.log("category offer:", categoryOffer);
+    
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
@@ -132,8 +136,7 @@ exports.getCheckout = async (req, res) => {
 
 exports.postCheckout = async (req, res) => {
   try {
-    const addressId = req.body.address;
-    const paymentMethod = req.body.paymentMethod;
+    const { address: addressId, paymentMethod, paymentStatus, paymentId } = req.body;
 
     const isLoggedIn = req.session.email ? true : false;
     let userDatabase = null;
@@ -217,7 +220,7 @@ exports.postCheckout = async (req, res) => {
       price: item.productId.price,
       discountPrice:
         item.productId.price -
-        (item.productId.price * item.productId.discount) / 100, 
+        (item.productId.price * item.productId.discount) / 100,
     }));
 
     for (let item of cart.items) {
@@ -228,7 +231,22 @@ exports.postCheckout = async (req, res) => {
       }
 
       product.stock -= item.quantity;
-      await product.save(); 
+      await product.save();
+    }
+
+    let paymentStatusFinal = 'pending'; 
+    if (paymentMethod === 'COD') {
+      paymentStatusFinal = 'pending';
+    } else if (paymentMethod === 'Razorpay') {
+      if (paymentStatus === 'failed') {
+        paymentStatusFinal = 'failed'; 
+      } else if (paymentStatus === 'completed') {
+        paymentStatusFinal = 'completed'; 
+      } else {
+        paymentStatusFinal = 'completed'; 
+      }
+    } else if (paymentMethod === 'Wallet') {
+      paymentStatusFinal = 'completed';
     }
 
     const newOrder = new Orders({
@@ -246,19 +264,21 @@ exports.postCheckout = async (req, res) => {
         city: address.city,
       },
       paymentMethod,
-      orderStatus: "pending",
+      paymentStatus: paymentStatusFinal,
+      orderStatus: "pending", 
       orderDate: new Date(),
       createdAt: new Date(),
+      paymentId: paymentId || null,
     });
-
-  
 
     await newOrder.save();
     await Cart.deleteOne({ userId: user._id });
 
-    res.status(200).json({ message: "Order placed successfully" });
+    res.status(200).json({ message: "Order placed successfully with pending payment status" });
   } catch (error) {
     console.error("Server error:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
+

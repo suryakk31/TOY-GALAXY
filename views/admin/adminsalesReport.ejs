@@ -4,123 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sales report</title>
-  <link rel="stylesheet" href="/css/admin/adminOrder.css">
+  <link rel="stylesheet" href="/css/admin/adminSale.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-  
-  select {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    color: #333;
-    cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
-    transition: background-color 0.3s ease;
-  }
-
-  .status-pending {
-    background-color: #e31010; /* Red */
-    color: white;
-  }
-
-  .status-confirmed {
-    background-color: #e1f151; /* Yellow */
-    color: black;
-  }
-
-  .status-shipping {
-    background-color: #22cde7; /* Blue */
-    color: white;
-  }
-
-  .status-delivered {
-    background-color: #10f123; /* Green */
-    color: black;
-  }
-
-  .status-cancelled {
-    background-color: #e31010; /* Red */
-    color: white;
-  }
-
-  select:focus {
-    border-color: #5b9bd5;
-    outline: none;
-  }
-
-
-  .filter-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .filter-form select,
-        .filter-form input[type="date"],
-        .filter-form button {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .filter-form button {
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-        }
-        
-        .filter-form button:hover {
-            background-color: #45a049;
-        }
-        
-        #clearFilter {
-            background-color: #f44336;
-        }
-        
-        #clearFilter:hover {
-            background-color: #da190b;
-        }
-
-        .filter-active {
-            background-color: #e3f2fd;
-            border: 1px solid #2196f3;
-        }
-        
-        .filter-feedback {
-            margin: 1rem 0;
-            padding: 1rem;
-            border-radius: 5px;
-            background-color: #e3f2fd;
-            color: #1565c0;
-            display: none;
-        }
-
-        .date-range {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .date-range.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
   <header>
     <div class="top-nav">
       <div class="logo">
-        <h1>Kids Kastle</h1>
-      </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Search...">
+        <h1>TOY GALAXY</h1>
       </div>
       <div class="profile-logout">
         <a href="/logout" class="logout-btn">Logout</a>
@@ -130,11 +25,11 @@
   <nav>
     <ul>
       <li><a href="/admin/adminDashboard"><i class='bx bx-home'></i> Dashboard</a></li>
-      <li><a href="/admin/userManagement" ><i class='bx bx-user'></i> User Management</a></li>
+      <li><a href="/admin/userManagement"><i class='bx bx-user'></i> User Management</a></li>
       <li><a href="/admin/category"><i class='bx bx-category'></i> Category</a></li>
       <li><a href="/admin/products"><i class='bx bx-box'></i> Products</a></li>
-      <li><a href="/admin/orders" ><i class='bx bx-cart'></i> Orders</a></li>
-      <li><a href="/admin/coupon"><i class='bx bx-gift'></i> coupon</a></li>
+      <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
+      <li><a href="/admin/coupon"><i class='bx bx-gift'></i> Coupon</a></li>
       <li><a href="/admin/sales-report" class="active"><i class='bx bx-line-chart'></i> Sales Report</a></li>
       <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
       <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
@@ -143,234 +38,179 @@
       <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
     </ul>
   </nav>
-  <div class="order-table-container">
-    <h2>SALES REPORT</h2>
-    <div class="filter-feedback" id="filterFeedback"></div>
-    <form id="filterForm" class="filter-form" action="/admin/sales-report">
-      <select id="reportType" name="reportType" required>
-        <option value="">Select Report Type</option>
-        <option value="daily" <%= reportType === 'daily' ? 'selected' : '' %>>Daily</option>
-        <option value="weekly" <%= reportType === 'weekly' ? 'selected' : '' %>>Weekly</option>
-        <option value="monthly" <%= reportType === 'monthly' ? 'selected' : '' %>>Monthly</option>
-        <option value="yearly" <%= reportType === 'yearly' ? 'selected' : '' %>>Yearly</option>
-        <option value="custom" <%= reportType === 'custom' ? 'selected' : '' %>>Custom Date Range</option>
+
+  <div class="filter-container">
+    <select id="dateFilter" onchange="toggleDateInputs()">
+      <option value="">Select Date Filter</option>
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="custom">Custom Range</option>
     </select>
-    <div class="date-range" id="dateRangeInputs">
-      <input type="date" id="startDate" name="startDate" 
-          value="<%= startDate %>" 
-          <%= reportType !== 'custom' ? 'disabled' : '' %>>
-      <span>to</span>
-      <input type="date" id="endDate" name="endDate" 
-          value="<%= endDate %>" 
-          <%= reportType !== 'custom' ? 'disabled' : '' %>>
+    <div id="dateInputs" class="date-range-inputs">
+      <input type="date" id="startDate">
+      <input type="date" id="endDate">
+    </div>
+    <button onclick="applyFilters()">Apply Filter</button>
+    <button onclick="clearFilters()">Clear Filter</button>
   </div>
-  
-  <button type="submit" id="applyFilter">Apply Filter</button>
-  <button type="button" id="clearFilter">Clear Filter</button>
-  </form>
-  <div id="downloadLinks">
-    <a href="/admin/sales-report/pdf" id="pdfLink">Download PDF</a>
-    <a href="/admin/sales-report/excel" id="excelLink">Download Excel</a>
-</div>
+
+  <div class="download-buttons">
+    <button onclick="downloadPDF()">Download PDF</button>
+    <button onclick="downloadExcel()">Download Excel</button>
+  </div>
+
+  <div class="order-table-container">
     <table id="orderTable">
-        <thead>
-          
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>Address</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Payment Method</th>
+          <th>Order Date</th>
+          <th>Order Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <% order.items.forEach(item => { %>
             <tr>
-                <th>Name</th>
-                <th>Phone Number</th>
-                <th>Address</th>
-               
-                <th>Product Name</th>
-                
-
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Payment Method</th>
-                <th>Order Date</th>
-               
-                <th>Order Status</th>
+              <td><%= order ? order.address.name : 'Unknown' %></td>
+              <td><%= order ? order.address.phone : 'Unknown' %></td>
+              <td>
+                <%= order.address.name %>, <%= order.address.locality %>, 
+                <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
+              </td>
+              <td><%= item.productName %></td>
+              <td><%= item.quantity %></td>
+              <td>₹<%= order.totalPrice.toFixed(2) %></td>
+              <td><%= order.paymentMethod %></td>
+              <td><%= order.orderDate ? order.orderDate.toDateString() : 'N/A' %></td>
+              <td>
+                <%= item.orderStatus ? item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1) : 'Unknown' %>
+              </td>
             </tr>
-        </thead>
-        <tbody>
-          <% orders.forEach(order => { %>
-            <!-- Iterate through each item in the order -->
-            <% order.items.forEach(item => { %>
-              <tr>
-                <!-- Customer Details -->
-                <td><%= order ? order.address.name : 'Unknown' %></td>
-                <td><%= order ? order.address.phone : 'Unknown' %></td>
-                
-                <!-- Address Details -->
-                <td>
-                  <%= order.address.name %>, <%= order.address.locality %>, 
-                  <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
-                </td>
-      
-        
-                <!-- Product Details -->
-                <td><%= item.productName %></td>
-                <td><%= item.quantity %></td>
-        
-                <!-- Order Total Price -->
-                <td>₹<%= order.totalPrice.toFixed(2) %></td>
-        
-                <!-- Payment Method -->
-                <td><%= order.paymentMethod %></td>
-        
-                <!-- Order Date -->
-                <td><%= order.orderDate ? order.orderDate.toDateString() : 'N/A' %></td>
-        
-                <!-- Order Status -->
-                <td>
-                  <%= item.orderStatus ? item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1) : 'Unknown' %>
-                </td>
-              </tr>
-            <% }); %> <!-- End of item loop -->
-          <% }); %> <!-- End of order loop -->
-        </tbody>
-        
-        
-      
+          <% }); %>
+        <% }); %>
+      </tbody>
     </table>
-</div>
+  </div>
+
+  <% if (showPagination) { %>
+    <div class="pagination">
+      <% if (hasPreviousPage) { %>
+        <a href="?page=1<%= filters.dateFilter ? `&dateFilter=${filters.dateFilter}` : '' %><%= filters.startDate ? `&startDate=${filters.startDate}` : '' %><%= filters.endDate ? `&endDate=${filters.endDate}` : '' %>">&laquo; First</a>
+        <a href="?page=<%= previousPage %><%= filters.dateFilter ? `&dateFilter=${filters.dateFilter}` : '' %><%= filters.startDate ? `&startDate=${filters.startDate}` : '' %><%= filters.endDate ? `&endDate=${filters.endDate}` : '' %>">&lsaquo; Previous</a>
+      <% } %>
+      
+      <% let startPage = Math.max(currentPage - 2, 1);
+         let endPage = Math.min(startPage + 4, totalPages);
+         for (let i = startPage; i <= endPage; i++) { %>
+        <a href="?page=<%= i %><%= filters.dateFilter ? `&dateFilter=${filters.dateFilter}` : '' %><%= filters.startDate ? `&startDate=${filters.startDate}` : '' %><%= filters.endDate ? `&endDate=${filters.endDate}` : '' %>" <%= i === currentPage ? 'class="active"' : '' %>><%= i %></a>
+      <% } %>
+      
+      <% if (hasNextPage) { %>
+        <a href="?page=<%= nextPage %><%= filters.dateFilter ? `&dateFilter=${filters.dateFilter}` : '' %><%= filters.startDate ? `&startDate=${filters.startDate}` : '' %><%= filters.endDate ? `&endDate=${filters.endDate}` : '' %>">Next &rsaquo;</a>
+        <a href="?page=<%= lastPage %><%= filters.dateFilter ? `&dateFilter=${filters.dateFilter}` : '' %><%= filters.startDate ? `&startDate=${filters.startDate}` : '' %><%= filters.endDate ? `&endDate=${filters.endDate}` : '' %>">Last &raquo;</a>
+      <% } %>
+    </div>
+  <% } %>
 
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      const filterForm = document.getElementById('filterForm');
-      const reportType = document.getElementById('reportType');
-      const startDate = document.getElementById('startDate');
-      const endDate = document.getElementById('endDate');
-      const clearFilterBtn = document.getElementById('clearFilter');
-      const dateRangeInputs = document.getElementById('dateRangeInputs');
-      const filterFeedback = document.getElementById('filterFeedback');
+  <script>
+    function toggleDateInputs() {
+      const dateFilter = document.getElementById('dateFilter').value;
+      const dateInputs = document.getElementById('dateInputs');
+      dateInputs.style.display = dateFilter === 'custom' ? 'inline' : 'none';
+    }
 
-      // Set initial dates if not set
-      function setInitialDates() {
-          const today = new Date();
-          const lastMonth = new Date();
-          lastMonth.setMonth(lastMonth.getMonth() - 1);
+    function applyFilters() {
+      const dateFilter = document.getElementById('dateFilter').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
 
-          if (!startDate.value) {
-              startDate.value = lastMonth.toISOString().split('T')[0];
-          }
-          if (!endDate.value) {
-              endDate.value = today.toISOString().split('T')[0];
-          }
+      let queryString = `?page=1`; // Reset to first page when applying new filters
+
+if (dateFilter) {
+  queryString += `&dateFilter=${dateFilter}`;
+}
+      if (dateFilter === 'custom') {
+        queryString += `&startDate=${startDate}&endDate=${endDate}`;
       }
 
-      // Handle report type changes
-      reportType.addEventListener('change', function() {
-          const isCustom = this.value === 'custom';
-          dateRangeInputs.classList.toggle('disabled', !isCustom);
-          startDate.disabled = !isCustom;
-          endDate.disabled = !isCustom;
+      window.location.href = window.location.pathname + queryString;
+    }
 
-          if (isCustom) {
-              setInitialDates();
-          } else {
-              // Set dates based on report type
-              const today = new Date();
-              let start = new Date();
-              
-              switch(this.value) {
-                  case 'daily':
-                      start = today;
-                      break;
-                  case 'weekly':
-                      start.setDate(today.getDate() - 7);
-                      break;
-                  case 'monthly':
-                      start.setMonth(today.getMonth() - 1);
-                      break;
-                  case 'yearly':
-                      start.setFullYear(today.getFullYear() - 1);
-                      break;
-              }
-              
-              startDate.value = start.toISOString().split('T')[0];
-              endDate.value = today.toISOString().split('T')[0];
-          }
-      });
+    function clearFilters() {
+      window.location.href = window.location.pathname + '?page=1';
+    }
 
-      // Form submission handler
-      filterForm.addEventListener('submit', function(e) {
-          e.preventDefault();
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      document.getElementById('dateFilter').value = urlParams.get('dateFilter') || '';
+      document.getElementById('startDate').value = urlParams.get('startDate') || '';
+      document.getElementById('endDate').value = urlParams.get('endDate') || '';
+      toggleDateInputs();
+    }
 
-          if (!reportType.value) {
-              alert('Please select a report type');
-              return;
-          }
+    function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-          if (reportType.value === 'custom' && (!startDate.value || !endDate.value)) {
-              alert('Please select both start and end dates for custom range');
-              return;
-          }
+  // Add a custom heading at the top of the PDF
+  doc.setFontSize(18);
+  doc.text("Toy Galaxy Sales Report", 14, 20); // Title with some padding
 
-          // Update download links before submitting
-          updateDownloadLinks();
+  // Move to the next line for the table
+  doc.setFontSize(12);
+  doc.text("Generated on: " + new Date().toLocaleDateString(), 14, 28); // Add a generated date
 
-          // Show filter feedback
-          filterFeedback.style.display = 'block';
-          filterFeedback.textContent = `Showing ${reportType.value} report ${
-              reportType.value === 'custom' 
-                  ? `from ${startDate.value} to ${endDate.value}` 
-                  : ''
-          }`;
+  // Get the table headers and data
+  const table = document.getElementById('orderTable');
+  const headers = [...table.querySelectorAll('thead th')].map(header => header.innerText);
 
-          // Submit the form
-          this.submit();
-      });
-
-      // Clear filter handler
-      clearFilterBtn.addEventListener('click', function() {
-          reportType.value = '';
-          startDate.value = '';
-          endDate.value = '';
-          dateRangeInputs.classList.add('disabled');
-          startDate.disabled = true;
-          endDate.disabled = true;
-          filterFeedback.style.display = 'none';
-          
-          // Update download links
-          updateDownloadLinks();
-          
-          // Submit the form to reset filters
-          filterForm.submit();
-      });
-
-      // Update download links
-      function updateDownloadLinks() {
-          const params = new URLSearchParams(new FormData(filterForm));
-          const baseUrl = '/admin/sales-report';
-          
-          document.getElementById('pdfLink').href = `${baseUrl}/pdf?${params.toString()}`;
-          document.getElementById('excelLink').href = `${baseUrl}/excel?${params.toString()}`;
+  const data = [...table.querySelectorAll('tbody tr')].map(row => {
+    return [...row.querySelectorAll('td')].map((cell, index) => {
+      // Check if the cell belongs to the price column (6th column with index 5)
+      if (index === 5) {
+        const price = parseFloat(cell.innerText.replace(/[^0-9.-]+/g, '')); // Extract the number from the price
+        if (!isNaN(price)) {
+          // If it's a valid number, add the ₹ symbol before it
+          return `RS. ${price.toFixed(2)}`; // Add ₹ and format to 2 decimal places
+        } else {
+          // If invalid, return an empty string or keep as 'N/A'
+          return 'N/A';
+        }
       }
-
-      // Initialize the form
-      if (reportType.value === 'custom') {
-          dateRangeInputs.classList.remove('disabled');
-          startDate.disabled = false;
-          endDate.disabled = false;
-      }
-
-      // Show active filters if any
-      if (reportType.value) {
-          filterFeedback.style.display = 'block';
-          filterFeedback.textContent = `Showing ${reportType.value} report ${
-              reportType.value === 'custom' 
-                  ? `from ${startDate.value} to ${endDate.value}` 
-                  : ''
-          }`;
-      }
-
-      // Initialize download links
-      updateDownloadLinks();
+      return cell.innerText;
+    });
   });
-</script>
 
+  // Generate the PDF with autoTable
+  doc.autoTable({
+    head: [headers],
+    body: data,
+    startY: 32, // Start the table below the title
+  });
 
-  
+  // Save the PDF
+  doc.save("toy_galaxy_sales_report.pdf");
+}
+
+    function downloadExcel() {
+      // Get the table data
+      let table = document.getElementById("orderTable");
+
+      // Convert table to a worksheet
+      let workbook = XLSX.utils.table_to_book(table, { sheet: "Orders" });
+
+      // Export the file as an Excel file
+      XLSX.writeFile(workbook, "order_report.xlsx");
+    }
+  </script>
 </body>
 </html>

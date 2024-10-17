@@ -7,6 +7,8 @@ const upload = require('../middleware/multer')
 
 const adminLoginController = require('../controllers/admin/adminLoginController');
 
+const adminDashboard = require('../controllers/admin/adminDashboard')
+
 const adminUserController = require('../controllers/admin/adminUserController');
 
 const adminProductController = require('../controllers/admin/adminProductController');
@@ -24,7 +26,9 @@ const adminSalesController = require('../controllers/admin/adminSalesreportContr
 router.get('/login', adminLoginController.adminLogin);
 router.post('/', adminLoginController.loginPost);
 
-router.get('/adminDashboard', adminAuth.isAuthenticated, adminLoginController.adminDashboard);
+router.get('/adminDashboard', adminAuth.isAuthenticated, adminDashboard.getAdminDashboard);
+
+
 router.get('/userManagement', adminAuth.isAuthenticated, adminUserController.getUserManagementPage);
 router.post('/block/:id', adminUserController.blockUser);
 
@@ -56,9 +60,6 @@ router.delete('/coupon/:id' ,adminCouponController.deleteCoupon)
 
 
 router.get('/sales-report', adminAuth.isAuthenticated, adminSalesController.adminSales)
-
-router.get('/sales-report/pdf', adminSalesController.downloadSalesReportPDF);
-router.get('/sales-report/excel', adminSalesController.downloadSalesReportExcel);
 
 router.get('/logout', adminLoginController.adminLogout);
 

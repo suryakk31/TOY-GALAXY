@@ -1,75 +1,95 @@
 body {
     font-family: Arial, sans-serif;
-    background-image: url('/image/w.jpg');
+    background-image: url('/image/logos.jpg');
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    min-height: 100vh;
+    color: #ffffff;
 }
 
 .container {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     text-align: center;
-    width: 300px;
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background for better readability */
+    width: 350px;
 }
 
 h2 {
-    margin-bottom: 20px;
-    color: #333; /* Dark color for better readability */
-}
-
-.error-message {
-    color: red;
-    margin-bottom: 10px;
+    color: #4ecdc4;
+    margin-bottom: 30px;
+    font-size: 24px;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     text-align: left;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333; /* Ensure labels are readable */
+    position: relative;
 }
 
 .form-group input {
-    width: 100%; /* Full width of the container */
-    padding: 10px;
-    border: 1px solid #120909;
-    border-radius: 4px;
-    opacity: 0.9; /* Slightly less opacity for better visibility */
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #4ecdc4;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 button {
-    width: 100%; /* Full width of the container */
-    padding: 10px;
-    background-color: #9D51FF;
-    color: #fff;
+    width: 100%;
+    padding: 12px;
+    background-color: #4ecdc4;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #7b36e6; /* Adjusted hover color for better contrast */
+    background-color: #45b7a7;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
 }
 
 a {
-    display: block;
-    margin-top: 20px;
-    color: #9D51FF;
+    color: #4ecdc4;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 a:hover {
+    color: #45b7a7;
     text-decoration: underline;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+#errorMessage {
+    color: #ff6b6b;
+    font-size: 0.9em;
+    margin-top: 10px;
+    display: none;
 }

@@ -14,7 +14,8 @@
 
 .checkout-section {
     flex: 0 0 70%;
-    background-color: white;
+    background-color: rgb(250, 243, 243);
+    color: #333;
     padding: 20px;
     border-radius: 4px;
 }
@@ -34,6 +35,7 @@
 .step-content h3 {
     margin: 0 0 10px;
     font-size: 18px;
+    color: #333;
 }
 
 .user-info, .address-info, .order-item, .payment-method {
@@ -41,7 +43,7 @@
 }
 
 .btn-primary {
-    background-color: #FF9933;
+    background-color: #00FFFF;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -50,11 +52,11 @@
 }
 
 .btn-primary:hover {
-    background-color: #FF9933;
+    background-color: #00FFFF;
 }
 
 .btn-primary1 {
-    background-color: #FF9933;
+    background-color: #00FFFF;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -64,7 +66,7 @@
 }
 
 .btn-primary1:hover {
-    background-color: #FF9933;
+    background-color: #00FFFF;
 }
 
 .savings {
@@ -168,7 +170,7 @@
 
 .address-actions .edit-btn:hover,
 .address-actions .delete-btn:hover {
-    background-color: #FF9933;
+    background-color: #00FFFF;
     color: #fff;
 }
 
@@ -202,7 +204,7 @@
 }
 
 .address-form button.btn-primary {
-    background-color: #FF9933;
+    background-color: #00FFFF;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -211,7 +213,7 @@
 }
 
 .address-form button.btn-primary:hover {
-    background-color: #FF9933;
+    background-color: #00FFFF;
 }
 
 
@@ -277,15 +279,15 @@
       .header, .footer { text-align: center; margin: 20px 0; }
       .main-content { display: flex; justify-content: space-between; }
       .checkout-section { width: 70%; }
-      .btn-primary3 { background-color: #FF9933; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
+      .btn-primary3 { background-color: #00FFFF; color: rgb(17, 15, 15); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
       .section { border: 1px solid #ddd; margin-bottom: 10px; padding: 15px; border-radius: 5px; }
       .section-header { display: flex; justify-content: space-between; align-items: center; }
       .step-content { display: none; } /* Initially hide all sections */
       .step-content.active { display: block; } /* Show the active section */
-      .btn-primary { background-color: #FF9933; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;}
-      .btn-primary1 { background-color: #FF9933; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; }
+      .btn-primary { background-color: #00FFFF; color: rgb(15, 14, 14); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;justify-content: space-between;}
+      .btn-primary1 { background-color: #00FFFF; color: rgb(17, 16, 16); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px;margin-left: 10px;}
       .savings { color: green; font-weight: bold; }
-      .change-link { font-size: 14px; color: #FF9933; cursor: pointer; text-decoration: underline; }
+      .change-link { font-size: 14px; color: #00FFFF; cursor: pointer; text-decoration: underline; }
       .address-form { display: none; } /* Initially hide the address form */
 
 
@@ -330,7 +332,7 @@
           width: 100%;
           padding: 10px 15px;
           background-color: transparent;
-          color: #FF9933;
+          color: #151414;
           border: 1px solid #ccc;
           border-radius: 4px;
           cursor: pointer;
@@ -369,7 +371,7 @@
           left: 0; /* Slide in from the right */
       }
       .modal h2 {
-          color: #333;
+          color: #161616;
           margin-top: 0;
           border-bottom: 2px solid #eee;
           padding-bottom: 10px;
@@ -399,8 +401,8 @@
       .modal button {
           width: 100%;
           padding: 12px;
-          background-color: #FF9933;
-          color: white;
+          background-color: #00FFFF;
+          color: rgb(20, 20, 20);
           border: none;
           border-radius: 4px;
           cursor: pointer;
@@ -408,7 +410,7 @@
           transition: background-color 0.3s;
       }
       .modal button:hover {
-          background-color: #FF9933;
+          background-color: #00FFFF;
       }
 
 
@@ -420,13 +422,13 @@
       .coupon-input input {
           flex-grow: 1;
           padding: 10px;
-          border: 1px solid #ccc;
+          border: 1px solid #0e0d0d;
           border-right: none;
           border-radius: 4px 0 0 4px;
       }
       .coupon-input button {
           padding: 10px 20px;
-          background-color: #FF9933;
+          background-color: #00FFFF;
           color: white;
           border: none;
           border-radius: 0 4px 4px 0;
@@ -439,7 +441,8 @@
           margin-bottom: 15px;
       }
       .coupon-code {
-          background-color: #fff9c4;
+          background-color: #00FFFF;
+          color: #0e0d0d;
           padding: 5px 10px;
           display: inline-block;
           margin-bottom: 10px;

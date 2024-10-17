@@ -11,11 +11,11 @@
 }
 
 .profile-header {
-    background-color: #FF9933;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #0A0A2A;
     padding: 20px;
     text-align: center;
-    border-bottom: 2px solid #FF6600;
+    border-bottom: 2px solid #FF6EFF;
 }
 
 .profile-header h2 {
@@ -26,7 +26,7 @@
 
 .profile-nav {
     background-color: #FFFFFF;
-    border-bottom: 2px solid #FF9933;
+    border-bottom: 2px solid #FF6EFF;
     overflow-x: hidden;
     position: relative;
 }
@@ -47,7 +47,7 @@
 .profile-nav a {
     display: block;
     padding: 15px 20px;
-    color: #FF6600;
+    color: #0A0A2A;
     text-decoration: none; /* No underline by default */
     font-size: 0.9rem;
     font-weight: bold;
@@ -62,7 +62,7 @@
     bottom: 0;
     width: 0; /* Initially no underline */
     height: 2px; 
-    background-color: #FF6600; 
+    background-color: #00FFFF; 
     transition: width 0.3s ease; 
 }
 
@@ -72,7 +72,7 @@
 }
 
 .profile-nav a:hover, .profile-nav a.active {
-    color: #FF9933; /* Change text color on hover or active */
+    color: #0A0A2A; /* Change text color on hover or active */
 }
 
 

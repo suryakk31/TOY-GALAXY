@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toygalaxy - 500 Server Error</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #330000, #660000);
+            overflow: hidden;
+            color: #ffffff;
+        }
+        .error-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        h1 {
+            font-size: 8em;
+            margin: 0;
+            text-shadow: 0 0 10px #ff6666;
+        }
+        p {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff6666;
+            color: #330000;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #ffffff;
+            box-shadow: 0 0 15px #ff6666;
+        }
+        .rocket {
+            font-size: 100px;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+        .meteor {
+            position: absolute;
+            width: 300px;
+            height: 1px;
+            transform: rotate(-45deg);
+            top: 50px;
+            left: -300px;
+            background: linear-gradient(to right, transparent, #ff6666);
+            animation: meteorFall 2s linear infinite;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes meteorFall {
+            from { transform: translateX(0) translateY(0) rotate(-45deg); }
+            to { transform: translateX(1500px) translateY(1500px) rotate(-45deg); }
+        }
+        .stars {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 1979px 919px #FFF , 711px 394px #FFF , 1433px 145px #FFF , 1618px 1965px #FFF , 440px 191px #FFF , 1595px 14px #FFF , 449px 1482px #FFF , 1350px 647px #FFF , 444px 380px #FFF , 420px 1852px #FFF , 121px 1968px #FFF , 1397px 1538px #FFF , 771px 69px #FFF , 1658px 1741px #FFF , 1600px 1789px #FFF , 970px 370px #FFF , 909px 516px #FFF , 1747px 1763px #FFF , 1420px 1472px #FFF , 1828px 1993px #FFF , 1943px 1025px #FFF , 1757px 1928px #FFF;
+            animation: animStar 100s linear infinite;
+        }
+        @keyframes animStar {
+            from { transform: translateY(0); }
+            to { transform: translateY(-2000px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="meteor"></div>
+    <div class="error-container">
+        <div class="rocket">🚀</div>
+        <h1>500 error</h1>
+        <p>Houston, we have a problem!</p>
+        <a href="/" class="btn">Return to Toygalaxy Home</a>
+    </div>
+</body>
+</html>

@@ -165,11 +165,9 @@ button:hover {
   <header>
     <div class="top-nav">
       <div class="logo">
-        <h1>Kids Kastle</h1>
+        <h1>TOY GALAXY</h1>
       </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Search...">
-      </div>
+     
       <div class="profile-logout">
         <a href="/logout" class="logout-btn">Logout</a>
       </div>
@@ -264,7 +262,7 @@ button:hover {
                       <h2>Billing Details</h2> 
                       <h5>Product name: <%= item.productName %></h5>
                       <h5><strong>Name:</strong> <% if (order.userId && order.userId.firstName) { %> <%= order.userId.firstName %> <% } else { %> User not available <% } %></h5>
-                      <h5><strong>Phone no:</strong> <% if (order.userId && order.userId.phone) { %> <%= order.userId.phone %> <% } else { %> N/A <% } %></h5>
+                      <h5><strong>Phone no:</strong> <% if (order.address && order.address.phone) { %> <%= order.address.phone %> <% } else { %> N/A <% } %></h5>
                       <h5><strong>Address:</strong> <%= order.address.name %>, <%= order.address.locality %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></h5>
                       <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
                       <p><strong>Quantity:</strong> <%= item.quantity %></p>

@@ -54,7 +54,7 @@
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary" id="addAmountBtn" onclick="openAddAmountModal()" style="height: 40px; margin-top: 10px; margin-left: 5px; margin-bottom: 20px;width: 150px;background-color: #FF6600;border-color: #FF6600 ;">
+        <button type="button" class="btn btn-primary" id="addAmountBtn" onclick="openAddAmountModal()" style="height: 40px; margin-top: 10px; margin-left: 5px; margin-bottom: 20px;width: 150px;background-color: #00FFFF;border-color: #00FFFF ;color: black;">
           Add amount
         </button>
     
@@ -64,18 +64,19 @@
             <table class="transaction-table">
               <thead>
                 <tr>
-                  <th>Type</th>
-                  <th>Amount</th>
                   <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
                   <th>Description</th>
                 </tr>
               </thead>
               <tbody>
                 <% transactions.forEach(function(transaction) { %>
                   <tr>
-                    <td><%= transaction.type %></td>
-                    <td>₹<%= transaction.amount.toFixed(2) %></td>
+
                     <td><%= transaction.timestamp.toLocaleDateString() %></td>
+                    <td>₹<%= transaction.amount.toFixed(2) %></td>
+                    <td><%= transaction.type %></td>
                     <td><%= transaction.description || 'N/A' %></td>
                   </tr>
                 <% }); %>

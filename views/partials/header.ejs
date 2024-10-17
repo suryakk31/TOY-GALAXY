@@ -4,21 +4,21 @@
 
 <nav class="navbar">
   <div class="logo">
-      <i class='bx bxs-castle'></i>
-      <h1>Kids Kastle</h1>
+      <i class='bx bxs-planet rotating-planet'></i>
+      <h1>Toy Galaxy</h1>
   </div>
   <div class="search-container">
       <form action="#" method="get">
-          <input type="text" placeholder="Search..." name="search">
-          <button type="submit"><i class='bx bx-search'></i></button>
+          <input type="text" placeholder="Explore toys..." name="search">
+          <button type="submit"><i class='bx bx-search-alt-2'></i></button>
       </form>
   </div>
   <ul class="nav-menu">
       <li class="nav-item">
-          <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>" class="nav-link"><i class='bx bx-home'></i> Home</a>
+          <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>" class="nav-link"><i class='bx bxs-home-alt-2'></i> Home</a>
       </li>
       <li class="nav-item dropdown">
-          <a href="#" class="nav-link"><i class='bx bx-category'></i> Categories <i class='bx bx-chevron-down'></i></a>
+          <a href="#" class="nav-link"><i class='bx bxs-category-alt'></i> Categories <i class='bx bx-chevron-down'></i></a>
           <div class="dropdown-content">
               <ul class="dropdown-menu">
                 <% categories.forEach(category => { %>
@@ -27,36 +27,31 @@
               </ul>
           </div>
       </li>
-      
       <li class="nav-item">
-          <a href="<%= isLoggedIn ? '/auth/shop' : '/shop' %>" class="nav-link"><i class='bx bx-store'></i> Shop</a>
+          <a href="<%= isLoggedIn ? '/shop' : '/shop' %>" class="nav-link"><i class='bx bxs-store-alt'></i> Shop</a>
       </li>
       <li class="nav-item">
-          <a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>" class="nav-link"><i class='bx bx-book-content'></i> Blog</a>
+          <a href="<%= isLoggedIn ? '/auth/blog' : '/blog' %>" class="nav-link"><i class='bx bxs-game'></i> Fun Zone</a>
       </li>
-      
-    
       <li class="nav-item">
-          <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>" class="nav-link"><i class="bx bx-cart"></i> Cart</a>
+          <a href="<%= isLoggedIn ? '/auth/cart' : '/cart' %>" class="nav-link"><i class="bx bxs-cart-add"></i> Cart</a>
       </li>
-
       <li class="nav-item user-dropdown">
-        <a href="javascript:void(0);" class="nav-link" id="user-icon"><i class="bx bx-user"></i> Account <i class='bx bx-chevron-down'></i></a>
-        
+        <a href="javascript:void(0);" class="nav-link" id="user-icon"><i class="bx bxs-rocket"></i> My Space <i class='bx bx-chevron-down'></i></a>
         <% if (isLoggedIn && userDatabase) { %>
           <div class="user-dropdown-content" id="user-info">
-            <a href="/auth/profile"><i class='bx bx-user-circle'></i> Hello, <%= userDatabase.firstName %></a>
-            <a href="/auth/logout" id="logout-button"><i class='bx bx-log-out'></i> Log out</a>
+            <a href="/auth/profile"><i class='bx bxs-astronaut'></i> Hello, <%= userDatabase.firstName %></a>
+            <a href="/auth/logout" id="logout-button"><i class='bx bxs-exit'></i> Blast Off</a>
           </div>
         <% } else { %>
           <div class="user-dropdown-content">
-            <a href="/auth/login"><i class='bx bx-user-circle'></i> Login</a>
-            <a href="#"><i class='bx bx-cog'></i> Settings</a>
+            <a href="/auth/login"><i class='bx bxs-meteor'></i> Launch</a>
+            <a href="#"><i class='bx bxs-widget'></i> Control Panel</a>
           </div>
         <% } %>
     </li>
-    
   </ul>
+
   <div class="hamburger">
       <span class="bar"></span>
       <span class="bar"></span>

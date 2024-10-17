@@ -10,11 +10,11 @@
 }
 
 .profile-header {
-    background-color: #FF9933;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #0A0A2A;
     padding: 20px;
     text-align: center;
-    border-bottom: 2px solid #FF6600;
+    border-bottom: 2px solid #FF6EFF;
 }
 
 .profile-header h2 {
@@ -25,7 +25,7 @@
 
 .profile-nav {
     background-color: #FFFFFF;
-    border-bottom: 2px solid #fdfafa;
+    border-bottom: 2px solid #FF6EFF;
     overflow-x: hidden;
     position: relative;
 }
@@ -46,7 +46,7 @@
 .profile-nav a {
     display: block;
     padding: 15px 20px;
-    color: #FF6600;
+    color: #0A0A2A;
     text-decoration: none; /* No underline by default */
     font-size: 0.9rem;
     font-weight: bold;
@@ -61,7 +61,7 @@
     bottom: 0;
     width: 0; /* Initially no underline */
     height: 2px; 
-    background-color: #FF6600; 
+    background-color: #00FFFF; 
     transition: width 0.3s ease; 
 }
 
@@ -71,7 +71,7 @@
 }
 
 .profile-nav a:hover, .profile-nav a.active {
-    color: #22b039; /* Change text color on hover or active */
+    color: #0A0A2A; /* Change text color on hover or active */
 }
 
 
@@ -84,7 +84,7 @@
   }
   
   .wallet-card {
-    background: linear-gradient(135deg, #eea574, #FF9933);
+    background: linear-gradient(135deg, #fff, #fff);
     border-radius: 15px;
     padding: 20px;
     display: flex;
@@ -107,11 +107,11 @@
   .wallet-icon svg {
     width: 30px;
     height: 30px;
-    stroke: #FF9933;
+    stroke: #0A0A2A;
   }
   
   .wallet-info {
-    color: #ffffff;
+    color: #0A0A2A;
   }
   
   .wallet-info h3 {
@@ -119,6 +119,7 @@
     font-size: 1rem;
     font-weight: 500;
     opacity: 0.9;
+    color:#0A0A2A;
   }
   
   .wallet-info .balance {
@@ -222,10 +223,10 @@ footer p {
 }
 
 .payment-history h3 {
-  color: #FF6600;
+  color: #0A0A2A;
   font-size: 1.3rem;
   margin-bottom: 20px;
-  border-bottom: 2px solid #FF9933;
+  border-bottom: 2px solid #FF6EFF;
   padding-bottom: 10px;
 }
 
@@ -242,8 +243,8 @@ footer p {
 }
 
 .transaction-table th {
-  background-color: #FF9933;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #0A0A2A;
   font-weight: bold;
   text-transform: uppercase;
   font-size: 0.9rem;
@@ -251,6 +252,7 @@ footer p {
 
 .transaction-table tr {
   background-color: #f8f9fa;
+  color: #0A0A2A;
   transition: background-color 0.3s ease;
 }
 

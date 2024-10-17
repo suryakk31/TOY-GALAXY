@@ -6,15 +6,14 @@
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    
 }
 
 .profile-header {
-    background-color: #FF9933;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #0A0A2A;
     padding: 20px;
     text-align: center;
-    border-bottom: 2px solid #FF6600;
+    border-bottom: 2px solid #FF6EFF;
 }
 
 .profile-header h2 {
@@ -25,7 +24,7 @@
 
 .profile-nav {
     background-color: #FFFFFF;
-    border-bottom: 2px solid #fdfafa;
+    border-bottom: 2px solid #FF6EFF;
     overflow-x: hidden;
     position: relative;
 }
@@ -46,7 +45,7 @@
 .profile-nav a {
     display: block;
     padding: 15px 20px;
-    color: #FF6600;
+    color: #0A0A2A;
     text-decoration: none; /* No underline by default */
     font-size: 0.9rem;
     font-weight: bold;
@@ -61,7 +60,7 @@
     bottom: 0;
     width: 0; /* Initially no underline */
     height: 2px; 
-    background-color: #FF6600; 
+    background-color: #00FFFF; 
     transition: width 0.3s ease; 
 }
 
@@ -71,8 +70,9 @@
 }
 
 .profile-nav a:hover, .profile-nav a.active {
-    color: #22b039; /* Change text color on hover or active */
+    color: #0A0A2A; /* Change text color on hover or active */
 }
+
 
 
 
@@ -88,24 +88,24 @@
 
 /* Edit Button */
 #edit-btn {
-    background-color: #FF6600; /* Orange background */
-    color: white;
+    background-color: #00FFFF; /* Orange background */
+    color: rgb(1, 1, 1);
     height: 40px;
     width: 100px; /* White text */
 }
 
 #edit-btn:hover {
-    background-color: #e55a00; /* Darker orange on hover */
+    background-color: #00FFFF; /* Darker orange on hover */
 }
 
 /* Save Button */
 #save-btn {
-    background-color: #22b039; /* Green background */
-    color: white; /* White text */
+    background-color: #00FFFF; /* Green background */
+    color: rgb(8, 8, 8); /* White text */
 }
 
 #save-btn:hover {
-    background-color: #1b8e2f; /* Darker green on hover */
+    background-color: #00FFFF; /* Darker green on hover */
 }
 
 footer {
@@ -132,7 +132,7 @@ footer p {
 .form-group label {
     display: block;
     margin-bottom: 5px;
-    color: #FF6600;
+    color: #0e0d0d;
     font-size: 0.9rem;
     font-weight: bold;
 }
@@ -140,7 +140,7 @@ footer p {
 .form-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #FF9933;
+    border: 1px solid #100f0f;
     border-radius: 4px;
     font-size: 0.9rem;
     transition: border-color 0.3s ease;

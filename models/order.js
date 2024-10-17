@@ -123,7 +123,15 @@ const OrderSchema = new Schema({
 
     paymentMethod: { 
         type: String, 
+        
         required: true 
+    },
+
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'completed', 'failed', 'refunded'],
+        default: 'pending',
+        required: true
     },
 
     orderDate: { 

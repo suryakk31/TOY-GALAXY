@@ -9,11 +9,11 @@
 }
 
 .profile-header {
-    background-color: #FF9933;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #0A0A2A;
     padding: 20px;
     text-align: center;
-    border-bottom: 2px solid #FF6600;
+    border-bottom: 2px solid #FF6EFF;
 }
 
 .profile-header h2 {
@@ -24,7 +24,7 @@
 
 .profile-nav {
     background-color: #FFFFFF;
-    border-bottom: 2px solid #fdfafa;
+    border-bottom: 2px solid #FF6EFF;
     overflow-x: hidden;
     position: relative;
 }
@@ -45,7 +45,7 @@
 .profile-nav a {
     display: block;
     padding: 15px 20px;
-    color: #FF6600;
+    color: #0A0A2A;
     text-decoration: none; /* No underline by default */
     font-size: 0.9rem;
     font-weight: bold;
@@ -60,7 +60,7 @@
     bottom: 0;
     width: 0; /* Initially no underline */
     height: 2px; 
-    background-color: #FF6600; 
+    background-color: #00FFFF; 
     transition: width 0.3s ease; 
 }
 
@@ -70,7 +70,7 @@
 }
 
 .profile-nav a:hover, .profile-nav a.active {
-    color: #22b039; /* Change text color on hover or active */
+    color: #0A0A2A; /* Change text color on hover or active */
 }
 
 
@@ -85,10 +85,10 @@
 
 .address-card {
     background-color: #fff;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #040404;
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 4px 8px #FF9933;
+    
     transition: box-shadow 0.3s ease;
 }
 
@@ -98,7 +98,7 @@
 
 .address-card h3 {
     font-size: 18px;
-    color: #FF6600;
+    color: #0A0A2A;
     margin-bottom: 15px;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .address-actions a {
-    color: #FF6600;
+    color: #00FFFF;
     text-decoration: none;
     margin-left: 15px;
     font-size: 16px;
@@ -124,7 +124,7 @@
 }
 
 .address-actions a:hover {
-    color: #FF3300;
+    color: #00FFFF;
 }
 
 /* Modal styles */
@@ -134,8 +134,8 @@
 }
 
 .modal-header {
-    background-color: #FF9933;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #050505;
     border-bottom: none;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -170,7 +170,7 @@
 }
 
 .modal-body button[type="submit"] {
-    background-color: #FF6600;
+    background-color: #00FFFF;
     color: #FFFFFF;
     border: none;
     padding: 10px 20px;
@@ -181,7 +181,7 @@
 }
 
 .modal-body button[type="submit"]:hover {
-    background-color: #FF3300;
+    background-color: #00FFFF;
 }
 
 

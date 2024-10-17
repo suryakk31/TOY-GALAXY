@@ -13,12 +13,14 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "chart": "^0.1.2",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^5.1.0",
     "cropperjs": "^1.6.2",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
+    "excel4node": "^1.8.2",
     "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "express-flash": "^0.0.2",
@@ -36,6 +38,7 @@
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.15.0",
     "razorpay": "^2.9.4",
-    "tailwindcss": "^3.4.10"
+    "tailwindcss": "^3.4.10",
+    "xlsx": "^0.18.5"
   }
 }

@@ -37,13 +37,6 @@ exports.loginPost = async (req, res) => {
 
 
 
-exports.adminDashboard = (req, res) => {
-    if (!req.session.isAdmin) {
-        return res.redirect('/admin/login'); 
-    }
-  
-    res.render('admin/adminDashboard', { title: 'Admin Dashboard' });
-};
 
 
 exports.adminLogout = (req,res) => {

@@ -11,12 +11,12 @@
 
     <style>
        #removeCouponBtn {
-        background-color: #FF6600;
+        background-color: #00FFFF;
         color: white;
         margin-left: 70px;
         border-radius: 5px;
         height: 20px;
-        border-color: #FF6600;
+        border-color: #00FFFF;
        }
 
        #couponValidationMessage {
@@ -94,7 +94,7 @@
                             <button class="btn-primary" type="button" onclick="toggleAddressForm()">CANCEL</button>
                         </form>
                         
-                        <a href="#" class="btn-primary" id="add-new-address" onclick="showNewAddressForm()">+ Add  new address</a>
+                        <a href="#" class="btn-primary" id="add-new-address" onclick="showNewAddressForm()">+ Add  new address </a>
                         <button class="btn-primary1" type="button" onclick="DeliverHere()"> DELIVER HERE</button>
                     </div>
                 </div>
@@ -172,7 +172,7 @@
                                   Online payment
                                 </label>
                                 <br>
-                                <input type="radio" name="wallet" id="wallet" value="Wallet payment">
+                                <input type="radio" name="paymentMethod" id="wallet" value="Wallet payment">
                                 <label for="wallet">
                                   <i class="bi bi-wallet2"></i>
 
@@ -283,6 +283,26 @@
       </div>
   </div>
 </div>
+
+
+<div id="paymentFailedModal" class="modal1" style="display: none;">
+  <div class="modal-content1" style="text-align: center; padding: 20px; border-radius: 10px; background-color: white; width: 300px; margin: auto;">
+      <div class="modal-body1">
+          <div style="margin-bottom: 20px;">
+              <div style="font-size: 50px; color: red; margin-bottom: 20px;">
+                  &#10006;
+              </div>
+          </div>
+          <h2>Payment Failed!</h2>
+          <p>Continue repayment from the order page.</p>
+          <button style="padding: 10px 20px; background-color: #FF6600; color: white; border: none; border-radius: 5px; cursor: pointer;">
+              <a href="/auth/order" style="color: white; text-decoration: none;">Go to Orders</a>
+          </button>
+      </div>
+  </div>
+</div>
+
+
 
                
                     
@@ -456,6 +476,9 @@
             showNextSection('payment-options-section', 'change-address-link');
         }
 
+ 
+
+
         function placeOrder() {
     const selectedAddress = document.querySelector('input[name="address"]:checked');
     const isCOD = document.getElementById('cod').checked;
@@ -465,6 +488,14 @@
         Swal.fire('Error', 'Please select a delivery address', 'error');
         return;
     }
+
+    let totalAmount = parseFloat(document.getElementById('total-amount').innerText.replace('₹', '').trim());
+
+// Check if COD is selected and total is above 1000
+if (isCOD && totalAmount > 1000) {
+    Swal.fire('Error', 'Cash on Delivery is not available for orders above ₹1000. Please choose another payment method.', 'error');
+    return;
+}
 
     if (isCOD) {
         processCODOrder();
@@ -507,15 +538,33 @@ function initiateRazorpayPayment() {
             },
             "theme": {
                 "color": "#FF6600"
+            },
+            "modal": {
+                "ondismiss": function() {
+                  processOrder('Razorpay', null, 'failed');
+                }
             }
         };
         var rzp = new Razorpay(options);
         rzp.open();
+
+        rzp.on('payment.failed', function (response){
+            console.error(response.error);
+            showPaymentFailedModal();
+        });
     })
     .catch(error => {
         console.error('Error creating Razorpay order:', error);
         Swal.fire('Error', 'There was an issue processing your payment. Please try again.', 'error');
     });
+}
+
+
+function showPaymentFailedModal() {
+    const modal = document.getElementById('paymentFailedModal');
+    modal.style.display = 'block'; 
+
+  
 }
 
 function processCODOrder() {
@@ -548,13 +597,16 @@ function processWalletPayment() {
         Swal.fire('Error', 'There was an issue processing your wallet payment. Please try again.', 'error');
     });
 }
-function processOrder(paymentMethod, paymentId = null) {
+
+
+function processOrder(paymentMethod, paymentId = null, paymentStatus = 'pending') {
     const selectedAddress = document.querySelector('input[name="address"]:checked').value;
 
     const orderDetails = {
         address: selectedAddress,
         paymentMethod: paymentMethod,
         paymentId: paymentId,
+        paymentStatus: paymentStatus
         // Add other necessary details
     };
 
@@ -572,9 +624,13 @@ function processOrder(paymentMethod, paymentId = null) {
         return response.json();
     })
     .then(data => {
-        if (data.message) {
+      if (data.message) {
             console.log('Order placed successfully:', data.message);
-            showOrderConfirmationModal();
+            if (paymentStatus === 'failed') {
+                showPaymentFailedModal();  // Show failed payment modal
+            } else {
+                showOrderConfirmationModal(); // Show success modal
+            }
         } else if (data.error) {
             Swal.fire('Error', data.error, 'error');
         }

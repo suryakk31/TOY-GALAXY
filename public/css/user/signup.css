@@ -1,60 +1,68 @@
-
 body {
     font-family: Arial, sans-serif;
-    background-image: url('/image/w.jpg');
+    background-image: url('/image/logos.jpg'); /* Use the same dark background as the login page */
     background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    color: #ffffff;
 }
 
 .container {
-    
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     text-align: center;
-    width: 300px;
+    width: 350px;
 }
 
 h2 {
-    text-align: center;
-    margin-bottom: 20px;
+    color: #4ecdc4; /* Bright teal color for headings */
+    margin-bottom: 30px;
+    font-size: 24px;
 }
 
 .form-group {
-    opacity: 70%;
-  
     margin-bottom: 20px;
     text-align: left;
+    position: relative;
 }
 
 .form-group input {
-    
-    width: 92%; 
-    padding: 10px;
-    border: 1px solid #120909;
-    border-radius: 4px;
-     
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #4ecdc4;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 button {
-    width: 100%; 
-    padding: 10px;
-    background-color: #9D51FF;
-    color: #fff;
+    width: 100%;
+    padding: 12px;
+    background-color: #4ecdc4;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #7d3bcc; 
+    background-color: #45b7a7;
 }
 
 p {
@@ -63,10 +71,49 @@ p {
 }
 
 a {
-    color: #007bff;
+    color: #4ecdc4;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 a:hover {
+    color: #45b7a7;
     text-decoration: underline;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.valid-message {
+    color: #4ecdc4;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #4ecdc4;
+}
+
+.show-password {
+    color: #4ecdc4;
+}
+
+.hide-password {
+    color: #ff6b6b;
+}
+
+#errorMessage {
+    color: #ff6b6b;
+    font-size: 0.9em;
+    margin-top: 10px;
+    display: none;
 }

@@ -70,6 +70,9 @@ router.get('/auth/orderDetails/:orderId', userOrderdetailsController.getOrderdet
 router.post('/cancel-order-item/:itemId',userOrderdetailsController.cancelOrder)
 router.post('/auth/return-order-item/:itemId', userOrderdetailsController.returnOrder)
 
+router.post('/create-razorpay-order',userOrderdetailsController.retryPayment)
+router.post('/update-payment-status/:orderId', userOrderdetailsController.updatePaymentStatus);
+
 router.get('/auth/coupon',userCouponController.getCoupon)
 router.post('/validateCoupon',userCouponController.applyCoupon)
 
@@ -81,4 +84,5 @@ router.post('/update-wallet',userWalletController.updateWallet)
 router.get('/auth/wishlist',userwishlistController.getWishlist)
 router.post('/wishlist/add',userwishlistController.addToWishlist)
 router.post('/auth/wishlist/remove', userwishlistController.removeFromWishlist);
+
 module.exports = router;
