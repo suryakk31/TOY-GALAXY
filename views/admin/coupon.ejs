@@ -170,14 +170,13 @@
     </table>
   </div>
 
-  <!-- Coupon Modal -->
-  <!-- Add Coupon Modal -->
+
 <div id="couponModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Add Coupon</h2>
     <form id="couponForm">
-      <!-- Form Fields for Add Coupon -->
+  
       <label for="description">Coupon Description:</label>
       <input type="text" id="description" name="description" required>
       
@@ -201,7 +200,7 @@
   </div>
 </div>
 
-<!-- Edit Coupon Modal -->
+
 <div id="editCouponModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -295,7 +294,7 @@
     couponForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       
-      const couponCode = document.getElementById("couponCode").value.trim(); // Ensure no extra spaces
+      const couponCode = document.getElementById("couponCode").value.trim(); 
       if (!couponCode) {
           Swal.fire("Error", "Coupon code is required", "error");
           return;
@@ -336,7 +335,7 @@
   </script>
 
 <script>
-  // ... (previous JavaScript code remains the same) ...
+
 
   const editModal = document.getElementById("editCouponModal");
   const editForm = document.getElementById("editCouponForm");
@@ -361,7 +360,7 @@
         }
         const coupon = await response.json();
         
-        // Populate form fields with the coupon data
+
         document.getElementById('editCouponId').value = coupon._id;
         document.getElementById('editDescription').value = coupon.description;
         document.getElementById('editCouponCode').value = coupon.couponCode;
@@ -435,7 +434,7 @@
 </script>
 
 <script>
-     // Delete coupon
+
    async function deleteCoupon(couponId) {
       try {
         const result = await Swal.fire({
@@ -455,7 +454,7 @@
 
           if (!response.ok) throw new Error('Failed to delete coupon');
 
-          location.reload(); // Refresh to show updated list
+          location.reload(); 
           Swal.fire('Deleted!', 'Coupon has been deleted.', 'success');
         }
       } catch (error) {

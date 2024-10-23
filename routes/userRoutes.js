@@ -30,7 +30,7 @@ const userwishlistController = require('../controllers/user/userWishListControll
 
 
 router.get('/',userController.getLandingPage)
-router.get('/auth/homepage', userController.getHomepage)
+router.get('/auth/homepage', userAuth.isAuthenticated, userController.getHomepage)
 router.get('/shop',userAuth.isAuthenticated,shopController.getShopPage)
 router.get('/product/:id',userAuth.isAuthenticated,productController.getProductPage)
 

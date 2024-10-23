@@ -39,7 +39,7 @@
     </style>
 </head>
 <body>
-  <!-- Header and Navigation remain unchanged -->
+
   <header>
     <div class="top-nav">
       <div class="logo">
@@ -68,7 +68,7 @@
     </ul>
   </nav>
 
-  <!-- Form Container with validation -->
+
   <div class="form-container">
     <form id="edit-category-form" enctype="multipart/form-data">
       <div class="form-group">
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (result.success) {
         window.location.href = '/admin/category';
       } else {
-        // Handle server-side validation errors
+      
         if (result.errors && Array.isArray(result.errors)) {
           result.errors.forEach(error => {
             if (error.toLowerCase().includes('name')) {
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           });
         } else {
-          // Show general error message
+
           const errorDiv = document.createElement('div');
           errorDiv.className = 'error-message';
           errorDiv.style.color = '#ff0000';

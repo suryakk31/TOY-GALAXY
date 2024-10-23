@@ -51,7 +51,7 @@
                         </div>
                         <div class="change-link" id="change-address-link" onclick="showSection('delivery-address-section')">Change</div>
                     </div>
-                    <div class="step-content active"> <!-- Active by default -->
+                    <div class="step-content active"> 
                         <% addresses.forEach((address, index) => { %>
                             <div class="address-info">
                                 <input type="radio" name="address" id="address<%= index + 1 %>" value="<%=address._id%>" <%= index === 0 ? 'checked' : '' %>>
@@ -148,7 +148,7 @@
                 
 
 
-                 <!-- Payment Options Section -->
+               
                  <div id="payment-options-section" class="section">
                     <div class="section-header">
                         <div>
@@ -184,8 +184,7 @@
                     </div>
                 </div>
 
-             <!-- Order Summary Section -->
-
+      
 
                
             </div>
@@ -221,7 +220,7 @@
                     </div>
                   </div>
                   
-                  <!-- Keep the modal and form as they were before -->
+            
                     
                   
                 </aside>
@@ -328,7 +327,7 @@
 
 
     document.getElementById('saveAddressBtn').addEventListener('click',async function(){
-    // Gather form values
+  
     const name = document.getElementById('name').value.trim();
     const address = document.getElementById('address').value.trim();
     const phone = document.getElementById('phone').value.trim();
@@ -339,45 +338,44 @@
 
     let isValid = true;
 
-    // Name validation
+
     if (name === '') {
       Swal.fire('Validation Error', 'Name is required.', 'error');
       isValid = false;
     }
 
-    // Address validation
+   
     if (address === '') {
       Swal.fire('Validation Error', 'Address is required.', 'error');
       isValid = false;
     }
 
-    // Phone validation
+
     const phonePattern = /^[0-9]{10}$/;
     if (!phonePattern.test(phone)) {
       Swal.fire('Validation Error', 'Please enter a valid 10-digit phone number.', 'error');
       isValid = false;
     }
 
-    // Locality validation
+
     if (locality === '') {
       Swal.fire('Validation Error', 'Locality is required.', 'error');
       isValid = false;
     }
 
-    // Pincode validation
+
     const pincodePattern = /^[0-9]{6}$/;
     if (!pincodePattern.test(pincode)) {
       Swal.fire('Validation Error', 'Please enter a valid 6-digit pincode.', 'error');
       isValid = false;
     }
 
-    // State validation
+
     if (state === '') {
       Swal.fire('Validation Error', 'State is required.', 'error');
       isValid = false;
     }
 
-    // City validation
     if (city === '') {
       Swal.fire('Validation Error', 'City is required.', 'error');
       isValid = false;
@@ -426,7 +424,7 @@
             });
             document.getElementById(sectionId).querySelector('.step-content').classList.add('active');
     
-            // Ensure the "Add New Address" button remains visible and styled correctly
+        
             const addNewAddress = document.getElementById('add-new-address');
             addNewAddress.style.display = 'block';
             addNewAddress.style.backgroundColor = '#2874f0';
@@ -452,7 +450,7 @@
         }
     
         function showNewAddressForm() {
-            // Clear the form fields
+            
             document.getElementById('name').value = '';
             document.getElementById('pincode').value = '';
             document.getElementById('address').value = '';
@@ -491,7 +489,6 @@
 
     let totalAmount = parseFloat(document.getElementById('total-amount').innerText.replace('₹', '').trim());
 
-// Check if COD is selected and total is above 1000
 if (isCOD && totalAmount > 1000) {
     Swal.fire('Error', 'Cash on Delivery is not available for orders above ₹1000. Please choose another payment method.', 'error');
     return;
@@ -607,7 +604,7 @@ function processOrder(paymentMethod, paymentId = null, paymentStatus = 'pending'
         paymentMethod: paymentMethod,
         paymentId: paymentId,
         paymentStatus: paymentStatus
-        // Add other necessary details
+    
     };
 
     fetch('/auth/checkout', {
@@ -627,9 +624,9 @@ function processOrder(paymentMethod, paymentId = null, paymentStatus = 'pending'
       if (data.message) {
             console.log('Order placed successfully:', data.message);
             if (paymentStatus === 'failed') {
-                showPaymentFailedModal();  // Show failed payment modal
+                showPaymentFailedModal();  
             } else {
-                showOrderConfirmationModal(); // Show success modal
+                showOrderConfirmationModal(); 
             }
         } else if (data.error) {
             Swal.fire('Error', data.error, 'error');
@@ -654,21 +651,21 @@ function processOrder(paymentMethod, paymentId = null, paymentStatus = 'pending'
     const modal = document.getElementById('orderConfirmationModal');
     modal.style.display = 'block'; 
 
-    // Timer element
+   
     const countdownElement = document.getElementById('countdown');
-    let countdown = 5; // 5 seconds countdown
+    let countdown = 5; 
 
-    // Update the countdown every second
+
     const countdownInterval = setInterval(() => {
         countdownElement.textContent = countdown;
         countdown -= 1;
     }, 1000);
 
-    // Redirect after 5 seconds
+  
     setTimeout(() => {
         clearInterval(countdownInterval);
-        window.location.href = '/auth/order'; // Redirect to the orders page
-    }, 5000); // 5000 milliseconds = 5 seconds
+        window.location.href = '/auth/order'; 
+    }, 5000); 
 }
 
 

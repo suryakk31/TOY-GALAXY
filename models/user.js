@@ -16,8 +16,6 @@ const userSchema = new mongoose.Schema({
     phone: Number,
     password: String,
     image: String,
-    otp: String,
-    otpExpiry: Date,
     isBlocked: {
         type: Boolean,
         default: false

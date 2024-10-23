@@ -1,8 +1,6 @@
 
   
   
-  
-  
 
 
 .main-content {
@@ -15,7 +13,7 @@
 .checkout-section {
     flex: 0 0 70%;
     background-color: rgb(250, 243, 243);
-    color: #333;
+    color: #090909;
     padding: 20px;
     border-radius: 4px;
 }
@@ -42,22 +40,9 @@
     margin-bottom: 10px;
 }
 
-.btn-primary {
-    background-color: #00FFFF;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background-color: #00FFFF;
-}
-
-.btn-primary1 {
-    background-color: #00FFFF;
-    color: white;
+.btn-primary, .btn-primary1, .btn-primary3 {
+    background-color: #FFD700;
+    color: #8A2BE2;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
@@ -65,8 +50,13 @@
     margin-top: 10px;
 }
 
-.btn-primary1:hover {
-    background-color: #00FFFF;
+.btn-primary:hover, .btn-primary1:hover, .btn-primary3:hover {
+    background-color: #8A2BE2;
+    color: #FFFFFF;
+}
+
+.btn-primary3 {
+    margin-left: 80px;
 }
 
 .savings {
@@ -82,8 +72,8 @@
 
 .price-details {
     padding: 20px;
-    border: 1px solid white;
-    background-color: white;
+    border: 1px solid #8A2BE2;
+    background-color: #FFFFFF;
     border-radius: 5px;
     font-family: Arial, sans-serif;
     width: 300px;
@@ -94,7 +84,7 @@
     text-align: center;
     margin-bottom: 15px;
     font-size: 18px;
-    color: #333;
+       color: #8A2BE2;
 }
 
 .price-details ul {
@@ -119,7 +109,7 @@
 
 .price-details ul li span {
     font-weight: bold;
-    color: #333;
+    color: #090909;
 }
 
 
@@ -130,7 +120,7 @@
     gap: 20px;
     justify-content: space-between;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #87CEEB;
 }
 
 .address-card:hover {
@@ -147,7 +137,7 @@
 .address-card p {
     font-size: 1em;
     margin: 10px 0;
-    color: #666;
+    color: #8A2BE2;
 }
 
 .address-actions {
@@ -158,37 +148,37 @@
 
 .address-actions .edit-btn,
 .address-actions .delete-btn {
-    color: #495057;
+    color: #8A2BE2;
     font-size: 1rem;
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 5px;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+    background-color: #FFFFFF;
+    border: 1px solid #8A2BE2;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .address-actions .edit-btn:hover,
 .address-actions .delete-btn:hover {
-    background-color: #00FFFF;
-    color: #fff;
+    background-color: #8A2BE2;
+    color: #FFFFFF;
 }
 
 /* Form Styling */
 .address-form {
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: #FFFFFF;
+    border: 1px solid #8A2BE2;
     border-radius: 8px;
     padding: 20px;
     width: 450px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin: 20px 0;
 }
 
 .address-form label {
     font-size: 1em;
-    color: #333;
+    color: #8A2BE2;
     display: block;
     margin-bottom: 5px;
 }
@@ -197,10 +187,10 @@
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #8A2BE2;
     border-radius: 4px;
     font-size: 1em;
-    color: #666;
+    color: #8A2BE2;
 }
 
 .address-form button.btn-primary {
@@ -241,31 +231,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5); /* Dark backdrop */
+    background-color: rgba(138, 43, 226, 0.5);
 }
-
 .modal-content1 {
-    background-color: #fff;
+    background-color: #FFFFFF;
     padding: 20px;
     border-radius: 10px;
     width: 90%;
     max-width: 400px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
 }
 
 .modal-body1 h2 {
     margin-top: 0;
     font-size: 24px;
+    color: #8A2BE2;
 }
-
 .modal-body1 p {
     margin: 10px 0 20px;
 }
 
 .modal-body1 button {
-    background-color: #FF9933;
-    color: white;
+    background-color: #FFD700;
+    color: #8A2BE2;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
@@ -329,26 +318,28 @@
 }
 
 .apply-coupon-btn {
-          width: 100%;
-          padding: 10px 15px;
-          background-color: transparent;
-          color: #151414;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-      }
-      .apply-coupon-btn:hover {
-          background-color: #f5f5f5;
-      }
-      .apply-coupon-btn i {
-          margin-right: 8px;
-          font-size: 18px;
-      }
+    width: 100%;
+    padding: 10px 15px;
+    background-color: transparent;
+    color: #8A2BE2;
+    border: 1px solid #8A2BE2;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.apply-coupon-btn:hover {
+    background-color: #87CEEB;
+}
+
+.apply-coupon-btn i {
+    margin-right: 8px;
+    font-size: 18px;
+}
 
 
 .modal {
@@ -436,31 +427,33 @@
       }
      
       .coupon {
-          border: 1px dashed #ccc;
-          padding: 15px;
-          margin-bottom: 15px;
-      }
+        border: 1px dashed #8A2BE2;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
       .coupon-code {
-          background-color: #00FFFF;
-          color: #0e0d0d;
-          padding: 5px 10px;
-          display: inline-block;
-          margin-bottom: 10px;
-      }
-      .coupon-title {
-          font-weight: bold;
-          margin-bottom: 5px;
-      }
-      .coupon-description {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 5px;
-      }
-      .more-info {
-          color: #FF9933;
-          font-size: 12px;
-          cursor: pointer;
-      }
-
-
+        background-color: #FFD700;
+        color: #8A2BE2;
+        padding: 5px 10px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    
+    .coupon-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #8A2BE2;
+    }
+    
+    .coupon-description {
+        font-size: 12px;
+        color: #8A2BE2;
+        margin-bottom: 5px;
+    }
+    
+    .more-info {
+        color: #FFD700;
+        font-size: 12px;
+        cursor: pointer;
+    }
       

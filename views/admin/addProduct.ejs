@@ -101,7 +101,7 @@
       <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
     </ul>
   </nav>
-  <!-- Form Container -->
+ 
   <div class="form-container">
     <form id="product-form" action="/admin/products/addProduct" method="POST" enctype="multipart/form-data">
       <div class="form-group">
@@ -148,13 +148,13 @@
       <button type="button" class="cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
     </form>
   </div>
-  <!-- Crop Container -->
+
   <div class="crop-container" id="crop-container">
     <img id="crop-image" src="" alt="Crop Image">
     <button id="crop-btn">Crop</button>
     <button id="cancel-crop-btn">Cancel</button>
   </div>
-  <!-- Cropper.js Script -->
+ 
   <script src="https://unpkg.com/cropperjs"></script>
   <script>
   let cropper;
@@ -187,46 +187,41 @@
   function validateForm() {
     let isValid = true;
   
-    // Clear previous error messages
+  
     document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
   
-    // Validate Product Name
     if (itemInput.value.length < 3) {
       itemErrorMessage.style.display = 'block';
       isValid = false;
     }
-  
-    // Validate Category
+
     if (categoryInput.value === "") {
       categoryErrorMessage.style.display = 'block';
       isValid = false;
     }
   
-    // Validate Price
     if (priceInput.value <= 0) {
       priceErrorMessage.style.display = 'block';
       isValid = false;
     }
   
-    // Validate Description
     if (descriptionInput.value.length < 10) {
       descriptionErrorMessage.style.display = 'block';
       isValid = false;
     }
-  
-    // Validate Stock
+
     if (stockInput.value < 0) {
       stockErrorMessage.style.display = 'block';
       isValid = false;
     }
   
-    // Validate Discount
+
     if (discountInput.value < 0 || discountInput.value > 100) {
       discountErrorMessage.style.display = 'block';
       isValid = false;
     }
   
-    // Validate Images
+
     if (previewContainer.children.length === 0) {
       imageErrorMessage.style.display = 'block';
       isValid = false;

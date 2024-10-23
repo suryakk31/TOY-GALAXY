@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP Verification</title>
     <link rel="stylesheet" href="/css/user/otp.css">
-   
 </head>
 <body>
     <div class="container">
@@ -22,44 +21,58 @@
                 <div class="error-message"><%= errorMessage %></div>
             <% } %>
             
-            <button type="submit">Verify OTP</button>
+            <div class="button-container">
+                <button type="submit" id="verifyButton">Verify OTP</button>
+                <button type="button" id="resendBtn" style="display: none;">Resend OTP</button>
+            </div>
         </form>
-        <p id="timer">Resend OTP in <span id="time">60</span> seconds</p>
-        <button id="resendBtn" disabled>Resend OTP</button>
+        <p id="timerDisplay">Time remaining: <span id="time">60</span> seconds</p>
+       
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            // Generate a unique session ID for this OTP verification attempt
-            const sessionId = Date.now().toString();
-            localStorage.setItem('otpSessionId', sessionId);
-            
-            let timer = 60; // Always start from 60 seconds
-            let interval;
-            const timerSpan = document.getElementById('time');
+            const isNewSignup = <%= typeof isNewSignup !== 'undefined' ? isNewSignup : false %>;
+            let timer;
+            const verifyButton = document.getElementById('verifyButton');
             const resendBtn = document.getElementById('resendBtn');
+            const timerSpan = document.getElementById('time');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const errorMessageDiv = document.getElementById('errorMessage');
+           
+
+            if (isNewSignup) {
+                timer = 60;
+                sessionStorage.setItem('otpTimer', timer);
+                localStorage.removeItem('otpTimer');
+            } else {
+                timer = parseInt(sessionStorage.getItem('otpTimer')) || parseInt(localStorage.getItem('otpTimer')) || 60;
+            }
+
+            let interval;
             
             const startTimer = () => {
                 if (interval) clearInterval(interval);
                 
-                // Store the start time of the timer
-                localStorage.setItem('otpTimerStart', Date.now().toString());
-                
+                timerSpan.textContent = timer;
                 interval = setInterval(() => {
                     timer--;
                     timerSpan.textContent = timer;
+                    sessionStorage.setItem('otpTimer', timer);
+                    localStorage.setItem('otpTimer', timer);
                     
                     if (timer <= 0) {
                         clearInterval(interval);
-                        resendBtn.disabled = false;
-                        // Clear all timer-related data
-                        localStorage.removeItem('otpTimerStart');
-                        localStorage.removeItem('otpSessionId');
+                        verifyButton.style.display = 'none';
+                        resendBtn.style.display = 'block';
+                        timerDisplay.style.display = 'none';
+                        sessionStorage.removeItem('otpTimer');
+                        localStorage.removeItem('otpTimer');
                     }
                 }, 1000);
             };
     
-            startTimer(); // Initialize the timer when the page loads
+            startTimer();
             
             resendBtn.addEventListener('click', async () => {
                 try {
@@ -73,12 +86,11 @@
                     if (result.success) {
                         timer = 60;
                         timerSpan.textContent = timer;
-                        resendBtn.disabled = true;
-                        
-                        // Generate a new session ID for this resend attempt
-                        const newSessionId = Date.now().toString();
-                        localStorage.setItem('otpSessionId', newSessionId);
-                        
+                        verifyButton.style.display = 'block';
+                        resendBtn.style.display = 'none';
+                        timerDisplay.style.display = 'block';
+                        sessionStorage.setItem('otpTimer', timer);
+                        localStorage.setItem('otpTimer', timer);
                         startTimer();
                     } else {
                         console.error('Failed to resend OTP:', result.message);

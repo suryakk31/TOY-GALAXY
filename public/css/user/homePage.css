@@ -1,14 +1,14 @@
 :root {
-  --primary-color: #FF6EFF;  /* Bright pink */
-  --secondary-color: #00FFFF;  /* Cyan */
+  --primary-color: #8A2BE2;  /* Electric Purple */
+  --secondary-color: #FFD700;  /* Bright Yellow */
   --text-color: #FFFFFF;  /* White */
-  --light-gray: #1A1A4A;  /* Slightly lighter space blue */
-  --border-color: #4A4A7A;  /* Medium space blue */
+  --light-gray: #87CEEB;  /* Sky Blue */
+  --border-color: #8A2BE2;  /* Electric Purple */
   --heart-color: #FF4444;  /* Keep red for heart */
   --success-green: #00FF00;  /* Bright green */
   --warning-orange: #FFA500;  /* Orange */
   --danger-red: #FF0000;  /* Red */
-  --background-color: #0A0A2A;  /* Deep space blue */
+  --background-color: #FFFFFF;  /* White */
 }
 
 /* ... (previous CSS remains the same) ... */
@@ -72,7 +72,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--light-gray);
-  color: var(--text-color);
+  color: var(--primary-color);
 }
 
 .product-info {
@@ -85,7 +85,7 @@
 }
 
 .product-title a {
-  color: var(--text-color);
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -107,8 +107,8 @@
 }
 
 .discount-tag {
-  background-color: var(--primary-color);
-  color: var(--background-color);
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -116,7 +116,7 @@
 
 .product-description {
   font-size: 0.9rem;
-  color: var(--text-color);
+  color: var(--primary-color);
   margin-bottom: 0.5rem;
 }
 

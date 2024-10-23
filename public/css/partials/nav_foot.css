@@ -4,10 +4,10 @@
 }
 
 @keyframes color-shift {
-    0% { color: #FF6EFF; }
-    33% { color: #00FFFF; }
-    66% { color: #FFFF00; }
-    100% { color: #FF6EFF; }
+    0% { color: #8A2BE2; }
+    33% { color: #FFD700; }
+    66% { color: #87CEEB; }
+    100% { color: #8A2BE2; }
 }
 
 * {
@@ -18,8 +18,8 @@
 
 body {
     font-family: 'Roboto', 'Comic Sans MS', sans-serif;
-    background-color: #0A0A2A;  /* Deep space blue */
-    color: #FFFFFF;
+    background-color: #FFFFFF;  /* White background */
+    color: #8A2BE2;  /* Electric Purple text */
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -28,14 +28,14 @@ body {
 }
 
 .navbar {
-    background-color: #1A1A4A;  /* Slightly lighter space blue */
+    background-color: #8A2BE2;  /* Electric Purple navbar */
     padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    border-bottom: 2px solid #FF6EFF;  /* Bright pink */
-    box-shadow: 0 2px 5px rgba(255, 110, 255, 0.3);
+    border-bottom: 2px solid #FFD700;  /* Bright Yellow border */
+    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.3);
     position: fixed;
     top: 0;
     left: 0;
@@ -48,15 +48,15 @@ body {
     align-items: center;
     font-size: 2rem;
     font-weight: bold;
-    color: #00FFFF;  /* Yellow for "Galaxy" */
-    text-shadow: 2px 2px 4px rgba(255, 110, 255, 0.5);
+    color: #FFD700;  /* Bright Yellow for logo */
+    text-shadow: 2px 2px 4px rgba(135, 206, 235, 0.5);
 }
 
 .logo .rotating-planet {
     font-size: 2.5rem;
     margin-right: 0.5rem;
     animation: rotate 10s linear infinite;
-    color: #00FFFF;  /* Cyan for the planet */
+    color: #87CEEB;  /* Sky Blue for the planet */
 }
 
 .logo i {
@@ -79,7 +79,7 @@ body {
     background-color: #FFFFFF;
     border-radius: 20px;
     overflow: hidden;
-    border: 2px solid #FF6EFF;  /* Bright pink */
+    border: 2px solid #FFD700;  /* Bright Yellow border */
 }
 
 .search-container input[type="text"] {
@@ -89,12 +89,12 @@ body {
     outline: none;
     font-size: 0.9rem;
     background-color: #FFFFFF;
-    color: #0A0A2A;  /* Deep space blue */
+    color: #8A2BE2;  /* Electric Purple text */
 }
 
 .search-container button {
-    background-color: #FF6EFF;  /* Bright pink */
-    color: #FFFFFF;
+    background-color: #FFD700;  /* Bright Yellow button */
+    color: #8A2BE2;  /* Electric Purple text */
     border: none;
     padding: 8px 12px;
     cursor: pointer;
@@ -102,8 +102,8 @@ body {
 }
 
 .search-container button:hover {
-    background-color: #00FFFF;  /* Cyan */
-    color: #0A0A2A;  /* Deep space blue */
+    background-color: #87CEEB;  /* Sky Blue on hover */
+    color: #FFFFFF;  /* White text on hover */
 }
 
 .nav-menu {
@@ -128,28 +128,26 @@ body {
 }
 
 .nav-link:hover {
-    color: #00FFFF;  /* Cyan */
+    color: #FFD700;  /* Bright Yellow on hover */
     transform: scale(1.05);
 }
 
 .nav-link i {
     margin-right: 0.3rem;
     font-size: 1.2rem;
-    background-color: #FF6EFF;  /* Bright pink */
-    color: #FFFFFF;
+    background-color: #FFD700;  /* Bright Yellow background */
+    color: #8A2BE2;  /* Electric Purple icon color */
     padding: 0.2rem;
     border-radius: 50%;
     transition: all 0.3s ease;
 }
 
 .nav-link:hover i {
-    background-color: #00FFFF;  /* Cyan */
-    color: #0A0A2A;  /* Deep space blue */
+    background-color: #87CEEB;  /* Sky Blue on hover */
+    color: #FFFFFF;  /* White icon on hover */
     transform: scale(1.2);
     transition: transform 0.3s ease;
 }
-
-
 
 .bx {
     display: inline-block;
@@ -283,20 +281,20 @@ body {
 footer {
     text-align: center;
     padding: 20px 0;
-    background-color: #1A1A4A;  /* Slightly lighter space blue */
+    background-color: #8A2BE2;  /* Electric Purple footer */
     margin-top: 200px;
-    border-top: 2px solid #FF6EFF;  /* Bright pink */
+    border-top: 2px solid #FFD700;  /* Bright Yellow border */
 }
 
 footer p {
-    color: #00FFFF;  /* Cyan */
+    color: #FFFFFF;  /* White text */
     font-size: 1rem;
-    text-shadow: 1px 1px 2px rgba(255, 110, 255, 0.5);
+    text-shadow: 1px 1px 2px rgba(255, 215, 0, 0.5);
 }
 
 @keyframes glow {
-    0%, 100% { text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF; }
-    50% { text-shadow: 0 0 10px #FF6EFF, 0 0 20px #FF6EFF, 0 0 30px #FF6EFF; }
+    0%, 100% { text-shadow: 0 0 5px #87CEEB, 0 0 10px #87CEEB, 0 0 15px #87CEEB; }
+    50% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700; }
 }
 
 .logo .rotating-planet {

@@ -22,7 +22,7 @@
           <div class="dropdown-content">
               <ul class="dropdown-menu">
                 <% categories.forEach(category => { %>
-                  <li><a href="/category/<%= category._id %>"><%= category.name %></a></li>
+                  <li><a href="/shop?category=<%= category._id %>"><%= category.name %></a></li
                 <% }) %>
               </ul>
           </div>

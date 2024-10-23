@@ -14,6 +14,8 @@ exports.getLandingPage = async (req, res) => {
             return res.redirect('/auth/homepage');
         }
 
+     
+
        
         const categories = await Category.find();
         const products = await Product.find({ isBlocked: false });
@@ -32,13 +34,22 @@ exports.getHomepage = async (req, res) => {
         const isLoggedIn = req.session.email ? true : false;
         let userDatabase = null;
 
+        
+
         if (isLoggedIn) {
             userDatabase = await User.findOne({ email: req.session.email });
+
+            if (!userDatabase) {
+                req.session.destroy();
+                return res.render('auth/login', { errorMessage: 'User not found. Please log in again.' });
+            }
 
             if (userDatabase.isBlocked) {
                 req.session.destroy(); 
                 return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
             }
+            
+        
             
         }
 

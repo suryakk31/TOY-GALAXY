@@ -36,10 +36,10 @@
     <div class="product-info">
       <h1><%= product.name %></h1>
       <div class="price-info">
-        <!-- Display original price with strikethrough -->
+       
         <span class="original-price" style="text-decoration: line-through;">₹<%= product.price %></span>
         
-        <!-- Calculate and display discounted price -->
+   
         <span class="discounted-price">₹<%= (product.price - (product.price * product.discount / 100)).toFixed(2) %></span>
         
         <span class="free-delivery"><p>(<%= product.discount %>% off)</p></span>

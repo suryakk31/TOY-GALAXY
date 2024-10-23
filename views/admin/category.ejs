@@ -84,10 +84,10 @@
                   <% if (!category.isBlocked) { %>
                     <a href="/admin/category/<%= category._id %>/edit"><i class='bx bx-edit edit-icon'></i></a>
                   <% } else { %>
-                    <!-- Optionally, you can render a disabled edit icon or a message -->
+
                     <i class='bx bx-edit edit-icon' style="color: #d30606; "></i>
                   <% } %>
-                  <!-- Toggle Icon -->
+                 
                   <form action="/admin/category/<%= category._id %>/toggle" method="POST" class="toggle-form">
                     <i class='bx <%= category.isBlocked ? "bx-lock-alt blocked-icon" : "bx-lock-open-alt unblocked-icon" %> toggle-icon' data-id="<%= category._id %>" data-isBlocked="<%= category.isBlocked %>"></i>
                   </form>
@@ -97,7 +97,7 @@
             <% }) %>
           </tbody>
         </table>
-         <!-- Pagination Links -->
+
          <div class="pagination">
           <% if (current > 1) { %>
             <a href="?page=<%= current - 1 %>" class="prev"> Previous</a>
@@ -112,10 +112,10 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Show SweetAlert confirmation for toggling block/unblock
+  
       document.querySelectorAll('.toggle-icon').forEach(icon => {
         icon.addEventListener('click', function(event) {
-          event.preventDefault(); // Prevent form submission
+          event.preventDefault(); 
           var form = this.parentElement;
           var isBlocked = this.getAttribute('data-isBlocked') === 'true';
           var action = isBlocked ? 'unblock' : 'block';
@@ -129,7 +129,7 @@
             confirmButtonText: `Yes, ${action} it!`
           }).then((result) => {
             if (result.isConfirmed) {
-              form.submit(); // Submit form if confirmed
+              form.submit(); 
             }
           });
         });

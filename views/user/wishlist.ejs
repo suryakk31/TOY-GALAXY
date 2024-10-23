@@ -88,11 +88,10 @@
             });
             const data = await response.json();
             if (data.removed) {
-              // Remove the item from the DOM
               const wishlistCard = this.closest('.wishlist-card');
               wishlistCard.remove();
               
-              // If the wishlist is now empty, show the empty message
+           
               const wishlistContainer = document.querySelector('.wishlist-container');
               if (wishlistContainer.children.length === 0) {
                 const emptyMessage = document.createElement('p');
@@ -101,7 +100,7 @@
                 wishlistContainer.appendChild(emptyMessage);
               }
   
-              // Optional: Show a success message
+         
               Swal.fire({
                 title: 'Removed!',
                 text: 'Item removed from wishlist',
@@ -113,7 +112,7 @@
             }
           } catch (error) {
             console.error('Error removing from wishlist:', error);
-            // Show an error message
+         
             Swal.fire({
               title: 'Error!',
               text: 'Failed to remove item from wishlist',

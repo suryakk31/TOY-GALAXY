@@ -66,16 +66,16 @@
         </div>
 
         <% if (typeof errorMessage !== 'undefined') { %>
-            <div class="error-message"><%= errorMessage %></div>
+            <div id = "errorMessage" class="error-message"><%= errorMessage %></div>
         <% } %>
     </div>
 
     <script>
-        // JavaScript for validation (unchanged)
+   
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             let valid = true;
 
-            // Email validation
+          
             const email = document.getElementById('email').value;
             const emailError = document.getElementById('emailError');
             if (!validateEmail(email)) {
@@ -85,7 +85,6 @@
                 emailError.textContent = '';
             }
 
-            // Password validation
             const password = document.getElementById('password').value;
             const passwordError = document.getElementById('passwordError');
             if (password.length < 6) {
@@ -96,7 +95,7 @@
             }
 
             if (!valid) {
-                event.preventDefault(); // Prevent form submission if validation fails
+                event.preventDefault(); 
             }
         });
 
@@ -105,15 +104,15 @@
             return re.test(String(email).toLowerCase());
         }
 
-        // JavaScript for toggling password visibility (unchanged)
+       
         const passwordField = document.getElementById('password');
         const togglePassword = document.querySelector('.toggle-password');
 
         passwordField.addEventListener('input', function() {
             if (passwordField.value.length > 0) {
-                togglePassword.style.display = 'block'; // Show the toggle icon
+                togglePassword.style.display = 'block'; 
             } else {
-                togglePassword.style.display = 'none'; // Hide the toggle icon
+                togglePassword.style.display = 'none'; 
             }
         });
 
@@ -130,6 +129,19 @@
                 this.textContent = '👁️';
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                setTimeout(function() {
+                    errorMessage.style.opacity = '0';
+                    setTimeout(function() {
+                        errorMessage.style.display = 'none';
+                    }, 500); 
+                }, 5000);
+            }
+        });
+
     </script>
 </body>
 </html>

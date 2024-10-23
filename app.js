@@ -17,7 +17,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true })); 
 
-// Database connection
+
 mongoose.connect('mongodb://localhost/Kids_Kastle', {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -41,6 +41,8 @@ app.use(session({
     saveUninitialized: false,
     cookie:{secure:false}
 }));
+
+
 
 
 app.use(passport.initialize());

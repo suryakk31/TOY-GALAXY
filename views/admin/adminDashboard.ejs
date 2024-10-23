@@ -70,6 +70,7 @@
       <div class="chart">
         <h3>Sales Chart</h3>
         <select id="salesChartFilter">
+          <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
           <option value="monthly" selected>Monthly</option>
           <option value="yearly">Yearly</option>
@@ -176,6 +177,7 @@
       }
 
       const data = {
+        daily: <%- JSON.stringify(dailySales) %>,
         weekly: <%- JSON.stringify(weeklySales) %>,
         monthly: <%- JSON.stringify(monthlySales) %>,
         yearly: <%- JSON.stringify(yearlySales) %>

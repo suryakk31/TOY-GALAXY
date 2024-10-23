@@ -321,17 +321,17 @@ button:hover {
 
 
 <script>
-  // Function to open modal
+
   function openModal(itemId) {
     document.getElementById('orderDetailsModal-' + itemId).style.display = 'flex';
   }
   
-  // Function to close modal
+
   function closeModal(itemId) {
     document.getElementById('orderDetailsModal-' + itemId).style.display = 'none';
   }
   
-  // Close the modal when clicking outside of the modal content
+
   window.onclick = function(event) {
     const modals = document.querySelectorAll('.modal');
     modals.forEach(modal => {

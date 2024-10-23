@@ -142,7 +142,7 @@ function addAmountToWallet() {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ amount: amount * 100 }) // Razorpay expects amount in paise
+    body: JSON.stringify({ amount: amount * 100 }) 
   })
   .then(response => response.json())
   .then(order => {
@@ -154,7 +154,7 @@ function addAmountToWallet() {
       "description": "Add money to wallet",
       "order_id": order.id,
       "handler": function (response) {
-        // Send the payment details to your server to validate and update the wallet
+  
         fetch('/update-wallet', {
           method: 'POST',
           headers: {
@@ -172,7 +172,7 @@ function addAmountToWallet() {
           if (data.success) {
             Swal.fire('Success', 'Amount added to wallet successfully', 'success')
             .then(() => {
-              location.reload(); // Reload the page to show updated balance
+              location.reload();
             });
           } else {
             Swal.fire('Error', 'Failed to add amount to wallet', 'error');

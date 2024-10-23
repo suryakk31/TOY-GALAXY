@@ -86,7 +86,7 @@
     </div>
 
     <script>
-        // Restrict phone input to digits only
+ 
         document.getElementById('phone').addEventListener('input', function(event) {
             const phone = event.target;
             phone.value = phone.value.replace(/\D/g, '');
@@ -95,7 +95,6 @@
             }
         });
 
-        // Form validation
         document.getElementById('signupForm').addEventListener('submit', function(event) {
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
@@ -114,7 +113,7 @@
 
             let isValid = true;
 
-            // Reset previous error messages
+           
             firstNameError.textContent = '';
             lastNameError.textContent = '';
             emailError.textContent = '';
@@ -124,7 +123,7 @@
             errorMessage.textContent = '';
             errorMessage.style.display = 'none';
 
-            // Validate first name
+      
             if (firstName === '') {
                 firstNameError.textContent = 'First name is required';
                 isValid = false;
@@ -133,7 +132,7 @@
                 isValid = false;
             }
 
-            // Validate last name
+          
             if (lastName === '') {
                 lastNameError.textContent = 'Last name is required';
                 isValid = false;
@@ -142,7 +141,6 @@
                 isValid = false;
             }
 
-            // Validate email
             if (email === '') {
                 emailError.textContent = 'Email is required';
                 isValid = false;
@@ -151,7 +149,7 @@
                 isValid = false;
             }
 
-            // Validate phone number
+       
             if (phone === '') {
                 phoneError.textContent = 'Phone number is required';
                 isValid = false;
@@ -160,7 +158,6 @@
                 isValid = false;
             }
 
-            // Validate password
             if (password === '') {
                 passwordError.textContent = 'Password is required';
                 isValid = false;
@@ -169,7 +166,7 @@
                 isValid = false;
             }
 
-            // Validate confirm password
+           
             if (confirmPassword === '') {
                 confirmPasswordError.textContent = 'Confirm password is required';
                 isValid = false;
@@ -178,11 +175,11 @@
                 isValid = false;
             }
 
-            // Show overall error message if there are validation issues
+            
             if (!isValid) {
                 errorMessage.textContent = 'Please correct the errors above.';
                 errorMessage.style.display = 'block';
-                event.preventDefault(); // Prevent form submission if validation fails
+                event.preventDefault(); 
             }
             if (isValid) {
         const formData = new FormData(this);
@@ -190,7 +187,7 @@
     }
         });
 
-        // JavaScript for toggling password visibility
+      
         const passwordField = document.getElementById('password');
         const confirmPasswordField = document.getElementById('confirmPassword');
         const togglePasswordIcons = document.querySelectorAll('.toggle-password');
@@ -212,18 +209,18 @@
         passwordField.addEventListener('input', function() {
             const togglePassword = passwordField.nextElementSibling;
             if (passwordField.value.length > 0) {
-                togglePassword.style.display = 'block'; // Show the toggle icon
+                togglePassword.style.display = 'block';
             } else {
-                togglePassword.style.display = 'none'; // Hide the toggle icon
+                togglePassword.style.display = 'none'; 
             }
         });
 
         confirmPasswordField.addEventListener('input', function() {
             const togglePassword = confirmPasswordField.nextElementSibling;
             if (confirmPasswordField.value.length > 0) {
-                togglePassword.style.display = 'block'; // Show the toggle icon
+                togglePassword.style.display = 'block'; 
             } else {
-                togglePassword.style.display = 'none'; // Hide the toggle icon
+                togglePassword.style.display = 'none'; 
             }
         });
 

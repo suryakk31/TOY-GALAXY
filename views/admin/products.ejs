@@ -73,11 +73,11 @@
             <td><%= product.discount %></td>
             <td>
               <div class="action-icons">
-                <!-- Edit Icon Link -->
+               
                 <a href="/admin/products/edit/<%= product._id %>">
                   <i class="bx bx-edit edit-icon"></i>
                 </a>
-                <!-- Toggle Icon -->
+            
                 <i class='bx <%= product.isBlocked ? "bx-lock-alt blocked-icon" : "bx-lock-open-alt unblocked-icon" %> toggle-icon' data-id="<%= product._id %>" data-isBlocked="<%= product.isBlocked %>"></i>
                 <form action="/admin/products/<%= product._id %>/toggle" method="POST" class="toggle-form" style="display: none;"></form>
               </div>
@@ -88,7 +88,7 @@
     </table>
   </div>
   <script>
-    // Toggle product block/unblock
+   
     document.querySelectorAll('.toggle-icon').forEach(icon => {
       icon.addEventListener('click', function(event) {
         event.preventDefault();

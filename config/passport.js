@@ -1,8 +1,8 @@
-// config/passport.js
-
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/user')
+const User = require('../models/user');
+const Wallet = require('../models/wallet')
+const Wishlist = require('../models/wishlist')
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -19,24 +19,50 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "http://localhost:3900/auth/google/callback",
     passReqToCallback: true 
-}, (req,token, tokenSecret, profile, done) => {
-    User.findOne({ googleId: profile.id })
-    .then( (user) => {
+}, async (req, token, tokenSecret, profile, done) => {
+    try {
+      
+        let user = await User.findOne({ googleId: profile.id });
+        
         if (user) {
             return done(null, user);
-            
-        } else {
-           
-            const newUser = new User({
-                googleId: profile.id,
-                email: profile._json.email,
-                firstName: profile.displayName,
-              
-                image: profile.photos[0].value
-            });
-            newUser.save().then((user) => {
-                return done(null, newUser);
-            });
         }
-    });
+        
+       
+        user = await User.findOne({ email: profile._json.email });
+        
+        if (user) {
+        
+            return done(null, false, { message: 'An account with this email already exists. Please log in with your email and password.' });
+        }
+        
+      
+        const newUser = new User({
+            googleId: profile.id,
+            email: profile._json.email,
+            firstName: profile.displayName,
+            image: profile.photos[0].value
+        });
+
+        await newUser.generateReferralCode();
+
+        const newUserWallet = new Wallet({
+            userId: newUser._id,
+            balance: 0,
+            transactions: []
+        });
+
+        const newUserWishlist = new Wishlist({
+            userId: newUser._id,
+            items: []
+        });
+        await Promise.all([
+            newUser.save(),
+            newUserWallet.save(),
+            newUserWishlist.save()
+        ]);
+        return done(null, newUser);
+    } catch (error) {
+        return done(error);
+    }
 }));

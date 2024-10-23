@@ -32,6 +32,7 @@ h2 {
 p {
     margin: 8px 0;
     font-size: 14px;
+    color: black;
 }
 
 strong {
@@ -345,8 +346,7 @@ strong {
 <% } %>
 
 
-<!-- Modal Structure -->
-<!-- Cancel Order Modal -->
+
 <div id="cancelOrderModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -375,7 +375,7 @@ strong {
 
 
 
-<!-- Return Order Modal -->
+
 <div id="returnModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background-color:rgba(0, 0, 0, 0.7); justify-content:center; align-items:center; z-index: 1000;">
     <div style="background:white; padding:20px; border-radius:8px; width:400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
         <h4 style="margin: 0 0 15px; font-family: Arial, sans-serif;">Return Order</h4>
@@ -398,7 +398,7 @@ strong {
  
 
 <script>
-  // Get modal element and buttons
+
   const modal = document.getElementById('cancelOrderModal');
 const confirmCancelBtn = document.getElementById('confirmCancel');
 const closeModalBtn = document.querySelector('.close');
@@ -406,7 +406,7 @@ const cancelModalBtn = document.getElementById('cancelModal');
 const feedbackMessage = document.getElementById('feedbackMessage');
 const feedbackText = document.getElementById('feedbackText');
 
-// Open the modal when clicking the Cancel button
+
 document.querySelectorAll('.cancel-button').forEach(button => {
     button.addEventListener('click', function() {
         const itemId = this.getAttribute('data-item-id');
@@ -417,7 +417,7 @@ document.querySelectorAll('.cancel-button').forEach(button => {
     });
 });
 
-// When the user clicks 'Yes, Cancel', proceed with the cancellation
+
 function showFeedbackMessage(message, isError = false) {
     feedbackText.textContent = message;
     if (isError) {
@@ -426,9 +426,9 @@ function showFeedbackMessage(message, isError = false) {
         feedbackMessage.classList.remove('error');
     }
 
-    feedbackMessage.style.display = 'block'; // Show the feedback message
+    feedbackMessage.style.display = 'block'; 
 
-    // Hide after 3 seconds
+
     setTimeout(() => {
         feedbackMessage.style.display = 'none';
     }, 3000);
@@ -534,7 +534,7 @@ function openModal(itemId) {
         });
     });
     
-    // Handle return order submission
+
     confirmReturnBtn.addEventListener('click', async function() {
         const itemId = this.getAttribute('data-item-id');
         const productId = this.getAttribute('data-product-id');
@@ -583,12 +583,12 @@ function openModal(itemId) {
         returnModal.style.display = 'none';
     });
     
-    // Close modal when cancel button is clicked
+
     cancelReturnBtn.addEventListener('click', function() {
         returnModal.style.display = 'none';
     });
     
-    // Close modal when clicking outside
+
     window.addEventListener('click', function(event) {
         if (event.target === returnModal) {
             returnModal.style.display = 'none';
@@ -596,8 +596,7 @@ function openModal(itemId) {
     });
     
     function showFeedbackMessage(message, isError = false) {
-        // Implement this function to show feedback to the user
-        // You can use a toast notification or update a specific element on the page
+  
         console.log(message);
     }
     </script>
@@ -617,48 +616,47 @@ function openModal(itemId) {
         const orderId = button.getAttribute('data-item-id');
         const totalAmount = button.getAttribute('data-total-price');
     
-        // Fetch to create a new Razorpay order
+
         fetch('/create-razorpay-order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                amount: totalAmount * 100, // Razorpay expects amount in paise (1 INR = 100 paise)
+                amount: totalAmount * 100,
                 orderId: orderId
             })
         })
         .then(response => response.json())
         .then(order => {
             var options = {
-                "key": order.key_id, // Razorpay key ID
-                "amount": order.amount, // Payment amount
+                "key": order.key_id, 
+                "amount": order.amount,
                 "currency": "INR",
                 "name": "Kids Kastle",
                 "description": "Toy Purchase - Retry Payment",
-                "order_id": order.id, // Razorpay order ID
+                "order_id": order.id, 
                 "handler": function (response) {
-                    // This function is called on successful payment
+                  
                     updatePaymentStatus(orderId, response.razorpay_payment_id, 'completed');
                 },
                 "prefill": {
-                    "name": "<%= userDatabase.firstName %> <%= userDatabase.lastName %>", // Prefill user's name
-                    "email": "<%= userDatabase.email %>", // Prefill user's email
-                    "contact": "<%= userDatabase.phoneNumber %>" // Prefill user's contact
+                    "name": "<%= userDatabase.firstName %> <%= userDatabase.lastName %>", 
+                    "email": "<%= userDatabase.email %>", 
+                    "contact": "<%= userDatabase.phoneNumber %>" 
                 },
                 "theme": {
-                    "color": "#FF6600" // Razorpay theme color
+                    "color": "#FF6600" 
                 }
             };
-    
-            // Open the Razorpay payment window
+   
             var rzp = new Razorpay(options);
             rzp.open();
     
-            // Handle payment failure
+          
             rzp.on('payment.failed', function(response) {
                 console.error(response.error);
-                showPaymentFailedModal(); // Show payment failure modal (if exists)
+                showPaymentFailedModal(); 
             });
         })
         .catch(error => {
@@ -667,7 +665,7 @@ function openModal(itemId) {
         });
     }
     
-    // Function to update the order payment status after a successful payment
+   
     function updatePaymentStatus(orderId, paymentId, status) {
         fetch(`/update-payment-status/${orderId}`, {
             method: 'POST',
@@ -675,15 +673,15 @@ function openModal(itemId) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                paymentId: paymentId, // Razorpay payment ID
-                paymentStatus: status // Payment status (e.g., 'completed')
+                paymentId: paymentId, 
+                paymentStatus: status 
             })
         })
         .then(response => response.json())
         .then(result => {
             if (result.success) {
                 alert('Payment completed successfully!');
-                location.reload(); // Reload the page after successful payment
+                location.reload(); 
             } else {
                 alert('There was an issue updating your payment. Please contact support.');
             }

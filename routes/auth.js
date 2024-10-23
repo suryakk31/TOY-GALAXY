@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const passport = require('passport')
 const User = require('../models/user')
+const userAuth = require('../middleware/userMiddleware')
 
 
 
@@ -13,23 +14,27 @@ require('../config/passport')
 // Google OAuth route
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// Google OAuth callback route
 router.get('/google/callback', 
-    passport.authenticate('google', { failureRedirect: '/auth/login' }),
+    passport.authenticate('google', { 
+        failureRedirect: '/auth/login', 
+        failureMessage: true 
+    }),
     async (req, res) => {
         try {
             const user = await User.findOne({ email: req.user.email });
 
             if (user.isBlocked) {
-                req.session.destroy(); 
-                return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
+                req.logout((err) => {
+                    if (err) {
+                        console.error('Error logging out:', err);
+                    }
+                    req.session.destroy();
+                    return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
+                });
+            } else {
+                req.session.email = req.user.email;
+                res.redirect('/auth/homepage');
             }
-
-           
-            req.session.email = req.user.email;
-           
-           
-            res.redirect('/auth/homepage');
         } catch (error) {
             console.error('Error during authentication callback:', error);
             res.status(500).send('Internal Server Error');
@@ -38,24 +43,27 @@ router.get('/google/callback',
 );
 
 
-//Get Login page
+router.get('/login', (req, res) => {
+    let error = null;
+    if (req.session.messages && req.session.messages.length > 0) {
+        error = req.session.messages[0];
+        req.session.messages = [];
+    }
+    authController.getLoginPage(req, res, { error });
+});
 
-router.get('/login', authController.getLoginPage);
-
-// POST Login form
 router.post('/login', authController.postLogin);
 
-// GET Signup page
+
 router.get('/signup', authController.getSignupPage);
 
-// POST Signup form
 router.post('/signup', authController.postSignup);
 
-// OTP Verification page
-router.get('/verify-otp', authController.getVerifyOtpPage);
+
+router.get('/verify-otp',  authController.getVerifyOtpPage);
 
 // OTP Verification form
-router.post('/postverify-otp', authController.postVerifyOtp);
+router.post('/postverify-otp',authController.postVerifyOtp);
 
 
 
@@ -70,8 +78,6 @@ router.post('/reset-password', authController.postResetPassword);
 
 
 
-
-//Logout route
 
 router.get('/logout',authController.logout)
 

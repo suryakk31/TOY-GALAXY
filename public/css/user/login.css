@@ -1,15 +1,30 @@
 body {
     font-family: Arial, sans-serif;
-    background-image: url('/image/logos.jpg'); /* Add your dark background image */
-    background-size: cover;
-    background-position: center;
+    position: relative; /* Necessary for the pseudo-element */
+    margin: 0;
+    color: #ffffff;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
-    color: #ffffff;
 }
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/image/logos.jpg'); /* Add your dark background image */
+    background-size: cover;
+    background-position: center;
+    filter: brightness(50%);
+    z-index: -1; /* Ensure it sits behind the content */
+}
+
+
+
 
 .login-container {
     background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
@@ -18,6 +33,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     text-align: center;
     width: 350px;
+    filter: brightness(100%);
 }
 
 .branding {

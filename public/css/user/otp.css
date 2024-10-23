@@ -48,8 +48,8 @@ h2 {
     color: #ffffff;
 }
 
-button {
-    width: 50%;
+#verifyButton {
+    width: 100%; /* Full width for a better mobile view */
     padding: 12px;
     background-color: #4ecdc4;
     color: #ffffff;
@@ -61,9 +61,10 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+#verifyButton:hover {
     background-color: #45b7a7;
 }
+
 
 #timer {
     margin-top: 15px;
@@ -71,8 +72,21 @@ button:hover {
 }
 
 #resendBtn {
-    margin-top: 15px;
+    width: 100%; /* Full width to match the verify button */
+    padding: 12px;
     background-color: #4ecdc4;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: block; /* Make sure it shows up */
+}
+
+#resendBtn:hover {
+    background-color: #45b7a7;
 }
 
 #resendBtn:disabled {

@@ -20,6 +20,16 @@ exports.getAdminDashboard = async (req, res) => {
         const totalProducts = await Product.countDocuments();
 
  
+        const thirtyDaysAgo = moment().subtract(29, 'days').startOf('day');
+        const dailySales = await Order.aggregate([
+            { $match: { orderDate: { $gte: thirtyDaysAgo.toDate() } } },
+            { $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
+                sales: { $sum: "$totalPrice" }
+            }},
+            { $sort: { _id: 1 } }
+        ]);
+
         const twelveWeeksAgo = moment().subtract(11, 'weeks').startOf('week');
         const weeklySales = await Order.aggregate([
             { $match: { orderDate: { $gte: twelveWeeksAgo.toDate() } } },
@@ -111,6 +121,7 @@ exports.getAdminDashboard = async (req, res) => {
             totalOrders,
             totalUsers,
             totalProducts,
+            dailySales,
             weeklySales,
             monthlySales,
             yearlySales,

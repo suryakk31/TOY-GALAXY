@@ -1,16 +1,16 @@
 /* Shop Page Styles */
 
 :root {
-  --primary-color: #FF6EFF; /* Bright pink */
-  --secondary-color: #00FFFF; /* Cyan */
-  --text-color: #FFFFFF;
-  --background-color: #0A0A2A; /* Deep space blue */
-  --light-background: #1A1A4A; /* Slightly lighter space blue */
-  --border-color: #FF6EFF;
-  --heart-color: #FF6EFF;
-  --success-green: #FFFF00; /* Yellow */
-  --warning-orange: #FF9933;
-  --danger-red: #FF3300;
+  --primary-color: #8A2BE2; /* Electric Purple */
+  --secondary-color: #FFD700; /* Bright Yellow */
+  --text-color: #8A2BE2; /* Electric Purple for text on white background */
+  --background-color: #FFFFFF; /* White */
+  --light-background: #87CEEB; /* Sky Blue */
+  --border-color: #8A2BE2; /* Electric Purple */
+  --heart-color: #8A2BE2; /* Electric Purple */
+  --success-green: #00FF00; /* Keeping the original bright green */
+  --warning-orange: #FFA500; /* Keeping the original orange */
+  --danger-red: #FF0000; /* Keeping the original red */
 }
 
 /* Layout */
@@ -38,32 +38,33 @@
   background: var(--light-background);
   padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(255, 110, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
   border: 2px solid var(--border-color);
 }
 
 .filter-heading {
   font-size: 1.2rem;
   margin-bottom: 1rem;
-  color: var(--secondary-color);
+  color: var(--primary-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  text-shadow: 1px 1px 2px rgba(255, 110, 255, 0.5);
+  text-shadow: 1px 1px 2px rgba(138, 43, 226, 0.5);
 }
 
 .clear-filters {
   height: 20px;
   border-radius: 5px;
   border: none;
-  background-color: var(--primary-color);
-  color: var(--background-color);
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .clear-filters:hover {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
   transform: scale(1.05);
 }
 
@@ -94,6 +95,11 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.filter-checkbox:checked + .filter-label .custom-checkbox {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
 .custom-checkbox {
   width: 18px;
   height: 18px;
@@ -106,15 +112,12 @@
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.filter-checkbox:checked + .filter-label .custom-checkbox {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-}
+
 
 .custom-checkbox::after {
   content: '\e92c';
   font-family: 'boxicons';
-  color: var(--background-color);
+  color: var(--primary-color);
   font-size: 12px;
   display: none;
 }
@@ -215,7 +218,7 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: var(--primary-color);
+  background: var(--secondary-color);
   border: none;
   border-radius: 50%;
   width: 2rem;
@@ -229,13 +232,15 @@
 
 .wishlist-btn:hover {
   transform: scale(1.1);
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
 }
 
+
 .wishlist-btn i {
-  color: var(--background-color);
+  color: var(--primary-color);
   font-size: 1.2rem;
 }
+
 
 .product-info {
   padding: 1rem;
@@ -245,13 +250,11 @@
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
-
 .product-title a {
-  color: var(--text-color);
+  color: var(--primary-color);
   text-decoration: none;
   transition: color 0.3s ease;
 }
-
 .product-title a:hover {
   color: var(--secondary-color);
 }
@@ -270,12 +273,12 @@
 
 .discounted-price {
   font-weight: bold;
-  color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .discount-tag {
-  background-color: var(--primary-color);
-  color: var(--background-color);
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -283,13 +286,14 @@
 
 .product-description {
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--text-color);
   margin-bottom: 0.5rem;
 }
 
 .stock-status {
   font-size: 0.9rem;
   font-weight: bold;
+  
 }
 
 .out-of-stock {
@@ -297,7 +301,7 @@
 }
 
 .low-stock {
-  color: var(--warning-orange);
+  color: var(--warning-black);
 }
 
 #loadingIndicator {
@@ -330,7 +334,7 @@
 @keyframes color-shift {
   0% { border-top-color: var(--primary-color); }
   33% { border-top-color: var(--secondary-color); }
-  66% { border-top-color: var(--success-green); }
+  66% { border-top-color: var(--light-background); }
   100% { border-top-color: var(--primary-color); }
 }
 

@@ -72,7 +72,7 @@
           <th>Price</th>
           <th>Payment Method</th>
           <th>Order Date</th>
-          <th>Order Status</th>
+          <th>OrderStatus</th>
         </tr>
       </thead>
       <tbody>
@@ -133,7 +133,7 @@
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
 
-      let queryString = `?page=1`; // Reset to first page when applying new filters
+      let queryString = `?page=1`; 
 
 if (dateFilter) {
   queryString += `&dateFilter=${dateFilter}`;
@@ -161,28 +161,29 @@ if (dateFilter) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // Add a custom heading at the top of the PDF
+  
   doc.setFontSize(18);
-  doc.text("Toy Galaxy Sales Report", 14, 20); // Title with some padding
+  doc.text("Toy Galaxy Sales Report", 14, 20);
 
-  // Move to the next line for the table
+
   doc.setFontSize(12);
-  doc.text("Generated on: " + new Date().toLocaleDateString(), 14, 28); // Add a generated date
+  doc.text("Generated on: " + new Date().toLocaleDateString(), 14, 28); 
 
-  // Get the table headers and data
+
   const table = document.getElementById('orderTable');
   const headers = [...table.querySelectorAll('thead th')].map(header => header.innerText);
 
   const data = [...table.querySelectorAll('tbody tr')].map(row => {
     return [...row.querySelectorAll('td')].map((cell, index) => {
-      // Check if the cell belongs to the price column (6th column with index 5)
+   
+  
       if (index === 5) {
-        const price = parseFloat(cell.innerText.replace(/[^0-9.-]+/g, '')); // Extract the number from the price
+        const price = parseFloat(cell.innerText.replace(/[^0-9.-]+/g, '')); 
         if (!isNaN(price)) {
-          // If it's a valid number, add the ₹ symbol before it
-          return `RS. ${price.toFixed(2)}`; // Add ₹ and format to 2 decimal places
+          
+          return `RS. ${price.toFixed(2)}`;
         } else {
-          // If invalid, return an empty string or keep as 'N/A'
+          
           return 'N/A';
         }
       }
@@ -190,11 +191,11 @@ if (dateFilter) {
     });
   });
 
-  // Generate the PDF with autoTable
+ 
   doc.autoTable({
     head: [headers],
     body: data,
-    startY: 32, // Start the table below the title
+    startY: 32, 
   });
 
   // Save the PDF
@@ -202,13 +203,13 @@ if (dateFilter) {
 }
 
     function downloadExcel() {
-      // Get the table data
+
       let table = document.getElementById("orderTable");
 
-      // Convert table to a worksheet
+     
       let workbook = XLSX.utils.table_to_book(table, { sheet: "Orders" });
 
-      // Export the file as an Excel file
+  
       XLSX.writeFile(workbook, "order_report.xlsx");
     }
   </script>
