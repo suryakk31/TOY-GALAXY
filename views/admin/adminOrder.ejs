@@ -182,11 +182,7 @@ button:hover {
       <li><a href="/admin/orders" class="active"><i class='bx bx-cart'></i> Orders</a></li>
       <li><a href="/admin/coupon"><i class='bx bx-gift'></i> coupon</a></li>
       <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
-      <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
-      <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
-      <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
-      <li><a href="/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
-      <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
+     
     </ul>
   </nav>
   <div class="order-table-container">
@@ -240,6 +236,36 @@ button:hover {
                     <select disabled>
                       <option value="cancelled" selected>Cancelled</option>
                     </select>
+                  <% } else if (item.orderStatus === 'Return Requested') { %>
+                    <p style="color: #ffc107; font-weight: bold;">Return Requested</p>
+                    <button onclick="openReturnModal('<%= item._id %>')" class="btn btn-warning">View Return Request</button>
+                    
+                    <div id="returnModal-<%= item._id %>" class="modal" style="display:none;">
+                      <div class="modal-content">
+                        <span class="close" onclick="closeReturnModal('<%= item._id %>')">&times;</span>
+                        <h2>Return Request Details</h2>
+                        
+                        <div class="return-details">
+                          <h4>Product: <%= item.productName %></h4>
+                          <p><strong>Return Reason:</strong> <%= item.reason || 'No reason provided' %></p>
+                          <p><strong>Request Date:</strong> <%= new Date(item.returnRequestDate).toLocaleDateString() %></p>
+                          <p><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %></p>
+                          <p><strong>Delivery Date:</strong> <%= new Date(item.deliveryDate).toLocaleDateString() %></p>
+                          
+                          <div class="return-actions">
+                            <form action="/admin/updateOrderStatus" method="POST">
+                              <input type="hidden" name="itemId" value="<%= item._id %>">
+                              <button type="submit" name="status" value="return_approved" class="btn btn-success">
+                                Approve Return
+                              </button>
+                              <button type="submit" name="status" value="return_rejected" class="btn btn-danger">
+                                Reject Return
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   <% } else { %>
                     <form action="/admin/updateOrderStatus" method="POST">
                       <input type="hidden" name="itemId" value="<%= item._id %>">
@@ -254,6 +280,7 @@ button:hover {
                     </form>
                   <% } %>
                   <hr>
+                  
                   <button onclick="openModal('<%= item._id %>')">View Details</button>
         
                   <div id="orderDetailsModal-<%= item._id %>" class="modal" style="display:none;">
@@ -330,6 +357,14 @@ button:hover {
   function closeModal(itemId) {
     document.getElementById('orderDetailsModal-' + itemId).style.display = 'none';
   }
+
+  function openReturnModal(itemId) {
+  document.getElementById(`returnModal-${itemId}`).style.display = "block";
+}
+
+function closeReturnModal(itemId) {
+  document.getElementById(`returnModal-${itemId}`).style.display = "none";
+}
   
 
   window.onclick = function(event) {
@@ -340,6 +375,19 @@ button:hover {
       }
     });
   }
+
+  function updateSelectColor(selectElement) {
+  const selectedOption = selectElement.options[selectElement.selectedIndex];
+  const statusClass = `status-${selectedOption.value}`;
+  selectElement.className = '';
+  selectElement.classList.add(statusClass);
+}
+
+document.querySelectorAll('select[name="status"]').forEach(select => {
+  updateSelectColor(select);
+  select.addEventListener('change', () => updateSelectColor(select));
+});
+
   </script>
 
 

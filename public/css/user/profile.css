@@ -9,11 +9,11 @@
 }
 
 .profile-header {
-    background-color: #FFFFFF;
-    color: #0A0A2A;
+    background-color: #8A2BE2;
+    color: #FFFFFF;
     padding: 20px;
     text-align: center;
-    border-bottom: 2px solid #FF6EFF;
+    border-bottom: 2px solid #FFD700;
 }
 
 .profile-header h2 {
@@ -24,7 +24,7 @@
 
 .profile-nav {
     background-color: #FFFFFF;
-    border-bottom: 2px solid #FF6EFF;
+    border-bottom: 2px solid #FFD700;
     overflow-x: hidden;
     position: relative;
 }
@@ -60,7 +60,7 @@
     bottom: 0;
     width: 0; /* Initially no underline */
     height: 2px; 
-    background-color: #00FFFF; 
+    background-color: #8A2BE2; 
     transition: width 0.3s ease; 
 }
 
@@ -88,24 +88,28 @@
 
 /* Edit Button */
 #edit-btn {
-    background-color: #00FFFF; /* Orange background */
-    color: rgb(1, 1, 1);
+    background-color: #FFD700; /* Orange background */
+    color: #8A2BE2; 
     height: 40px;
     width: 100px; /* White text */
 }
 
 #edit-btn:hover {
-    background-color: #00FFFF; /* Darker orange on hover */
+    background-color: #8A2BE2; /* Electric Purple */
+    border-color: #8A2BE2;
+    color: #FFFFFF;
 }
 
 /* Save Button */
 #save-btn {
-    background-color: #00FFFF; /* Green background */
-    color: rgb(8, 8, 8); /* White text */
+    background-color: #FFD700; /* Orange background */
+    color: #8A2BE2; 
 }
 
 #save-btn:hover {
-    background-color: #00FFFF; /* Darker green on hover */
+    background-color: #8A2BE2; /* Electric Purple */
+    border-color: #8A2BE2;
+    color: #FFFFFF;/* Darker green on hover */
 }
 
 footer {

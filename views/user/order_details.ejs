@@ -38,6 +38,7 @@ p {
 strong {
     font-weight: 600;
 }
+
 .delivery-status {
     margin: 20px 0;
 }
@@ -246,104 +247,111 @@ strong {
 <body>
     
     
-  <%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-
-
-  <% if (orders.length > 0) { %>
-    <% orders.forEach(order => { %>
+    <% if (orders.length > 0) { %>
+      <% orders.forEach(order => { %>
         
-            <section class="delivery-address">
-                <div class="section-header">
-                    <h2>Delivery Address</h2>
-                </div>
-                <% if (order.address) { %>
-                    <p><strong>Name:</strong> <%= order.address.name %></p>
-                    <p><strong>Address:</strong> <%= order.address.address %>, <%= order.address.locality %>, <%= order.address.city %> - <%= order.address.pincode %>, <%= order.address.state %></p>
-                    <p><strong>Phone Number:</strong> <%= order.address.phone %> </p>
-                   
-                <% } else { %>
-                    <p>Shipping address information is not available.</p>
-                <% } %>
-
-                <% if (order.paymentStatus === 'failed') { %>
-                    <button type="button" class="retry-payment-button" 
-                            data-item-id="<%= order._id %>" 
-                            data-product-id="<%= order.productId %>" 
-                            data-total-price="<%= order.totalPrice %>"
-                            style="padding: 10px; background-color: #FF6600; border: none; color: white; cursor: pointer;margin-left: 800px;border-radius: 5px;">
-                        Retry Payment
-                    </button>
-                <% } %>
-            </section>
-
-            <% order.items.forEach(item => { %>
-
-            <section class="order-details">
-                <h2>Order Details</h2>
-                <div class="product-details">
-                  <img src="<%= item.productImage[0] %>" alt="Product Image" class="product-image">
-                  <div class="product-info">
-                    <p><strong>Product Name:</strong> <%= item.productName %></p>
-                    <p><strong>Description:</strong> <%= item.productDescription %></p>
-                    <p><strong>Quantity:</strong> <%= item.quantity %></p>
-                    <p><strong>Total Price:</strong> ₹<%= order.totalPrice.toFixed(2) %></p>
-                    <p><strong>Order Status:</strong> 
-                       <%= item.orderStatus ? item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1) : 'Unknown' %>
-                    </p>
-                    <p><strong>Payment status:</strong> 
-                        <%= order.paymentStatus ? order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1) : 'Unknown' %>
-                     </p>
-                  </div>
-
-                  <button class="cancel-button" 
-                  data-item-id="<%= item._id %>" 
-                  data-product-id="<%= item.productId %>" 
-                  <% if (item.orderStatus === 'cancelled' || item.orderStatus === 'delivered' || item.orderStatus === 'Out for delivery' || item.orderStatus === 'returned' || order.paymentStatus === 'failed' ) { %> 
-                      style="display: none;" 
-                  <% } %>>
-                  Cancel
-              </button>
+        <section class="delivery-address">
+          <div class="section-header">
+            <h2>Delivery Address</h2>
+          </div>
+          <% if (order.address) { %>
+            <p><strong>Name:</strong> <%= order.address.name %></p>
+            <p><strong>Address:</strong> <%= order.address.address %>, <%= order.address.locality %>, <%= order.address.city %> - <%= order.address.pincode %>, <%= order.address.state %></p>
+            <p><strong>Phone Number:</strong> <%= order.address.phone %> </p>
+          <% } else { %>
+            <p>Shipping address information is not available.</p>
+          <% } %>
+        </section>
+    
+        <% order.items.forEach(item => { %>
+          <section class="order-details">
+            <h2>Order Details</h2>
+            <div class="product-details">
+              <img src="<%= item.productImage[0] %>" alt="Product Image" class="product-image">
+              <div class="product-info">
+                <p><strong>Product Name:</strong> <%= item.productName %></p>
+                <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                <p><strong>Original Price:</strong> ₹<%= item.price.toFixed(2) %></p>
+                <!-- <p><strong>Total discount:</strong> ₹<%= item.discountPrice.toFixed(2) %></p> -->
+                <p><strong>Total Coupon discount:</strong> ₹<%= item.couponDiscountPrice.toFixed(2) %></p>
+                <p><strong>Delivery charge:</strong> <%= order.deliveryCharge === 0 ? 'FREE' : `₹${order.deliveryCharge}` %></p>
+                <p><strong>Total Price:</strong> ₹<%= order.totalPrice.toFixed(2) %></p>
+                <p><strong>Order Status:</strong> 
+                  <%= item.orderStatus ? item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1) : 'Unknown' %>
+                </p>
+                <p><strong>Payment status:</strong> 
+                  <%= item.paymentStatus ? item.paymentStatus.charAt(0).toUpperCase() + item.paymentStatus.slice(1) : 'Unknown' %>
+                </p>
+              </div>
               
-              <% if (item.orderStatus === 'delivered') { %>
-                  <button type="button" class="return-button" 
-                          data-item-id="<%= item._id %>" 
-                          data-product-id="<%= item.productId %>" 
-                          style="padding: 10px; background-color: #f0ad4e; border: none; color: white; cursor: pointer;">
-                      Return Order
-                  </button>
+              <%# Cancel Button %>
+              <% const hideCancel = 
+                  item.orderStatus === 'cancelled' || 
+                  item.orderStatus === 'delivered' || 
+                  item.orderStatus === 'Out for delivery' || 
+                  item.orderStatus === 'returned' || 
+                  item.orderStatus === 'Return Requested' || 
+                  item.paymentStatus === 'failed'; 
+              %>
+              
+              <% if (!hideCancel) { %>
+                <button class="cancel-button" 
+                  data-item-id="<%= item._id %>" 
+                  data-product-id="<%= item.productId %>">
+                  Cancel
+                </button>
               <% } %>
               
-         
+              <%# Return Button %>
+              <% if (item.orderStatus === 'delivered' && !['Return Requested', 'returned'].includes(item.orderStatus)) { %>
+                <button type="button" 
+                  class="return-button" 
+                  data-item-id="<%= item._id %>" 
+                  data-product-id="<%= item.productId %>" 
+                  style="padding: 10px; background-color: #f0ad4e; border: none; color: white; cursor: pointer;">
+                  Return Order
+                </button>
+              <% } %>
               
-
-                </div>
-                <div class="delivery-status">
-                    <div class="status-bar" data-item-id="<%= item._id %>">
-                        <% ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered'].forEach(status => { %>
-                            <div class="status-item <%= item.orderStatus === status ? 'active' : '' %>">
-                              <div class="status-round"></div>
-                              <span><%= status.charAt(0).toUpperCase() + status.slice(1) %></span>
-                            </div>
-                          <% }) %>
-                      
-                      <% if (item.orderStatus !== 'delivered' && item.orderStatus !== 'Out for delivery') { %>
-                        <div class="status-item <%= item.orderStatus === 'cancelled' ? 'active' : '' %>">
-                          <div class="status-round"></div>
-                          <span>Cancelled</span>
-                        </div>
-                      <% } %>
+              <%# Retry Payment Button %>
+              <% if (item.paymentStatus === 'failed') { %>
+                <button type="button" class="retry-payment-button" 
+                  data-item-id="<%= order._id %>" 
+                  data-product-id="<%= order.productId %>" 
+                  data-total-price="<%= order.totalPrice %>"
+                  style="padding: 10px; background-color: #FF6600; border: none; color: white; cursor: pointer; margin-left: 800px; border-radius: 5px;">
+                  Retry Payment
+                </button>
+              <% } %>
+            </div>
+            
+            <div class="delivery-status">
+              <div class="status-bar" data-item-id="<%= item._id %>">
+                <% const allStatuses = ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered', 'Return Requested', 'returned', 'cancelled']; %>
+                <% allStatuses.forEach(status => { %>
+                  <% if (
+                    (status === 'cancelled' && item.orderStatus !== 'delivered' && item.orderStatus !== 'Out for delivery') ||
+                    (status === 'Return Requested' && item.orderStatus === 'Return Requested') ||
+                    (status === 'returned' && item.orderStatus === 'returned') ||
+                    ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered'].includes(status)
+                  ) { %>
+                    <div class="status-item <%= item.orderStatus === status ? 'active' : '' %>">
+                      <div class="status-round"></div>
+                      <span><%= status.charAt(0).toUpperCase() + status.slice(1) %></span>
                     </div>
-                  </div>
-
-                  
-              
-            </section>
+                  <% } %>
+                <% }) %>
+              </div>
+            </div>
+          </section>
         <% }) %>
-    <% }) %>
-<% } else { %>
-    <p>No orders found.</p>
-<% } %>
+      <% }) %>
+    <% } else { %>
+      <p>No orders found.</p>
+    <% } %>
+    
 
 
 
@@ -379,10 +387,31 @@ strong {
 <div id="returnModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background-color:rgba(0, 0, 0, 0.7); justify-content:center; align-items:center; z-index: 1000;">
     <div style="background:white; padding:20px; border-radius:8px; width:400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
         <h4 style="margin: 0 0 15px; font-family: Arial, sans-serif;">Return Order</h4>
-        <textarea id="returnReason" placeholder="Reason for return" required style="width: 100%; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 10px; font-family: Arial, sans-serif;"></textarea>
-        <br>
-        <button id="confirmReturnBtn" style="margin-top:15px; padding: 10px 15px; background-color: #5cb85c; border: none; color: white; cursor: pointer; border-radius: 5px;">Submit</button>
-        <button id="cancelReturnBtn" style="margin-top:15px; padding: 10px 15px; background-color: #d9534f; border: none; color: white; cursor: pointer; border-radius: 5px;">Cancel</button>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="returnReasonSelect" style="display: block; margin-bottom: 8px; font-family: Arial, sans-serif;">Select Reason for Return:</label>
+            <select id="returnReasonSelect" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-family: Arial, sans-serif;">
+                <option value="">Choose a reason</option>
+                <option value="Product damaged">Product damaged</option>
+                <option value="Wrong item received">Wrong item received</option>
+                <option value="Product not as described">Product not as described</option>
+                <option value="Size/fit issue">Size/fit issue</option>
+                <option value="Quality not as expected">Quality not as expected</option>
+                <option value="Defective product">Defective product</option>
+                <option value="Changed mind">Changed mind</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="returnReason" style="display: block; margin-bottom: 8px; font-family: Arial, sans-serif;">Additional Details:</label>
+            <textarea id="returnReason" placeholder="Please provide more details about your return reason..." style="width: 100%; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 10px; font-family: Arial, sans-serif;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; gap: 10px;">
+            <button id="confirmReturnBtn" style="flex: 1; padding: 10px 15px; background-color: #5cb85c; border: none; color: white; cursor: pointer; border-radius: 5px; font-family: Arial, sans-serif;">Submit Return</button>
+            <button id="cancelReturnBtn" style="flex: 1; padding: 10px 15px; background-color: #d9534f; border: none; color: white; cursor: pointer; border-radius: 5px; font-family: Arial, sans-serif;">Cancel</button>
+        </div>
     </div>
 </div>
 
@@ -537,51 +566,71 @@ function openModal(itemId) {
 
     confirmReturnBtn.addEventListener('click', async function() {
         const itemId = this.getAttribute('data-item-id');
-        const productId = this.getAttribute('data-product-id');
-        const returnMessage = document.getElementById('returnReason').value;
-    
-        try {
-            const response = await fetch(`/auth/return-order-item/${itemId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ reason: returnMessage, productId })
-            });
-    
-            const result = await response.json();
-            if (result.success) {
-                showFeedbackMessage('Return request has been submitted successfully.');
-    
-                const returnButton = document.querySelector(`.return-button[data-item-id="${itemId}"]`);
-                if (returnButton) {
-                    returnButton.style.display = 'none';
-                }
-    
-                const statusBar = document.querySelector(`.status-bar[data-item-id="${itemId}"]`);
-                if (statusBar) {
-                    statusBar.querySelectorAll('.status-item').forEach(statusItem => {
-                        statusItem.classList.remove('active');
-                    });
-    
-                    const returnedStatus = statusBar.querySelector('.status-item:nth-child(7)'); // Assuming "Returned" is the 7th status
-                    if (returnedStatus) {
-                        returnedStatus.classList.add('active');
-                    }
-                }
-    
-                setTimeout(() => {
-                    window.location.reload();
-                }, 3000);
-            } else {
-                showFeedbackMessage('Failed to submit return request.', true);
+    const productId = this.getAttribute('data-product-id');
+    const selectedReason = document.getElementById('returnReasonSelect').value;
+    const additionalDetails = document.getElementById('returnReason').value;
+
+    if (!selectedReason) {
+        showFeedbackMessage('Please select a reason for return.', true);
+        return;
+    }
+
+    const returnMessage = selectedReason === 'Other' 
+        ? additionalDetails 
+        : `${selectedReason}${additionalDetails ? ' - ' + additionalDetails : ''}`;
+
+
+    try {
+        const response = await fetch(`/auth/return-order-item/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reason: returnMessage, productId })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showFeedbackMessage('Return request has been submitted successfully.');
+
+            // Update status display
+            const statusBar = document.querySelector(`.status-bar[data-item-id="${itemId}"]`);
+            if (statusBar) {
+                statusBar.querySelectorAll('.status-item').forEach(statusItem => {
+                    statusItem.classList.remove('active');
+                });
+
+                // Add "Return Requested" status
+                const returnRequestedStatus = document.createElement('div');
+                returnRequestedStatus.className = 'status-item active';
+                returnRequestedStatus.innerHTML = `
+                    <div class="status-round"></div>
+                    <span>Return Requested</span>
+                `;
+                statusBar.appendChild(returnRequestedStatus);
             }
-        } catch (error) {
-            showFeedbackMessage('An error occurred. Please try again.', true);
+
+            // Hide return button and show status
+            const returnButton = document.querySelector(`.return-button[data-item-id="${itemId}"]`);
+            if (returnButton) {
+                const statusDiv = document.createElement('div');
+                statusDiv.style.cssText = 'padding: 10px; background-color: #ffd700; color: black; display: inline-block; border-radius: 5px;';
+                statusDiv.textContent = 'Return Request Pending';
+                returnButton.parentNode.replaceChild(statusDiv, returnButton);
+            }
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            showFeedbackMessage('Failed to submit return request.', true);
         }
-    
-        returnModal.style.display = 'none';
-    });
+    } catch (error) {
+        showFeedbackMessage('An error occurred. Please try again.', true);
+    }
+
+    returnModal.style.display = 'none';
+});
     
 
     cancelReturnBtn.addEventListener('click', function() {
@@ -623,7 +672,7 @@ function openModal(itemId) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                amount: totalAmount * 100,
+                amount: totalAmount,
                 orderId: orderId
             })
         })

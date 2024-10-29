@@ -44,10 +44,7 @@
         
         <span class="free-delivery"><p>(<%= product.discount %>% off)</p></span>
       </div>
-      <div class="ratings">
-        <span>⭐⭐⭐⭐⭐</span>
-        <span>(123 reviews)</span>
-      </div>
+      
      
       
 
@@ -85,7 +82,7 @@
               disabled
             <% } %>
           >
-            Add to Cart
+            <h2>Add to Cart</h2>
           </button>
         </form>
         <a href="/auth/checkout?productId=<%= product._id %>">
@@ -94,7 +91,7 @@
               disabled
             <% } %>
           >
-            Buy Now
+            <h2>Buy Now</h2>
           </button>
         </a>
       </div>

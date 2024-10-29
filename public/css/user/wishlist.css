@@ -1,7 +1,7 @@
 
 .profile-container {
   max-width: 1500px;
-  margin: 100px auto 20px;
+  margin: 100px auto 20px; /* Increased top margin to account for fixed navbar */
   background-color: #FFFFFF;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -9,11 +9,11 @@
 }
 
 .profile-header {
-  background-color: #FF9933;
+  background-color: #8A2BE2;
   color: #FFFFFF;
   padding: 20px;
   text-align: center;
-  border-bottom: 2px solid #FF6600;
+  border-bottom: 2px solid #FFD700;
 }
 
 .profile-header h2 {
@@ -24,8 +24,9 @@
 
 .profile-nav {
   background-color: #FFFFFF;
-  border-bottom: 2px solid #fdfafa;
-  overflow-x: auto;
+  border-bottom: 2px solid #FFD700;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .profile-nav ul {
@@ -33,23 +34,23 @@
   padding: 0;
   margin: 0;
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .profile-nav li {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
 }
 
 .profile-nav a {
   display: block;
   padding: 15px 20px;
-  color: #FF6600;
-  text-decoration: none;
+  color: #0A0A2A;
+  text-decoration: none; /* No underline by default */
   font-size: 0.9rem;
   font-weight: bold;
-  position: relative;
-  transition: color 0.3s ease;
+  position: relative; /* Required for the pseudo-element */
+  transition: color 0.3s ease; /* Smooth color transition */
 }
 
 .profile-nav a::after {
@@ -57,21 +58,21 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 0;
-  height: 2px;
-  background-color: #FF6600;
-  transition: width 0.3s ease;
+  width: 0; /* Initially no underline */
+  height: 2px; 
+  background-color: #8A2BE2; 
+  transition: width 0.3s ease; 
 }
 
-.profile-nav a:hover::after,
+.profile-nav a:hover::after, 
 .profile-nav a.active::after {
-  width: 100%;
+  width: 100%; /* Full width on hover or when active */
 }
 
-.profile-nav a:hover,
-.profile-nav a.active {
-  color: #22b039;
+.profile-nav a:hover, .profile-nav a.active {
+  color: #0A0A2A; /* Change text color on hover or active */
 }
+
 
 .container {
   padding: 20px;
@@ -161,8 +162,8 @@
 }
 
 .remove-from-wishlist {
-  background-color: #FF6600;
-  color: white;
+  background-color: #FFD700; /* Orange background */
+  color: #8A2BE2; 
   border: none;
   padding: 8px 12px;
   border-radius: 4px;
@@ -172,8 +173,8 @@
 }
 
 .cart {
-  background-color: #FF6600;
-  color: white;
+  background-color: #FFD700; /* Orange background */
+  color: #8A2BE2; 
   border: none;
   padding: 8px 12px;
   border-radius: 4px;

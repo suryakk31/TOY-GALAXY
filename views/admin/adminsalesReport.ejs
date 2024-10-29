@@ -31,11 +31,7 @@
       <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
       <li><a href="/admin/coupon"><i class='bx bx-gift'></i> Coupon</a></li>
       <li><a href="/admin/sales-report" class="active"><i class='bx bx-line-chart'></i> Sales Report</a></li>
-      <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
-      <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
-      <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
-      <li><a href="/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
-      <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
+     
     </ul>
   </nav>
 
@@ -72,7 +68,7 @@
           <th>Price</th>
           <th>Payment Method</th>
           <th>Order Date</th>
-          <th>OrderStatus</th>
+       
         </tr>
       </thead>
       <tbody>
@@ -90,9 +86,7 @@
               <td>₹<%= order.totalPrice.toFixed(2) %></td>
               <td><%= order.paymentMethod %></td>
               <td><%= order.orderDate ? order.orderDate.toDateString() : 'N/A' %></td>
-              <td>
-                <%= item.orderStatus ? item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1) : 'Unknown' %>
-              </td>
+             
             </tr>
           <% }); %>
         <% }); %>
@@ -156,62 +150,37 @@ if (dateFilter) {
       document.getElementById('endDate').value = urlParams.get('endDate') || '';
       toggleDateInputs();
     }
-
     function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  
-  doc.setFontSize(18);
-  doc.text("Toy Galaxy Sales Report", 14, 20);
-
-
-  doc.setFontSize(12);
-  doc.text("Generated on: " + new Date().toLocaleDateString(), 14, 28); 
-
-
-  const table = document.getElementById('orderTable');
-  const headers = [...table.querySelectorAll('thead th')].map(header => header.innerText);
-
-  const data = [...table.querySelectorAll('tbody tr')].map(row => {
-    return [...row.querySelectorAll('td')].map((cell, index) => {
-   
-  
-      if (index === 5) {
-        const price = parseFloat(cell.innerText.replace(/[^0-9.-]+/g, '')); 
-        if (!isNaN(price)) {
-          
-          return `RS. ${price.toFixed(2)}`;
-        } else {
-          
-          return 'N/A';
+    const dateFilter = document.getElementById('dateFilter').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    let url = '/admin/sales-report/download-pdf?';
+    if (dateFilter) {
+        url += `dateFilter=${dateFilter}&`;
+        if (dateFilter === 'custom') {
+            url += `startDate=${startDate}&endDate=${endDate}`;
         }
-      }
-      return cell.innerText;
-    });
-  });
-
- 
-  doc.autoTable({
-    head: [headers],
-    body: data,
-    startY: 32, 
-  });
-
-  // Save the PDF
-  doc.save("toy_galaxy_sales_report.pdf");
+    }
+    
+    window.location.href = url;
 }
 
-    function downloadExcel() {
-
-      let table = document.getElementById("orderTable");
-
-     
-      let workbook = XLSX.utils.table_to_book(table, { sheet: "Orders" });
-
-  
-      XLSX.writeFile(workbook, "order_report.xlsx");
+function downloadExcel() {
+    const dateFilter = document.getElementById('dateFilter').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    let url = '/admin/sales-report/download-excel?';
+    if (dateFilter) {
+        url += `dateFilter=${dateFilter}&`;
+        if (dateFilter === 'custom') {
+            url += `startDate=${startDate}&endDate=${endDate}`;
+        }
     }
+    
+    window.location.href = url;
+}
   </script>
 </body>
 </html>

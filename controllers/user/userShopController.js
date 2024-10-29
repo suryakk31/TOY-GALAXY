@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const Product = require('../../models/product');
 const User = require('../../models/user');
 const Category = require('../../models/category');
@@ -36,8 +37,17 @@ exports.getShopPage = async (req, res) => {
     }
 
     if (categoryIds.length > 0) {
-      filterCriteria.category = { $in: categoryIds };
+      const validCategoryIds = categoryIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+
+      
+      if (validCategoryIds.length === 0) {
+        return res.render('404')
+      }
+
+      filterCriteria.category = { $in: validCategoryIds };
     }
+
+    
 
     if (priceRanges.length > 0) {
       let priceCriteria = [];
@@ -103,7 +113,7 @@ exports.getShopPage = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
+   
+    res.render('500')
   }
 };

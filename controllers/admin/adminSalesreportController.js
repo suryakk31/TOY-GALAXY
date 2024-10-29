@@ -1,8 +1,17 @@
 const Order = require('../../models/order');
+const PDFDocument = require('pdfkit-table');
+const ExcelJS = require('exceljs');
 
 exports.adminSales = async (req, res) => {
     try {
-        let query = {};
+        let query = {
+            'items' : {
+                $elemMatch: {
+                    'orderStatus': 'delivered'
+
+                }
+            }
+        };
 
       
         const today = new Date();
@@ -53,13 +62,19 @@ exports.adminSales = async (req, res) => {
             .limit(limit)
             .sort({ orderDate: -1 });
 
-        const processedOrders = orders.map(order => ({
-            ...order.toObject(),
-            userFirstName: order.address ? order.address.name : 'N/A',
-            userPhone: order.address ? order.address.phone : 'N/A',
-            addressDetails: order.address ? `${order.address.name}, ${order.address.locality}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}` : 'N/A',
-            orderStatus: order.items.length > 0 ? order.items[0].orderStatus : 'N/A'
-        }));
+            const processedOrders = orders.map(order => {
+                const orderObj = order.toObject();
+             
+                orderObj.items = orderObj.items.filter(item => item.orderStatus === 'delivered');
+                return {
+                    ...orderObj,
+                    userFirstName: orderObj.address ? orderObj.address.name : 'N/A',
+                    userPhone: orderObj.address ? orderObj.address.phone : 'N/A',
+                    addressDetails: orderObj.address ? 
+                        `${orderObj.address.name}, ${orderObj.address.locality}, ${orderObj.address.city}, ${orderObj.address.state} - ${orderObj.address.pincode}` : 'N/A'
+                };
+            });
+    
 
         res.render('admin/adminsalesReport', { 
             orders: processedOrders,
@@ -79,4 +94,208 @@ exports.adminSales = async (req, res) => {
     }
 };
 
+exports.downloadSalesPDF = async (req, res) => {
+    try {
+        // Apply the same filters as in adminSales
+        let query = {
+            'items': {
+                $elemMatch: {
+                    'orderStatus': 'delivered'
+                }
+            }
+        };
 
+        // Handle date filtering
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        switch (req.query.dateFilter) {
+            case 'daily':
+                query.orderDate = {
+                    $gte: today,
+                    $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+                };
+                break;
+            case 'weekly':
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - today.getDay());
+                query.orderDate = {
+                    $gte: weekStart,
+                    $lt: new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+                };
+                break;
+            case 'monthly':
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                query.orderDate = {
+                    $gte: monthStart,
+                    $lt: nextMonth
+                };
+                break;
+            case 'custom':
+                if (req.query.startDate && req.query.endDate) {
+                    query.orderDate = {
+                        $gte: new Date(req.query.startDate),
+                        $lte: new Date(req.query.endDate)
+                    };
+                }
+                break;
+        }
+
+        const orders = await Order.find(query).sort({ orderDate: -1 });
+
+        // Create PDF document
+        const doc = new PDFDocument({ margin: 30, size: 'A4' });
+        
+        // Set response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=toy_galaxy_sales_report.pdf');
+        
+        // Pipe the PDF to the response
+        doc.pipe(res);
+
+        // Add header
+        doc.fontSize(18).text('Toy Galaxy Sales Report', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'left' });
+        doc.moveDown();
+
+        // Prepare table data
+        const tableData = {
+            headers: ['Name', 'Phone Number', 'Address', 'Product Name', 'Quantity', 'Price', 'Payment Method', 'Order Date'],
+            rows: []
+        };
+
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                if (item.orderStatus === 'delivered') {
+                    tableData.rows.push([
+                        order.address?.name || 'Unknown',
+                        order.address?.phone || 'Unknown',
+                        `${order.address?.name}, ${order.address?.locality}, ${order.address?.city}, ${order.address?.state} - ${order.address?.pincode}`,
+                        item.productName,
+                        item.quantity.toString(),
+                        `₹${order.totalPrice.toFixed(2)}`,
+                        order.paymentMethod,
+                        order.orderDate ? order.orderDate.toDateString() : 'N/A'
+                    ]);
+                }
+            });
+        });
+
+        // Draw table
+        await doc.table(tableData, {
+            prepareHeader: () => doc.fontSize(10),
+            prepareRow: () => doc.fontSize(10)
+        });
+
+        // Finalize PDF
+        doc.end();
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('Error generating PDF report');
+    }
+};
+
+// Excel Download Handler
+exports.downloadSalesExcel = async (req, res) => {
+    try {
+        // Apply the same filters as in adminSales
+        let query = {
+            'items': {
+                $elemMatch: {
+                    'orderStatus': 'delivered'
+                }
+            }
+        };
+
+        // Handle date filtering (same as PDF function)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        switch (req.query.dateFilter) {
+            case 'daily':
+                query.orderDate = {
+                    $gte: today,
+                    $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+                };
+                break;
+            case 'weekly':
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - today.getDay());
+                query.orderDate = {
+                    $gte: weekStart,
+                    $lt: new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+                };
+                break;
+            case 'monthly':
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                query.orderDate = {
+                    $gte: monthStart,
+                    $lt: nextMonth
+                };
+                break;
+            case 'custom':
+                if (req.query.startDate && req.query.endDate) {
+                    query.orderDate = {
+                        $gte: new Date(req.query.startDate),
+                        $lte: new Date(req.query.endDate)
+                    };
+                }
+                break;
+        }
+
+        const orders = await Order.find(query).sort({ orderDate: -1 });
+
+        // Create Excel workbook
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sales Report');
+
+        // Add headers
+        worksheet.columns = [
+            { header: 'Name', key: 'name', width: 20 },
+            { header: 'Phone Number', key: 'phone', width: 15 },
+            { header: 'Address', key: 'address', width: 40 },
+            { header: 'Product Name', key: 'product', width: 20 },
+            { header: 'Quantity', key: 'quantity', width: 10 },
+            { header: 'Price', key: 'price', width: 15 },
+            { header: 'Payment Method', key: 'payment', width: 15 },
+            { header: 'Order Date', key: 'date', width: 15 }
+        ];
+
+        // Style the header row
+        worksheet.getRow(1).font = { bold: true };
+
+        // Add data
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                if (item.orderStatus === 'delivered') {
+                    worksheet.addRow({
+                        name: order.address?.name || 'Unknown',
+                        phone: order.address?.phone || 'Unknown',
+                        address: `${order.address?.name}, ${order.address?.locality}, ${order.address?.city}, ${order.address?.state} - ${order.address?.pincode}`,
+                        product: item.productName,
+                        quantity: item.quantity,
+                        price: `₹${order.totalPrice.toFixed(2)}`,
+                        payment: order.paymentMethod,
+                        date: order.orderDate ? order.orderDate.toDateString() : 'N/A'
+                    });
+                }
+            });
+        });
+
+        // Set response headers
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=toy_galaxy_sales_report.xlsx');
+
+        // Write to response
+        await workbook.xlsx.write(res);
+        res.end();
+
+    } catch (error) {
+        console.error('Error generating Excel:', error);
+        res.status(500).send('Error generating Excel report');
+    }
+};

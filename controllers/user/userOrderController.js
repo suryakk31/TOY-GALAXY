@@ -25,7 +25,7 @@ exports.getOrderPage = async (req, res) => {
                 .populate({
                     path: 'items.productId',
                 })
-                .sort({ createdAt: -1 })
+                .sort({ orderDate: -1 })
                 .skip(skip)
                 .limit(perPage);
 

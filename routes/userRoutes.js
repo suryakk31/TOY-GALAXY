@@ -28,9 +28,11 @@ const userWalletController = require('../controllers/user/userWalletController')
 
 const userwishlistController = require('../controllers/user/userWishListController')
 
+const userfunZoneController = require('../controllers/user/userFunZoneController')
+
 
 router.get('/',userController.getLandingPage)
-router.get('/auth/homepage', userAuth.isAuthenticated, userController.getHomepage)
+router.get('/homepage', userAuth.isAuthenticated, userController.getHomepage)
 router.get('/shop',userAuth.isAuthenticated,shopController.getShopPage)
 router.get('/product/:id',userAuth.isAuthenticated,productController.getProductPage)
 
@@ -84,5 +86,7 @@ router.post('/update-wallet',userWalletController.updateWallet)
 router.get('/auth/wishlist',userwishlistController.getWishlist)
 router.post('/wishlist/add',userwishlistController.addToWishlist)
 router.post('/auth/wishlist/remove', userwishlistController.removeFromWishlist);
+
+router.get('/funZone',userfunZoneController.getFun)
 
 module.exports = router;

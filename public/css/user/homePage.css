@@ -12,7 +12,10 @@
 }
 
 /* ... (previous CSS remains the same) ... */
-
+.new-arrivals {
+  position: relative;
+  margin-left: 500px;
+}
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -133,23 +136,9 @@
   color: var(--warning-orange);
 }
 
-/* Container adjustments */
-.container-fluid {
-  padding-left: 0;
-  padding-right: 0;
-}
 
-.container {
-  padding-left: 15px;
-  padding-right: 15px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
-/* Banner container for better mobile display */
-.banner-container {
-  margin-bottom: 2rem;
-}
+
   /* Additional responsive adjustments */
   @media (max-width: 1200px) {
     .container {
@@ -224,66 +213,116 @@
   }
 
 
-  /* Banner Section */
+
+
+
+
+
+
+
+/* Banner Container Styles */
 .banner-container {
+  margin-top: 100px;
   width: 100%;
-  max-width: 1200px; /* Adjust based on your design preference */
-  margin: 60px auto 2rem; /* Top margin to account for fixed navbar */
-  padding: 0 15px;
+  height: 500px;
   overflow: hidden;
+  position: relative;
+  margin-bottom: 2rem;
 }
 
+/* Banner Styles */
 .banner {
- 
-  width: 100%;
-  aspect-ratio: 16 / 9; /* Maintains a consistent aspect ratio */
-  border-radius: 8px; /* Optional: adds rounded corners */
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
+  display: flex;
+  width: 500%; /* 100% * number of images */
+  height: 100%;
+  animation: slideshow 20s linear infinite;
+}
+
+.banner:hover {
+  animation-play-state: paused; /* Pauses animation on hover */
 }
 
 .banner img {
-  width: 100%;
+  width: 20%; /* 100% / number of images */
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  .banner-container {
-    max-width: 960px;
+/* Slideshow Animation */
+@keyframes slideshow {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-20%);
+  }
+  25% {
+    transform: translateX(-20%);
+  }
+  45% {
+    transform: translateX(-40%);
+  }
+  50% {
+    transform: translateX(-40%);
+  }
+  70% {
+    transform: translateX(-60%);
+  }
+  75% {
+    transform: translateX(-60%);
+  }
+  95% {
+    transform: translateX(-80%);
+  }
+  100% {
+    transform: translateX(-80%);
   }
 }
 
+/* Navigation Dots */
+.banner-nav {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+.nav-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-dot.active {
+  background-color: var(--primary-color);
+}
+
+/* Responsive Adjustments */
 @media (max-width: 992px) {
   .banner-container {
-    max-width: 720px;
-  }
-  
-  .banner {
-    aspect-ratio: 3 / 2;
-    margin-top: 100px; /* Slightly taller on medium screens */
+    height: 400px;
   }
 }
 
 @media (max-width: 768px) {
   .banner-container {
-    max-width: 540px;
-    margin-top: 50px; /* Adjust if navbar height changes on mobile */
+    height: 300px;
   }
   
-  .banner {
-    aspect-ratio: 4 / 3; /* Even taller on smaller screens */
+  .nav-dot {
+    width: 10px;
+    height: 10px;
   }
 }
 
 @media (max-width: 576px) {
   .banner-container {
-    padding: 0 10px;
-  }
-  
-  .banner {
-    border-radius: 6px; /* Slightly smaller border radius on mobile */
+    height: 200px;
   }
 }

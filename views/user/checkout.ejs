@@ -276,7 +276,7 @@
               </div>
           </div>
           <h2>Order Placed Successfully!</h2>
-         
+           <h2>Your order-details will send to the registered email</h2>
           <p>Redirecting to order list page in <span id="countdown">5</span> seconds...</p>
   
       </div>
@@ -513,7 +513,7 @@ function initiateRazorpayPayment() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            amount: totalAmount * 100,
+            amount: totalAmount,
         })
     })
     .then(response => response.json())
@@ -598,12 +598,15 @@ function processWalletPayment() {
 
 function processOrder(paymentMethod, paymentId = null, paymentStatus = 'pending') {
     const selectedAddress = document.querySelector('input[name="address"]:checked').value;
+    const couponCode = appliedCoupon ? appliedCoupon.couponCode : null;
+
 
     const orderDetails = {
         address: selectedAddress,
         paymentMethod: paymentMethod,
         paymentId: paymentId,
-        paymentStatus: paymentStatus
+        paymentStatus: paymentStatus,
+        couponCode: couponCode 
     
     };
 
@@ -623,6 +626,11 @@ function processOrder(paymentMethod, paymentId = null, paymentStatus = 'pending'
     .then(data => {
       if (data.message) {
             console.log('Order placed successfully:', data.message);
+
+            localStorage.removeItem('coupon');
+            localStorage.removeItem('originalTotal');
+            
+            
             if (paymentStatus === 'failed') {
                 showPaymentFailedModal();  
             } else {

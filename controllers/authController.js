@@ -208,7 +208,7 @@ exports.postVerifyOtp = async (req, res) => {
                 break;
             } catch (error) {
                 if(error.code === 11000 && error.keyPattern.referralCode) {
-                    console.log("Duplicate referral code detected, generating a new one...");
+
                     await newUser.generateReferralCode();
                     retries--;
                 } else {

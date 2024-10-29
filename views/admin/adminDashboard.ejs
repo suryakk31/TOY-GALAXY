@@ -32,11 +32,7 @@
       <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
       <li><a href="/admin/coupon"><i class='bx bx-gift'></i> coupon</a></li>
       <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
-      <li><a href="/banner"><i class='bx bx-image'></i> Banner</a></li>
-      <li><a href="/chat"><i class='bx bx-chat'></i> Chat</a></li>
-      <li><a href="/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
-      <li><a href="/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
-      <li><a href="/settings"><i class='bx bx-cog'></i> Settings</a></li>
+   
     </ul>
   </nav>
 
@@ -47,7 +43,7 @@
     <div class="dashboard-grid">
       <div class="card">
         <h3>Total Sales</h3>
-        <p class="big-number">$<%= totalSales.toFixed(2) %></p>
+        <p class="big-number">₹ <%= totalSales.toFixed(2) %></p>
       </div>
       <div class="card">
         <h3>Total Orders</h3>
@@ -132,7 +128,7 @@
               <td><%= index + 1 %></td>
               <td><%= product.name %></td>
               <td><%= product.sales %></td>
-              <td>$<%= product.revenue.toFixed(2) %></td>
+              <td>₹ <%= product.revenue.toFixed(2) %></td>
             </tr>
           <% }); %>
         </tbody>

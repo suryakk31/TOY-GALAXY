@@ -36,7 +36,7 @@
   </style>
 </head>
 <body>
-
+  <!-- Header and Navigation -->
   <header>
     <div class="top-nav">
       <div class="logo">
@@ -64,6 +64,7 @@
       <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
     </ul>
   </nav>
+  <!-- Form Container -->
   <div class="form-container">
     <form id="edit-product-form">
       <div class="form-group">
@@ -109,13 +110,13 @@
       <button type="button" class="cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
     </form>
   </div>
-
+  <!-- Crop Container -->
   <div class="crop-container" id="crop-container">
     <img id="crop-image" src="" alt="Crop Image">
     <button id="crop-btn">Crop</button>
     <button id="cancel-crop-btn">Cancel</button>
   </div>
- 
+  <!-- Cropper.js Script -->
   <script src="https://unpkg.com/cropperjs"></script>
   <script>
 let cropper;
@@ -127,11 +128,12 @@ let cropImage = document.getElementById('crop-image');
 let cropBtn = document.getElementById('crop-btn');
 let cancelCropBtn = document.getElementById('cancel-crop-btn');
 
-
+// Function to initialize Cropper on the selected image
 function initCropper(imageSrc, file, previewImage) {
   cropImage.src = imageSrc;
   cropContainer.style.display = 'block';
-
+  
+  // Ensure any previous cropper is destroyed before creating a new one
   if (cropper) {
     cropper.destroy();
   }
@@ -147,20 +149,21 @@ function initCropper(imageSrc, file, previewImage) {
     const canvas = cropper.getCroppedCanvas();
     canvas.toBlob(blob => {
       const imgUrl = URL.createObjectURL(blob);
-     
+      
+      // Update the preview image with the cropped image
       previewImage.src = imgUrl;
 
       cropper.destroy();
       cropContainer.style.display = 'none';
 
-     
+      // Replace the original file with the cropped file in the input's file list
       const croppedFile = new File([blob], currentFile.name, { type: currentFile.type });
       updateFileList(croppedFile);
     });
   };
 }
 
-
+// Update the file input with the cropped file
 function updateFileList(croppedFile) {
   const dataTransfer = new DataTransfer();
   Array.from(imageInput.files).forEach(file => {
@@ -172,7 +175,7 @@ function updateFileList(croppedFile) {
   imageInput.files = dataTransfer.files;
 }
 
-
+// Handle file input change
 imageInput.addEventListener('change', function(event) {
   const files = Array.from(event.target.files);
   files.forEach(file => {
@@ -190,7 +193,7 @@ imageInput.addEventListener('change', function(event) {
       img.addEventListener('click', () => initCropper(e.target.result, file, img));
       wrapper.appendChild(img);
 
-   
+      // Add delete button
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = 'X';
       deleteBtn.style.position = 'absolute';
@@ -218,7 +221,7 @@ imageInput.addEventListener('change', function(event) {
   });
 });
 
-
+// Handle cancel crop button click
 cancelCropBtn.addEventListener('click', () => {
   if (cropper) {
     cropper.destroy();
@@ -226,7 +229,7 @@ cancelCropBtn.addEventListener('click', () => {
   cropContainer.style.display = 'none';
 });
 
-
+// Initialize cropper for existing images (this might be on server-loaded images)
 document.querySelectorAll('.preview-images img').forEach(img => {
   const wrapper = document.createElement('div');
   wrapper.style.position = 'relative';
@@ -237,6 +240,7 @@ document.querySelectorAll('.preview-images img').forEach(img => {
   img.addEventListener('click', () => initCropper(img.src, null, img));
   wrapper.appendChild(img);
 
+  // Add delete button for server-loaded images
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'X';
   deleteBtn.style.position = 'absolute';
@@ -248,14 +252,14 @@ document.querySelectorAll('.preview-images img').forEach(img => {
   deleteBtn.style.cursor = 'pointer';
   deleteBtn.onclick = () => {
     wrapper.remove();
-
+    // Handle the deletion of the image on the server-side if needed
   };
   wrapper.appendChild(deleteBtn);
 
   previewContainer.appendChild(wrapper);
 });
 
-
+// Handle form submission with PUT method
 document.getElementById('edit-product-form').addEventListener('submit', async function(event) {
   event.preventDefault();
 

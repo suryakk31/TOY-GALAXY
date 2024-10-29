@@ -60,6 +60,8 @@ router.delete('/coupon/:id' ,adminCouponController.deleteCoupon)
 
 
 router.get('/sales-report', adminAuth.isAuthenticated, adminSalesController.adminSales)
+router.get('/sales-report/download-pdf', adminSalesController.downloadSalesPDF);
+router.get('/sales-report/download-excel', adminSalesController.downloadSalesExcel);
 
 router.get('/logout', adminLoginController.adminLogout);
 

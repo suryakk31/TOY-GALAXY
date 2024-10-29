@@ -120,7 +120,7 @@
     gap: 20px;
     justify-content: space-between;
     padding: 20px;
-    background-color: #87CEEB;
+    background-color: #8A2BE2;
 }
 
 .address-card:hover {
@@ -273,8 +273,7 @@
       .section-header { display: flex; justify-content: space-between; align-items: center; }
       .step-content { display: none; } /* Initially hide all sections */
       .step-content.active { display: block; } /* Show the active section */
-      .btn-primary { background-color: #00FFFF; color: rgb(15, 14, 14); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; text-decoration: none;justify-content: space-between;}
-      .btn-primary1 { background-color: #00FFFF; color: rgb(17, 16, 16); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px;margin-left: 10px;}
+    
       .savings { color: green; font-weight: bold; }
       .change-link { font-size: 14px; color: #00FFFF; cursor: pointer; text-decoration: underline; }
       .address-form { display: none; } /* Initially hide the address form */

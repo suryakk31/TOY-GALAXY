@@ -4,12 +4,12 @@
 .product-details {
   display: flex;
   padding: 20px;
-  background-color: #FFF5E6;
+  background-color: #ecebea;
   max-width: 1200px;
   margin: 100px auto 0;
  
-  border: 0.5px solid #FFB74D; 
-  border-radius: 5px;/* Add this line for border color */
+  border: 0.5px solid #8A2BE2; 
+  border-radius: 5px;
 }
 
 
@@ -30,13 +30,13 @@
   height: 80px;
   margin-bottom: 10px;
   cursor: pointer;
-  border: 1px solid #FF9933;
+  border: 3px solid #8A2BE2;
   border-radius: 5px;
   transition: border-color 0.3s ease;
 }
 
 .thumbnails img:hover {
-  border-color: #FF6600;
+  border-color: #FFD700;
 }
 
 .main-image {
@@ -47,7 +47,7 @@
 .main-image img {
   width: 400px;
   height: 400px;
-  border: 1px solid #FF9933;
+  border: 1px solid #8A2BE2;
   border-radius: 5px;
   transition: transform 0.3s ease;
 }
@@ -63,7 +63,7 @@
 .product-info h1 {
   font-size: 2em;
   margin-bottom: 10px;
-  color: #FF6600;
+  color: #111111;
 }
 
 .price-info {
@@ -80,27 +80,16 @@
 
 .discounted-price {
   font-size: 1.5em;
-  color: #FF6600;
+  color: #111111;
   font-weight: bold;
 }
 
 .free-delivery p {
   margin: 0;
-  color: #FF9933;
+  color: #8A2BE2;
   font-size: 1em;
 }
 
-.ratings {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.ratings span {
-  font-size: 1.2em;
-  color: #FF9933;
-  margin-right: 10px;
-}
 
 .category {
   margin-bottom: 20px;
@@ -108,7 +97,7 @@
 
 .category h4 {
   margin-bottom: 5px;
-  color: #FF6600;
+  color: #111111;
 }
 
 .actions {
@@ -118,8 +107,8 @@
 }
 
 .actions button {
-  background-color: #FF9933;
-  color: #FFFFFF;
+  background-color: #FFD700;
+  color: #8A2BE2;
   border: none;
   padding: 8px 12px;
   margin-right: 10px;
@@ -127,10 +116,12 @@
   border-radius: 20px;
   transition: background-color 0.3s ease;
   font-weight: bold;
+  height: 40px;
 }
 
 .actions button:hover {
-  background-color: #FF6600;
+  background-color: #8A2BE2;
+  color: white;
 }
 
 .actions button:disabled {
@@ -139,11 +130,11 @@
 }
 
 .buy-now {
-  background-color: #FF6600 !important;
+  background-color: #FFD700 !important;
 }
 
 .buy-now:hover {
-  background-color: #FF3300 !important;
+  background-color: #8A2BE2 !important;
 }
 
 .product-description {
@@ -153,7 +144,7 @@
 .product-description h3 {
   font-size: 1.5em;
   margin-bottom: 10px;
-  color: #FF6600;
+  color: #8A2BE2;
 }
 
 .product-description p {

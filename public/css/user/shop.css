@@ -31,6 +31,7 @@
   top: 2rem;
   height: fit-content;
   margin-top: 80px;
+  
 }
 
 .filter-section {
@@ -154,13 +155,13 @@
 /* Products Grid */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* 5 equal columns */
   margin-top: 80px;
   gap: 2rem;
-  flex: 1;
   position: relative;
   min-height: 200px;
 }
+
 
 .products-grid.loading {
   pointer-events: none;
@@ -351,6 +352,6 @@
   }
   
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 }
