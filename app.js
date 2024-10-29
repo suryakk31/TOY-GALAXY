@@ -1,3 +1,5 @@
+// Add this at the very top of your application, before any other code
+process.env.NODE_TLS_MIN_VERSION = 'TLSv1.2';
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -18,10 +20,10 @@ const app = express();
 app.use(express.urlencoded({ extended: true })); 
 
 // mongodb://surya3112:Surya123@@undefined/?replicaSet=atlas-xn77ia-shard-0&ssl=true&authSource=admin
-  // mongoose.connect('mongodb://localhost/Kids_Kastle', {
-  //     useNewUrlParser: true,
-  //     useUnifiedTopology: true
-  // });
+//   mongoose.connect('mongodb://localhost/Kids_Kastle', {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true
+//   });
   mongoose.connect('mongodb+srv://surya3112:Surya123%40@cluster0.ngrtu.mongodb.net/?retryWrites=true&w=majority', {
       useNewUrlParser: true,
       useUnifiedTopology: true
