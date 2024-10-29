@@ -51,7 +51,12 @@
         <% products.forEach(product => { %>
           <tr>
             <td><%= product.name %></td>
-            <td><%= product.category.name %></td>
+            <% if (product.category) { %>
+              <td><%= product.category.name %></td>
+          <% } else { %>
+              <td>No category available</td>
+          <% } %>
+          
             <% if (showDescription) { %>
               <td><%= product.description %></td>
             <% } %>
