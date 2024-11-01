@@ -148,7 +148,6 @@ exports.updatePaymentStatus = async (req, res) => {
       }
       await order.save();
 
-      // Send email if payment is completed
       if (emailToSend) {
           const user = await User.findById(order.userId);
           const transporter = nodemailer.createTransport({
@@ -160,61 +159,83 @@ exports.updatePaymentStatus = async (req, res) => {
           });
 
           const invoiceHTML = `
-            <!DOCTYPE html>
-            <html>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-              <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #2c3e50; text-align: center;">Order Invoice</h2>
-                
-                <div style="margin-bottom: 20px;">
-                  <p><strong>Order ID:</strong> ${order._id}</p>
-                  <p><strong>Date:</strong> ${moment(order.orderDate).format('MMMM DD, YYYY')}</p>
-                  <p><strong>Customer Name:</strong> ${order.address.name}</p>
-                  <p><strong>Shipping Address:</strong><br>
-                    ${order.address.address}<br>
-                    ${order.address.locality}<br>
-                    ${order.address.city}, ${order.address.state} - ${order.address.pincode}<br>
-                    Phone: ${order.address.phone}
-                  </p>
+          <!DOCTYPE html>
+          <html>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5; margin: 0; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <!-- Header with Logo -->
+              <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #4a90e2; padding-bottom: 20px;">
+                <div style="font-size: 28px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">
+                  <span style="color: #4a90e2;">🪐</span> TOY GALAXY
                 </div>
+                <div style="color: #666; font-size: 14px;">Where Fun Meets Adventure</div>
+              </div>
           
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                  <thead>
-                    <tr style="background-color: #f8f9fa;">
-                      <th style="padding: 12px; text-align: left;">Product</th>
-                      <th style="padding: 12px; text-align: left;">Quantity</th>
-                      <th style="padding: 12px; text-align: left;">Unit Price</th>
-                      <th style="padding: 12px; text-align: left;">Total</th>
+              <!-- Invoice Title -->
+              <h2 style="color: #2c3e50; text-align: center; margin-bottom: 25px; font-size: 24px;">Order Invoice</h2>
+              
+              <!-- Order Details -->
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                <p style="margin: 8px 0;"><strong style="color: #4a90e2;">Order ID:</strong> ${newOrder._id}</p>
+                <p style="margin: 8px 0;"><strong style="color: #4a90e2;">Date:</strong> ${moment(newOrder.orderDate).format('MMMM DD, YYYY')}</p>
+                <p style="margin: 8px 0;"><strong style="color: #4a90e2;">Customer Name:</strong> ${newOrder.address.name}</p>
+              </div>
+          
+              <!-- Shipping Address -->
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                <h3 style="color: #4a90e2; margin: 0 0 10px 0; font-size: 16px;">Shipping Address</h3>
+                <p style="margin: 5px 0;">${newOrder.address.address}</p>
+                <p style="margin: 5px 0;">${newOrder.address.locality}</p>
+                <p style="margin: 5px 0;">${newOrder.address.city}, ${newOrder.address.state} - ${newOrder.address.pincode}</p>
+                <p style="margin: 5px 0;"><strong>Phone:</strong> ${newOrder.address.phone}</p>
+              </div>
+          
+              <!-- Order Items Table -->
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                <thead>
+                  <tr style="background-color: #4a90e2; color: #ffffff;">
+                    <th style="padding: 12px 15px; text-align: left;">Product</th>
+                    <th style="padding: 12px 15px; text-align: center;">Quantity</th>
+                    <th style="padding: 12px 15px; text-align: right;">Unit Price</th>
+                    <th style="padding: 12px 15px; text-align: right;">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${orderItems.map(item => `
+                    <tr>
+                      <td style="padding: 12px 15px; border-bottom: 1px solid #eee;">${item.productName}</td>
+                      <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+                      <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: right;">₹${item.price.toFixed(2)}</td>
+                      <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.quantity).toFixed(2)}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    ${order.items.map(item => `
-                      <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #ddd;">${item.productName}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #ddd;">${item.quantity}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #ddd;">₹${item.price.toFixed(2)}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #ddd;">₹${(item.price * item.quantity).toFixed(2)}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
+                  `).join('')}
+                </tbody>
+              </table>
           
-                <div style="margin-top: 20px; text-align: right;">
-                  <p><strong>Subtotal:</strong> ₹${(order.totalPrice - order.deliveryCharge + order.couponDiscount).toFixed(2)}</p>
-                  <p><strong>Delivery Charge:</strong> ₹${order.deliveryCharge.toFixed(2)}</p>
-                  ${order.couponDiscount > 0 ? `<p><strong>Coupon Discount:</strong> -₹${order.couponDiscount.toFixed(2)}</p>` : ''}
-                  <p style="font-size: 1.2em;"><strong>Total Amount:</strong> ₹${order.totalPrice.toFixed(2)}</p>
-                  <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
-                  <p><strong>Payment Status:</strong> ${paymentItem ? paymentItem.paymentStatus : ''}</p>
-                </div>
-          
-                <div style="margin-top: 40px; text-align: center; color: #666;">
-                  <p>Thank you for shopping with us!</p>
-                  <p style="font-size: 0.8em;">For any queries, please contact our support team.</p>
+              <!-- Order Summary -->
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                <div style="text-align: right;">
+                  <p style="margin: 8px 0;"><strong>Subtotal:</strong> <span style="min-width: 80px; display: inline-block;">₹${(totalPrice - deliveryFee + totalCouponDiscount).toFixed(2)}</span></p>
+                  <p style="margin: 8px 0;"><strong>Delivery Charge:</strong> <span style="min-width: 80px; display: inline-block;">₹${deliveryFee.toFixed(2)}</span></p>
+                  ${totalCouponDiscount > 0 ? `<p style="margin: 8px 0; color: #28a745;"><strong>Coupon Discount:</strong> <span style="min-width: 80px; display: inline-block;">-₹${totalCouponDiscount.toFixed(2)}</span></p>` : ''}
+                  <p style="margin: 15px 0; padding-top: 10px; border-top: 2px solid #ddd; font-size: 18px;"><strong>Total Amount:</strong> <span style="min-width: 80px; display: inline-block; color: #4a90e2;">₹${totalPrice.toFixed(2)}</span></p>
+                  <p style="margin: 8px 0;"><strong>Payment Method:</strong> <span style="min-width: 80px; display: inline-block;">${paymentMethod}</span></p>
+                  <p style="margin: 8px 0;"><strong>Payment Status:</strong> <span style="min-width: 80px; display: inline-block; color: ${itemPaymentStatus.toLowerCase() === 'paid' ? '#28a745' : '#dc3545'}">${itemPaymentStatus}</span></p>
                 </div>
               </div>
-            </body>
-            </html>
+          
+              <!-- Footer -->
+              <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #4a90e2; color: #666;">
+                <p style="margin: 5px 0; font-size: 16px; color: #2c3e50;">Thank you for shopping with Toy Galaxy! 🚀</p>
+                <p style="margin: 5px 0; font-size: 14px;">For any queries, please contact our support team.</p>
+                <div style="margin-top: 15px; font-size: 12px;">
+                  <p style="margin: 3px 0;">Toy Galaxy - Where Every Child's Dreams Take Flight</p>
+                  <p style="margin: 3px 0;">📧 support@toygalaxy.com | 📞 1800-TOY-GALAXY</p>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
           `;
 
           transporter.sendMail({
@@ -362,7 +383,7 @@ exports.returnOrder = async (req, res) => {
           return res.status(400).json({ success: false, message: 'Return period has expired.' });
       }
 
-      // Update order status and reason
+
       item.orderStatus = 'Return Requested';
       item.reason = reason;
       // Set payment status to refund pending initially
@@ -373,15 +394,10 @@ exports.returnOrder = async (req, res) => {
           return res.status(404).json({ success: false, message: 'Product not found.' });
       }
 
-      // Add back to product stock only after admin approves return
-      // Removing this line as stock should be updated after admin approval
-      // product.stock += item.quantity;
-      // await product.save();
 
-      // Calculate refund amount but don't process it yet
       const refundAmount = item.price * item.quantity + order.deliveryCharge;
 
-      // Save the order with updated status
+
       await order.save();
 
       // Return appropriate message based on payment method

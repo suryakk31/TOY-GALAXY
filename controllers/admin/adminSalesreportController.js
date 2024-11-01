@@ -144,23 +144,23 @@ exports.downloadSalesPDF = async (req, res) => {
 
         const orders = await Order.find(query).sort({ orderDate: -1 });
 
-        // Create PDF document
+
         const doc = new PDFDocument({ margin: 30, size: 'A4' });
         
-        // Set response headers
+   
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=toy_galaxy_sales_report.pdf');
         
-        // Pipe the PDF to the response
+   
         doc.pipe(res);
 
-        // Add header
+  
         doc.fontSize(18).text('Toy Galaxy Sales Report', { align: 'center' });
         doc.moveDown();
         doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'left' });
         doc.moveDown();
 
-        // Prepare table data
+     
         const tableData = {
             headers: ['Name', 'Phone Number', 'Address', 'Product Name', 'Quantity', 'Price', 'Payment Method', 'Order Date'],
             rows: []
@@ -183,13 +183,13 @@ exports.downloadSalesPDF = async (req, res) => {
             });
         });
 
-        // Draw table
+
         await doc.table(tableData, {
             prepareHeader: () => doc.fontSize(10),
             prepareRow: () => doc.fontSize(10)
         });
 
-        // Finalize PDF
+  
         doc.end();
 
     } catch (error) {
@@ -198,10 +198,10 @@ exports.downloadSalesPDF = async (req, res) => {
     }
 };
 
-// Excel Download Handler
+
 exports.downloadSalesExcel = async (req, res) => {
     try {
-        // Apply the same filters as in adminSales
+    
         let query = {
             'items': {
                 $elemMatch: {
@@ -210,7 +210,7 @@ exports.downloadSalesExcel = async (req, res) => {
             }
         };
 
-        // Handle date filtering (same as PDF function)
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -249,11 +249,11 @@ exports.downloadSalesExcel = async (req, res) => {
 
         const orders = await Order.find(query).sort({ orderDate: -1 });
 
-        // Create Excel workbook
+     
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Sales Report');
 
-        // Add headers
+  
         worksheet.columns = [
             { header: 'Name', key: 'name', width: 20 },
             { header: 'Phone Number', key: 'phone', width: 15 },
@@ -265,10 +265,10 @@ exports.downloadSalesExcel = async (req, res) => {
             { header: 'Order Date', key: 'date', width: 15 }
         ];
 
-        // Style the header row
+      
         worksheet.getRow(1).font = { bold: true };
 
-        // Add data
+     
         orders.forEach(order => {
             order.items.forEach(item => {
                 if (item.orderStatus === 'delivered') {
@@ -286,11 +286,10 @@ exports.downloadSalesExcel = async (req, res) => {
             });
         });
 
-        // Set response headers
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=toy_galaxy_sales_report.xlsx');
 
-        // Write to response
+
         await workbook.xlsx.write(res);
         res.end();
 

@@ -8,11 +8,26 @@
       <h1>Toy Galaxy</h1>
   </div>
   <div class="search-container">
-      <form action="#" method="get">
-          <input type="text" placeholder="Explore toys..." name="search">
-          <button type="submit"><i class='bx bx-search-alt-2'></i></button>
-      </form>
-  </div>
+    <form action="/shop" method="get" id="searchForm">
+        <!-- Preserve existing filter values -->
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="categories" id="categoriesInput">
+        <input type="hidden" name="price" id="priceInput">
+        <input type="hidden" name="sort" id="sortInput">
+        
+        <input type="text" 
+               placeholder="Explore toys..." 
+               name="search" 
+               id="searchInput" 
+               autocomplete="off">
+        <button type="button" class="close-search" id="closeSearch">
+            <i class='bx bx-x'></i>
+        </button>
+        <button type="submit" class="search-button">
+            <i class='bx bx-search-alt-2'></i>
+        </button>
+    </form>
+</div>
   <ul class="nav-menu">
       <li class="nav-item">
           <a href="<%= isLoggedIn ? '/auth/homepage' : '/' %>" class="nav-link"><i class='bx bxs-home-alt-2'></i> Home</a>
@@ -41,12 +56,12 @@
         <% if (isLoggedIn && userDatabase) { %>
           <div class="user-dropdown-content" id="user-info">
             <a href="/auth/profile"><i class='bx bxs-astronaut'></i> Hello, <%= userDatabase.firstName %></a>
-            <a href="/auth/logout" id="logout-button"><i class='bx bxs-exit'></i> Blast Off</a>
+            <a href="/auth/logout" id="logout-button"><i class='bx bxs-exit'></i> Log out</a>
           </div>
         <% } else { %>
           <div class="user-dropdown-content">
             <a href="/auth/login"><i class='bx bxs-meteor'></i> Launch</a>
-            <a href="#"><i class='bx bxs-widget'></i> Control Panel</a>
+           
           </div>
         <% } %>
     </li>
@@ -72,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const navMenu = document.querySelector('.nav-menu');
   const navOverlay = document.querySelector('.nav-overlay');
   const dropdowns = document.querySelectorAll(".dropdown, .user-dropdown");
-
+  
 
   hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
@@ -163,3 +178,88 @@ document.getElementById('logout-button').addEventListener('click', function(even
 
 </script>
   
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const closeSearch = document.getElementById('closeSearch');
+    const categoriesInput = document.getElementById('categoriesInput');
+    const priceInput = document.getElementById('priceInput');
+    const sortInput = document.getElementById('sortInput');
+
+    // Function to get current URL parameters
+    function getCurrentFilters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return {
+            categories: urlParams.get('categories') || '',
+            price: urlParams.get('price') || '',
+            sort: urlParams.get('sort') || ''
+        };
+    }
+
+    // Set initial values for filter inputs
+    function setFilterInputs() {
+        const currentFilters = getCurrentFilters();
+        categoriesInput.value = currentFilters.categories;
+        priceInput.value = currentFilters.price;
+        sortInput.value = currentFilters.sort;
+    }
+
+    // Show/hide close button based on search input
+    searchInput.addEventListener('input', () => {
+        closeSearch.style.display = searchInput.value ? 'block' : 'none';
+    });
+
+    // Handle form submission
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const searchTerm = searchInput.value.trim();
+        
+        // Preserve existing filters
+        setFilterInputs();
+
+        // Remove empty parameters
+        const formData = new FormData(searchForm);
+        const params = new URLSearchParams();
+
+        for (const [key, value] of formData.entries()) {
+            if (value) {
+                params.append(key, value);
+            }
+        }
+
+        // Navigate to the filtered URL
+        window.location.href = `/shop?${params.toString()}`;
+    });
+
+    // Reset search while maintaining other filters
+    closeSearch.addEventListener('click', () => {
+        const currentFilters = getCurrentFilters();
+        const params = new URLSearchParams();
+
+        // Add non-empty filters
+        if (currentFilters.categories) params.append('categories', currentFilters.categories);
+        if (currentFilters.price) params.append('price', currentFilters.price);
+        if (currentFilters.sort) params.append('sort', currentFilters.sort);
+
+        // Reset to page 1
+        params.append('page', '1');
+
+        // Navigate to filtered URL without search
+        window.location.href = `/shop?${params.toString()}`;
+    });
+
+    // Initialize the search container
+    (() => {
+        setFilterInputs();
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            searchInput.value = searchParam;
+            closeSearch.style.display = 'block';
+        }
+    })();
+});
+</script>

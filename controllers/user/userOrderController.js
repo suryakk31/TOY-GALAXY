@@ -8,7 +8,7 @@ exports.getOrderPage = async (req, res) => {
         const categories = await Category.find();
         let userDatabase = null;
         let orders = [];
-        const perPage = 10; 
+        const perPage = 4; 
         const page = parseInt(req.query.page) || 1; 
 
         if (isLoggedIn) {
@@ -39,7 +39,8 @@ exports.getOrderPage = async (req, res) => {
                 userDatabase, 
                 orders, 
                 currentPage: page, 
-                totalPages 
+                totalPages,
+                currentPath: '/auth/order' 
             });
         } else {
             res.render('user/order', { 

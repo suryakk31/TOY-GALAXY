@@ -18,9 +18,16 @@ exports.getLandingPage = async (req, res) => {
 
        
         const categories = await Category.find();
-        const products = await Product.find({ isBlocked: false });
 
-        res.render('user/homepage', { isLoggedIn, categories, products });
+        const products = await Product.find({ isBlocked: false })
+        .sort({ updatedAt: -1 })
+        .limit(5); 
+
+        const topOfferProducts = await Product.find({ isBlocked: false })
+        .sort({ discount: -1 })
+        .limit(5);
+
+        res.render('user/homepage', { isLoggedIn, categories, products, topOfferProducts });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
@@ -34,8 +41,6 @@ exports.getHomepage = async (req, res) => {
         const isLoggedIn = req.session.email ? true : false;
         let userDatabase = null;
 
-        
-
         if (isLoggedIn) {
             userDatabase = await User.findOne({ email: req.session.email });
 
@@ -48,21 +53,32 @@ exports.getHomepage = async (req, res) => {
                 req.session.destroy(); 
                 return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
             }
-            
-        
-            
         }
 
         const categories = await Category.find({ isBlocked: false });
-        const products = await Product.find({ isBlocked: false }); 
+        
+        // Get latest products
+        const newProducts = await Product.find({ isBlocked: false })
+            .sort({ updatedAt: -1 })
+            .limit(5);
 
-        res.render('user/homepage', {isLoggedIn, userDatabase, categories, products });
+        // Get products with highest discounts
+        const topOfferProducts = await Product.find({ isBlocked: false })
+            .sort({ discount: -1 })
+            .limit(5);
+
+        res.render('user/homepage', {
+            isLoggedIn, 
+            userDatabase, 
+            categories, 
+            products: newProducts,
+            topOfferProducts
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
     }
 };
-
 
 exports.getProfilepage = async (req,res) => {
     try { 

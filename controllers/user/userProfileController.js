@@ -21,7 +21,7 @@ exports.getProfilepage = async (req,res) => {
         const user = await User.find()
         const categories = await Category.find();
         const products = await Product.find({ isBlocked: false });
-         res.render('user/profile',{user, isLoggedIn, categories, products, userDatabase })
+         res.render('user/profile',{user, isLoggedIn, categories, products, userDatabase,  currentPath: '/auth/profile' })
     }
     catch {
         console.err(error)
@@ -90,7 +90,8 @@ exports.getChangePasswordPage = async (req, res) => {
             userDatabase,
             categories,
             products,
-            isLoggedIn
+            isLoggedIn,
+            currentPath: '/auth/changePassword'
         });
     } catch (error) {
         console.error("Error loading change password page:", error);

@@ -1,0 +1,123 @@
+<link rel="stylesheet" href="/css/partials/sidebar.css">
+
+<div class="mobile-toggle">
+    <i class='bx bx-user-circle'></i>
+</div>
+<div class="sidebar">
+    <div class="user-profile">
+        <div class="profile-info">
+            <h4>Hello, <%= userDatabase.firstName %></h4>
+            <h5>REF CODE: <%= userDatabase.referralCode %></h5>
+        </div>
+    </div>
+
+    <nav class="side-nav">
+   
+        <div class="nav-section">
+            <h5>ACCOUNT SETTINGS</h5>
+            <ul>
+                <li>
+                    <a href="/auth/profile" class="<%= currentPath === '/auth/profile' ? 'nav-active' : '' %>">
+                        <i class='bx bx-user'></i>Profile Information
+                    </a>
+                </li>
+                <li>
+                    <a href="/auth/addresses" class="<%= currentPath === '/auth/addresses' ? 'nav-active' : '' %>">
+                        <i class='bx bx-map'></i>Manage Addresses
+                    </a>
+                </li>
+                <li>
+                    <a href="/auth/changePassword" class="<%= currentPath === '/auth/changePassword' ? 'nav-active' : '' %>">
+                        <i class='bx bx-lock'></i>Change Password
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h5>ORDERS</h5>
+            <ul>
+                <li>
+                    <a href="/auth/order" class="<%= currentPath === '/auth/order' ? 'active' : '' %>">
+                        <i class='bx bx-package'></i>My Orders
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h5>PAYMENTS & COUPONS</h5>
+            <ul>
+                <li>
+                    <a href="/auth/wallet" class="<%= currentPath === '/auth/wallet' ? 'nav-active' : '' %>">
+                        <i class='bx bx-wallet'></i>Wallet
+                    </a>
+                </li>
+                <li>
+                    <a href="/auth/coupon" class="<%= currentPath === '/auth/coupon' ? 'nav-active' : '' %>">
+                        <i class='bx bx-gift'></i>Coupons
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h5>MY STUFF</h5>
+            <ul>
+                <li>
+                    <a href="/auth/wishlist" class="<%= currentPath === '/auth/wishlist' ? 'nav-active' : '' %>">
+                        <i class='bx bx-heart'></i>My Wishlist
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<script>
+    
+document.addEventListener('DOMContentLoaded', () => {
+    // Create and append overlay if it doesn't exist
+    if (!document.querySelector('.sidebar-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        document.body.appendChild(overlay);
+    }
+
+    // Get DOM elements
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+    const sidebarClose = document.querySelector('.sidebar-close');
+
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    };
+
+
+    mobileToggle?.addEventListener('click', toggleSidebar);
+    sidebarClose?.addEventListener('click', toggleSidebar);
+    sidebarOverlay?.addEventListener('click', toggleSidebar);
+
+    // Close sidebar on menu item click for mobile
+    const menuItems = sidebar.querySelectorAll('a');
+    menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        });
+    });
+
+    // Handle resize events
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+});
+</script>

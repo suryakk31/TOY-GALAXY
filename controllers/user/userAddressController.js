@@ -24,7 +24,7 @@ exports.manageAddress = async(req,res) => {
         const categories = await Category.find();
         const addresses = await Address.find({userId:userId});
       
-       res.render('user/address',{isLoggedIn,userDatabase,categories,addresses}); 
+       res.render('user/address',{isLoggedIn,userDatabase,categories,addresses,  currentPath: '/auth/addresses'}); 
     } catch (error) {
       console.log(error);  
     }

@@ -75,18 +75,18 @@ exports.postSignup = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL,
             to: email,
-            subject: '🏰 Welcome to Kids Kastle! Verify Your Account',
+            subject: '⭐ Welcome to Toy galaxy! Verify Your Account',
             html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset="utf-8">
-                    <title>Verify Your Kids Kastle Account</title>
+                    <title>Verify Your Toy galaxy Account</title>
                 </head>
                 <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0;">
                     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                        <div style="background-color: #FF6600; padding: 20px; border-radius: 10px 10px 0 0;">
-                            <h1 style="color: white; margin: 0; text-align: center; font-size: 28px;">Verify Your Kids Kastle Account 🏰</h1>
+                        <div style="background-color: #8A2BE2; padding: 20px; border-radius: 10px 10px 0 0;">
+                            <h1 style="color: white; margin: 0; text-align: center; font-size: 28px;">Verify Your Toy galaxy Account ⭐</h1>
                         </div>
                         
                         <div style="background-color: #FFF2E6; padding: 20px; border-radius: 0 0 10px 10px; border: 2px solid #FF6600; border-top: none;">
@@ -115,7 +115,7 @@ exports.postSignup = async (req, res) => {
             text: `
                 Hello ${firstName}!
                 
-                Welcome to Kids Kastle!
+                Welcome to Toy galaxy!
                 
                 Your OTP for account verification is: ${otp}
                 
@@ -299,7 +299,7 @@ exports.resendOtp = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL,
             to: pendingUser.email,
-            subject: '🏰 Kids Kastle: Your New OTP',
+            subject: '⭐ Toy galaxy: Your New OTP',
             html: `
                 <!DOCTYPE html>
                 <html>
@@ -309,8 +309,8 @@ exports.resendOtp = async (req, res) => {
                 </head>
                 <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0;">
                     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                        <div style="background-color: #FF6600; padding: 20px; border-radius: 10px 10px 0 0;">
-                            <h1 style="color: white; margin: 0; text-align: center; font-size: 28px;">Your New OTP for Kids Kastle 🏰</h1>
+                        <div style="background-color: #8A2BE2; padding: 20px; border-radius: 10px 10px 0 0;">
+                            <h1 style="color: white; margin: 0; text-align: center; font-size: 28px;">Your New OTP for  Toy galaxy ⭐</h1>
                         </div>
                         
                         <div style="background-color: #FFF2E6; padding: 20px; border-radius: 0 0 10px 10px; border: 2px solid #FF6600; border-top: none;">

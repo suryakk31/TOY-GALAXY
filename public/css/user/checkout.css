@@ -40,7 +40,7 @@
     margin-bottom: 10px;
 }
 
-.btn-primary, .btn-primary1, .btn-primary3 {
+.btn-primary, .btn-primary1, .btn-primary3, .btn-primary4 {
     background-color: #FFD700;
     color: #8A2BE2;
     padding: 10px 20px;
@@ -50,7 +50,7 @@
     margin-top: 10px;
 }
 
-.btn-primary:hover, .btn-primary1:hover, .btn-primary3:hover {
+.btn-primary:hover, .btn-primary1:hover, .btn-primary3:hover, .btn-primary4:hover {
     background-color: #8A2BE2;
     color: #FFFFFF;
 }
@@ -164,7 +164,6 @@
     color: #FFFFFF;
 }
 
-/* Form Styling */
 .address-form {
     background-color: #FFFFFF;
     border: 1px solid #8A2BE2;
@@ -174,8 +173,12 @@
     box-shadow: 0 4px 8px rgba(138, 43, 226, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin: 20px 0;
+    
+    /* Added to prevent unexpected expansion */
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
 }
-
 .address-form label {
     font-size: 1em;
     color: #8A2BE2;
@@ -191,6 +194,7 @@
     border-radius: 4px;
     font-size: 1em;
     color: #8A2BE2;
+    box-sizing: border-box;
 }
 
 .address-form button.btn-primary {
@@ -200,6 +204,8 @@
     border: none;
     cursor: pointer;
     margin-top: 10px;
+    display: inline-block;
+    width: auto;
 }
 
 .address-form button.btn-primary:hover {
@@ -268,14 +274,14 @@
       .header, .footer { text-align: center; margin: 20px 0; }
       .main-content { display: flex; justify-content: space-between; }
       .checkout-section { width: 70%; }
-      .btn-primary3 { background-color: #00FFFF; color: rgb(17, 15, 15); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
+      .btn-primary3 { background-color: #FFD700; color: rgb(17, 15, 15); padding: 10px 20px; border: none; cursor: pointer; margin-top: 10px; margin-left: 80px; }
       .section { border: 1px solid #ddd; margin-bottom: 10px; padding: 15px; border-radius: 5px; }
       .section-header { display: flex; justify-content: space-between; align-items: center; }
       .step-content { display: none; } /* Initially hide all sections */
       .step-content.active { display: block; } /* Show the active section */
     
       .savings { color: green; font-weight: bold; }
-      .change-link { font-size: 14px; color: #00FFFF; cursor: pointer; text-decoration: underline; }
+      .change-link { font-size: 14px; color: #8A2BE2; cursor: pointer; text-decoration: underline; }
       .address-form { display: none; } /* Initially hide the address form */
 
 
@@ -391,8 +397,8 @@
       .modal button {
           width: 100%;
           padding: 12px;
-          background-color: #00FFFF;
-          color: rgb(20, 20, 20);
+          background-color: #8A2BE2;
+          color: #FFFFFF;
           border: none;
           border-radius: 4px;
           cursor: pointer;
@@ -400,7 +406,8 @@
           transition: background-color 0.3s;
       }
       .modal button:hover {
-          background-color: #00FFFF;
+          background-color: #FFD700;
+          color: #8A2BE2;
       }
 
 

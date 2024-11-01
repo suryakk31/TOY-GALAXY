@@ -8,9 +8,98 @@ exports.getAdminDashboard = async (req, res) => {
     try {
       
         const totalSales = await Order.aggregate([
-            { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+            {
+                $addFields: {
+                    effectiveItems: {
+                        $map: {
+                            input: "$items",
+                            as: "item",
+                            in: {
+                                effectivePrice: {
+                                    $subtract: [
+                                        "$$item.price",
+                                        { $add: ["$$item.discountPrice", "$$item.couponDiscountPrice"] }
+                                    ]
+                                },
+                                quantity: "$$item.quantity",
+                                orderStatus: "$$item.orderStatus",
+                                paymentStatus: "$$item.paymentStatus"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                   
+                    refundAmount: {
+                        $reduce: {
+                            input: "$effectiveItems",
+                            initialValue: 0,
+                            in: {
+                                $add: [
+                                    "$$value",
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $or: [
+                                                    { $eq: ["$$this.orderStatus", "cancelled"] },
+                                                    { $eq: ["$$this.orderStatus", "returned"] },
+                                                    { $eq: ["$$this.paymentStatus", "refunded"] },
+                                                    { $eq: ["$$this.paymentStatus", "cancelled"] }
+                                                ]
+                                            },
+                                            then: {
+                                                $multiply: [
+                                                    "$$this.effectivePrice",
+                                                    "$$this.quantity"
+                                                ]
+                                            },
+                                            else: 0
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    deliveryChargeRefund: {
+                        $cond: {
+                            if: {
+                                $anyElementTrue: {
+                                    $map: {
+                                        input: "$items",
+                                        as: "item",
+                                        in: {
+                                            $or: [
+                                                { $eq: ["$$item.orderStatus", "cancelled"] },
+                                                { $eq: ["$$item.orderStatus", "returned"] },
+                                                { $eq: ["$$item.paymentStatus", "refunded"] },
+                                                { $eq: ["$$item.paymentStatus", "cancelled"] }
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            then: "$deliveryCharge",
+                            else: 0
+                        }
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: {
+                        $sum: {
+                            $subtract: [
+                                { $subtract: ["$totalPrice", "$couponDiscount"] },
+                                { $add: ["$refundAmount", "$deliveryChargeRefund"] }
+                            ]
+                        }
+                    }
+                }
+            }
         ]);
-
         
         const totalOrders = await Order.countDocuments();
 
@@ -18,15 +107,103 @@ exports.getAdminDashboard = async (req, res) => {
 
       
         const totalProducts = await Product.countDocuments();
-
- 
         const thirtyDaysAgo = moment().subtract(29, 'days').startOf('day');
         const dailySales = await Order.aggregate([
-            { $match: { orderDate: { $gte: thirtyDaysAgo.toDate() } } },
-            { $group: {
-                _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
-                sales: { $sum: "$totalPrice" }
-            }},
+            {
+                $match: {
+                    orderDate: { $gte: thirtyDaysAgo.toDate() }
+                }
+            },
+            {
+                $addFields: {
+                    effectiveItems: {
+                        $map: {
+                            input: "$items",
+                            as: "item",
+                            in: {
+                                effectivePrice: {
+                                    $subtract: [
+                                        "$$item.price",
+                                        { $add: ["$$item.discountPrice", "$$item.couponDiscountPrice"] }
+                                    ]
+                                },
+                                quantity: "$$item.quantity",
+                                orderStatus: "$$item.orderStatus",
+                                paymentStatus: "$$item.paymentStatus"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    refundAmount: {
+                        $reduce: {
+                            input: "$effectiveItems",
+                            initialValue: 0,
+                            in: {
+                                $add: [
+                                    "$$value",
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $or: [
+                                                    { $eq: ["$$this.orderStatus", "cancelled"] },
+                                                    { $eq: ["$$this.orderStatus", "returned"] },
+                                                    { $eq: ["$$this.paymentStatus", "refunded"] },
+                                                    { $eq: ["$$this.paymentStatus", "cancelled"] }
+                                                ]
+                                            },
+                                            then: {
+                                                $multiply: [
+                                                    "$$this.effectivePrice",
+                                                    "$$this.quantity"
+                                                ]
+                                            },
+                                            else: 0
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    deliveryChargeRefund: {
+                        $cond: {
+                            if: {
+                                $anyElementTrue: {
+                                    $map: {
+                                        input: "$items",
+                                        as: "item",
+                                        in: {
+                                            $or: [
+                                                { $eq: ["$$item.orderStatus", "cancelled"] },
+                                                { $eq: ["$$item.orderStatus", "returned"] },
+                                                { $eq: ["$$item.paymentStatus", "refunded"] },
+                                                { $eq: ["$$item.paymentStatus", "cancelled"] }
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            then: "$deliveryCharge",
+                            else: 0
+                        }
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
+                    sales: {
+                        $sum: {
+                            $subtract: [
+                                { $subtract: ["$totalPrice", "$couponDiscount"] },
+                                { $add: ["$refundAmount", "$deliveryChargeRefund"] }
+                            ]
+                        }
+                    }
+                }
+            },
             { $sort: { _id: 1 } }
         ]);
 

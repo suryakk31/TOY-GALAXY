@@ -4,18 +4,18 @@ const Wishlist = require('../../models/wishlist');
 
 exports.getWishlist = async (req, res) => {
   try {
-    const isLoggedIn = req.session.email ? true : false;
-    let userDatabase = null;
-    let wishlistItems = [];
+    const isLoggedIn = !!req.session.email;
+    const perPage = 5; // Items per page
+    const page = parseInt(req.query.page) || 1; // Current page, default to 1
 
     if (!isLoggedIn) {
       return res.redirect('/login');
     }
 
-    userDatabase = await User.findOne({ email: req.session.email });
+    const userDatabase = await User.findOne({ email: req.session.email });
 
     if (!userDatabase) {
-      req.session.destroy(); 
+      req.session.destroy();
       return res.redirect('/login');
     }
 
@@ -24,24 +24,37 @@ exports.getWishlist = async (req, res) => {
       return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
     }
 
+    // Find wishlist items for the user
+    const wishlistData = await Wishlist.findOne({ userId: userDatabase._id })
+      .populate('items')
+      .skip((page - 1) * perPage)
+      .limit(perPage);
+      
+    const wishlistItems = wishlistData ? wishlistData.items : [];
 
-    const wishlist = await Wishlist.findOne({ userId: userDatabase._id }).populate('items');
-    wishlistItems = wishlist ? wishlist.items : [];
+    // Get total wishlist count for pagination
+    const totalWishlist = wishlistItems.length;
+    const totalPages = Math.ceil(totalWishlist / perPage);
 
-    const categories = await Category.find();
+    // Fetch categories if needed
+    const categories = await Category.find(); // Ensure correct schema/model
 
+    // Render the wishlist with pagination data
     res.render('user/wishlist', {
-  
       isLoggedIn,
       userDatabase,
       categories,
-      wishlistItems
+      wishlistItems,
+      currentPage: page,
+      totalPages,
+      currentPath: '/auth/wishlist'
     });
   } catch (error) {
     console.error('Error fetching wishlist:', error);
     res.status(500).render('error', { message: 'An error occurred while fetching your wishlist. Please try again later.' });
   }
 };
+
 exports.addToWishlist = async (req, res) => {
   try {
     const userEmail = req.session.email;

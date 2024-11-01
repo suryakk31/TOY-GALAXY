@@ -10,6 +10,11 @@ exports.getShopPage = async (req, res) => {
     let userDatabase = null;
     let userWishlist = [];
 
+    const ITEMS_PER_PAGE = 12;
+
+
+    const page = parseInt(req.query.page) || 1;
+  
   
     if (isLoggedIn) {
       userDatabase = await User.findOne({ email: req.session.email });
@@ -85,9 +90,22 @@ exports.getShopPage = async (req, res) => {
         break;
     }
 
+    const totalProducts = await Product.countDocuments(filterCriteria);
+    
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+
+    if (page < 1 || page > totalPages) {
+      return res.render('404');
+    }
+
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+
+
     const products = await Product.find(filterCriteria)
     .sort(sortCriteria)
-    .populate('category');
+    .populate('category')
+    .skip(skip)
+    .limit(ITEMS_PER_PAGE);
 
 
     const productsWithDiscounts = products.map(product => {
@@ -104,7 +122,13 @@ exports.getShopPage = async (req, res) => {
       categories,
       isLoggedIn,
       userWishlist,
-
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
+      lastPage: totalPages,
       appliedFilters: {
         search,
         categoryIds,

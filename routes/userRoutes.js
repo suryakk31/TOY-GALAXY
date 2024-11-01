@@ -56,7 +56,7 @@ router.put('/auth/addresses/:id',addressController.updateAddress)
 router.delete('/auth/addresses/:id', addressController.deleteAddress);
 
 router.get('/auth/cart',userAuth.isAuthenticated,cartController.getCart)
-router.post('/auth/cart', userAuth.isAuthenticated, cartController.addToCart);
+router.post('/auth/cart', cartController.addToCart);
 
 router.put('/auth/cart',  cartController.updateCartQuantity);
 router.delete('/auth/cart', cartController.removeProductFromCart)
@@ -66,7 +66,7 @@ router.post('/auth/checkout',userCheckoutController.postCheckout)
 router.post('/create-razorpay-order',userCheckoutController.createRazorpayOrder)
 router.post('/process-wallet-payment',userWalletController.processWalletPayment)
 
-router.get('/auth/order',userOrderController.getOrderPage)
+router.get('/auth/order',userAuth.isAuthenticated,userOrderController.getOrderPage)
 
 router.get('/auth/orderDetails/:orderId', userOrderdetailsController.getOrderdetails);
 router.post('/cancel-order-item/:itemId',userOrderdetailsController.cancelOrder)
@@ -75,15 +75,15 @@ router.post('/auth/return-order-item/:itemId', userOrderdetailsController.return
 router.post('/create-razorpay-order',userOrderdetailsController.retryPayment)
 router.post('/update-payment-status/:orderId', userOrderdetailsController.updatePaymentStatus);
 
-router.get('/auth/coupon',userCouponController.getCoupon)
+router.get('/auth/coupon',userAuth.isAuthenticated,userCouponController.getCoupon)
 router.post('/validateCoupon',userCouponController.applyCoupon)
 
-router.get('/auth/wallet',userWalletController.getWallet)
+router.get('/auth/wallet',userAuth.isAuthenticated,userWalletController.getWallet)
 router.post('/create-razorpay-order',userWalletController.createRazorPayorder)
 router.post('/update-wallet',userWalletController.updateWallet)
 
 
-router.get('/auth/wishlist',userwishlistController.getWishlist)
+router.get('/auth/wishlist',userAuth.isAuthenticated,userwishlistController.getWishlist)
 router.post('/wishlist/add',userwishlistController.addToWishlist)
 router.post('/auth/wishlist/remove', userwishlistController.removeFromWishlist);
 

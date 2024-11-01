@@ -11,7 +11,6 @@ const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET
 })
-
 exports.getWallet = async (req, res) => {
   try {
     const isLoggedIn = req.session.email ? true : false;
@@ -22,25 +21,44 @@ exports.getWallet = async (req, res) => {
 
       if (userDatabase.isBlocked) {
         req.session.destroy();
-        return res.render('auth/login', { errorMessage: 'Your account has been blocked. Please contact support.' });
+        return res.render('auth/login', { 
+          errorMessage: 'Your account has been blocked. Please contact support.' 
+        });
       }
     }
 
     if (!userDatabase) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found.' 
+      });
     }
+
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5; // Show 5 transactions per page
+    const skip = (page - 1) * limit;
 
     const categories = await Category.find();
     const products = await Product.find({ isBlocked: false });
 
     // Fetch the wallet for the user
     let wallet = await Wallet.findOne({ userId: userDatabase._id });  
-    // If wallet doesn't exist, create a new one
+
     if (!wallet) {
       const newWallet = new Wallet({ userId: userDatabase._id });
       await newWallet.save();
-      wallet = newWallet;  // Now this reassignment is allowed
+      wallet = newWallet;
     }
+
+    // Get total number of transactions for pagination
+    const totalTransactions = wallet.transactions.length;
+    const totalPages = Math.ceil(totalTransactions / limit);
+
+    // Sort transactions by date (latest first) and apply pagination
+    const paginatedTransactions = wallet.transactions
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(skip, skip + limit);
 
     res.render('user/wallet', {
       isLoggedIn,        
@@ -48,14 +66,25 @@ exports.getWallet = async (req, res) => {
       userDatabase, 
       products,       
       walletBalance: wallet.balance,
-      transactions: wallet.transactions
+      transactions: paginatedTransactions,
+      currentPath: '/auth/wallet',
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1
+      }
     });
   } catch (error) {
     console.error('Error fetching wallet data:', error);
-    res.status(500).json({ success: false, message: 'Internal server error.' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error.' 
+    });
   }
 };
-
 
 exports.createRazorPayorder = async (req, res) => {
   try {

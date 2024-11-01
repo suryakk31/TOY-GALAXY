@@ -60,13 +60,13 @@ exports.updateOrderStatus = async (req, res) => {
         }
 
         let updateStatus;
-        let paymentStatus = item.paymentStatus; // Preserve existing payment status
+        let paymentStatus = item.paymentStatus; 
 
         switch(status) {
             case 'cancelled':
                 updateStatus = 'cancelled';
                 
-                // Update product stock first
+                
                 try {
                     const product = await Product.findById(item.productId);
                     if (!product) {
@@ -82,19 +82,19 @@ exports.updateOrderStatus = async (req, res) => {
                     return res.status(500).send('Error updating product stock');
                 }
 
-                // Process refund for paid orders (Razorpay or Wallet)
+                
                 if (item.paymentStatus === 'completed' && 
                     (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet')) {
                     
-                    // Calculate refund amount
+                    
                     const refundAmount = item.price * item.quantity + order.deliveryCharge;
 
-                    // Validate refund amount
+               
                     if (typeof refundAmount !== 'number' || isNaN(refundAmount) || refundAmount <= 0) {
                         return res.status(400).send('Invalid refund amount calculated');
                     }
 
-                    // Find or create user wallet
+               
                     let userWallet = await Wallet.findOne({ userId: order.userId });
                     if (!userWallet) {
                         userWallet = new Wallet({ 
@@ -104,7 +104,7 @@ exports.updateOrderStatus = async (req, res) => {
                         });
                     }
 
-                    // Update wallet balance and add transaction
+                
                     userWallet.balance += refundAmount;
                     userWallet.transactions.push({
                         type: 'refund',
@@ -113,7 +113,7 @@ exports.updateOrderStatus = async (req, res) => {
                     });
                     await userWallet.save();
 
-                    // Update payment status to refunded
+                 
                     paymentStatus = 'refunded';
                     
                     console.log(`Refund processed: Amount ${refundAmount} added to wallet for user ${order.userId}`);
@@ -122,22 +122,22 @@ exports.updateOrderStatus = async (req, res) => {
 
             case 'return_approved':
                 updateStatus = 'returned';
-                // Only change to refunded when admin approves return
+             
                 if (item.paymentStatus === 'refund pending') {
                     if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet' || order.paymentMethod === 'COD') {
                         paymentStatus = 'refunded';
                         
-                        // Calculate refund amount
+                     
                         const refundAmount = item.price * item.quantity + order.deliveryCharge;
 
-                        // Validate refund amount
+                 
                         if (typeof refundAmount !== 'number' || isNaN(refundAmount) || refundAmount <= 0) {
                             return res.status(400).send('Invalid refund amount calculated');
                         }
 
-                        // Process refund based on payment method
+                        
                         if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
-                            // Find or create user wallet
+                          
                             let userWallet = await Wallet.findOne({ userId: order.userId });
                             if (!userWallet) {
                                 userWallet = new Wallet({ 
@@ -147,7 +147,7 @@ exports.updateOrderStatus = async (req, res) => {
                                 });
                             }
 
-                            // Update wallet balance and add transaction
+                          
                             userWallet.balance += refundAmount;
                             userWallet.transactions.push({
                                 type: 'refund',
@@ -157,7 +157,7 @@ exports.updateOrderStatus = async (req, res) => {
                             await userWallet.save();
                         }
 
-                        // Update product stock
+                     
                         const product = await Product.findById(item.productId);
                         if (!product) {
                             console.error(`Product not found for ID: ${item.productId}`);
@@ -173,7 +173,7 @@ exports.updateOrderStatus = async (req, res) => {
 
             case 'return_rejected':
                 updateStatus = 'delivered';
-                // If return is rejected, revert payment status to completed
+              
                 if (item.paymentStatus === 'refund pending') {
                     paymentStatus = 'completed';
                 }
@@ -181,7 +181,7 @@ exports.updateOrderStatus = async (req, res) => {
 
             case 'delivered':
                 updateStatus = 'delivered';
-                // If COD and delivered, mark payment as completed
+               
                 if (order.paymentMethod === 'COD') {
                     paymentStatus = 'completed';
                 }

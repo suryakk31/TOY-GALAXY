@@ -17,6 +17,38 @@
     .wishlist-btn .bxs-heart {
   color: #FF6600;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 50px 0;
+  }
+
+  .pagination a {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .pagination a.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+  }
+
+  .pagination a:hover {
+    background-color: #e9ecef;
+  }
+
+  .pagination a:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  }
   </style>
   
 </head>
@@ -155,8 +187,7 @@
               <span class="discount-tag"><%= product.discount %>% off</span>
             </div>
             
-            <p class="product-description"><%= product.description %></p>
-            
+           
             <% if (product.stock === 0) { %>
               <p class="stock-status out-of-stock">Not available</p>
             <% } else if (product.stock < 5) { %>
@@ -165,8 +196,28 @@
           </div>
         </article>
       <% }); %>
+    
     </section>
+
+    
+
+    
+    
   </main>
+
+  <div class="pagination">
+    <% if (hasPrevPage) { %>
+      <a href="?page=<%= prevPage %>&search=<%= appliedFilters.search %>&categories=<%= appliedFilters.categoryIds %>&price=<%= appliedFilters.priceRanges %>&sort=<%= appliedFilters.sort %>">Previous</a>
+    <% } %>
+    
+    <span>Page <%= currentPage %> of <%= totalPages %></span>
+    
+    <% if (hasNextPage) { %>
+      <a href="?page=<%= nextPage %>&search=<%= appliedFilters.search %>&categories=<%= appliedFilters.categoryIds %>&price=<%= appliedFilters.priceRanges %>&sort=<%= appliedFilters.sort %>">Next</a>
+    <% } %>
+  </div>
+  
+
 
   <%- include('../partials/footer') %>
 

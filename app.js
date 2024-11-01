@@ -24,6 +24,8 @@ app.use(express.urlencoded({ extended: true }));
 //       useNewUrlParser: true,
 //       useUnifiedTopology: true
 //   });
+
+
   mongoose.connect('mongodb+srv://surya3112:Surya123%40@cluster0.ngrtu.mongodb.net/?retryWrites=true&w=majority', {
       useNewUrlParser: true,
       useUnifiedTopology: true

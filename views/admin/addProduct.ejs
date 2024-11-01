@@ -70,6 +70,22 @@
     .crop-container img {
       max-width: 100%;
     }
+
+    .message {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 5px;
+}
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
   </style>
 </head>
 <body>
@@ -99,11 +115,13 @@
   </nav>
  
   <div class="form-container">
+   
     <form id="product-form" action="/admin/products/addProduct" method="POST" enctype="multipart/form-data">
       <div class="form-group">
         <label for="item">Product Name:</label>
         <input type="text" id="item" name="item">
         <div id="item-error-message" class="error-message" style="display: none;">Product name must be at least 3 characters long.</div>
+        
       </div>
       <div class="form-group">
         <label for="category">Category:</label>
@@ -143,6 +161,19 @@
       <button type="submit" class="submit-btn">Add Product</button>
       <button type="button" class="cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
     </form>
+
+    <% if (typeof errorMessage !== 'undefined' && errorMessage.length > 0) { %>
+      <div class="message error">
+        <%= errorMessage %>
+      </div>
+    <% } %>
+    
+    <% if (typeof successMessage !== 'undefined' && successMessage.length > 0) { %>
+      <div class="message success">
+        <%= successMessage %>
+      </div>
+    <% } %>
+
   </div>
 
   <div class="crop-container" id="crop-container">
@@ -330,6 +361,8 @@
   });
   
   imageInput.addEventListener('change', handleFileChange);
+
+
 </script>
   
 </body>

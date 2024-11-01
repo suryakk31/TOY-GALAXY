@@ -136,7 +136,10 @@
   color: var(--warning-orange);
 }
 
-
+.top-offers {
+  position: relative;
+  margin-left: 500px;
+}
 
 
   /* Additional responsive adjustments */

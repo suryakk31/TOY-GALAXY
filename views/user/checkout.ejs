@@ -34,6 +34,24 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        #add-new-address {
+    display: inline-block; /* Ensures the link behaves like an inline block */
+    padding: 10px 15px; /* Consistent padding */
+    text-decoration: none; /* Removes underline */
+    background-color: #FFD700; /* Matching your theme's yellow */
+    color: #8A2BE2; /* Matching your theme's purple */
+    border-radius: 4px;
+    margin-top: 10px;
+    width: auto; /* Prevents unwanted expansion */
+    max-width: fit-content; /* Constrains to content width */
+    text-align: center; /* Centers text if needed */
+}
+
+#add-new-address:hover {
+    background-color: #8A2BE2;
+    color: #FFFFFF;
+}
     </style>
 </head>
 <body>
@@ -90,8 +108,8 @@
                             
                      
                             
-                            <button class="btn-primary" type="button" id="saveAddressBtn">SAVE ADDRESS  </button>
-                            <button class="btn-primary" type="button" onclick="toggleAddressForm()">CANCEL</button>
+                            <button class="btn-primary4" type="button" id="saveAddressBtn">SAVE ADDRESS  </button>
+                            <button class="btn-primary4" type="button" onclick="toggleAddressForm()">CANCEL</button>
                         </form>
                         
                         <a href="#" class="btn-primary" id="add-new-address" onclick="showNewAddressForm()">+ Add  new address </a>
@@ -116,17 +134,16 @@
                                     </div>
                                     <div class="order-item-details" style="flex: 3; padding-left: 15px;">
                                         <div>
-                                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.name %></h4>
+                                            <h4 style="margin: 0; font-size: 16px;">Product Name : <%= item.productId.name %></h4>
                                             <br>
                                             <% if (item.productId.category) { %>
-                                              <h4 style="margin: 0; font-size: 16px;"><%= item.productId.category.name %></h4>
+                                              <h4 style="margin: 0; font-size: 16px;">Category Name : <%= item.productId.category.name %></h4>
                                           <% } else { %>
                                               <h4 style="margin: 0; font-size: 16px;">No category available</h4>
                                           <% } %>
                                           
                                             <br>
-                                            <h4 style="margin: 0; font-size: 16px;"><%= item.productId.description %></h4>
-                                            <br>
+                                           
                                             <h4 style="margin: 0; font-size: 16px;"> Quantity :<%= item.quantity%></h4>
                 
                                      
@@ -527,7 +544,7 @@ function initiateRazorpayPayment() {
             "key": order.key_id,
             "amount": order.amount,
             "currency": "INR",
-            "name": "Kids Kastle",
+            "name": "Toy galaxy",
             "description": "Toy Purchase",
             "order_id": order.id,
             "handler": function (response) {
@@ -539,7 +556,7 @@ function initiateRazorpayPayment() {
                 "contact": "<%= userDatabase.phoneNumber %>"
             },
             "theme": {
-                "color": "#FF6600"
+                "color": "#8A2BE2"
             },
             "modal": {
                 "ondismiss": function() {

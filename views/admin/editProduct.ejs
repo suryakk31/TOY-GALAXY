@@ -33,6 +33,42 @@
     .crop-container img {
       max-width: 100%;
     }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    .error-feedback {
+      display: none;
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    .form-group.has-error input,
+    .form-group.has-error select,
+    .form-group.has-error textarea {
+      border-color: #dc3545;
+    }
+    .form-group.has-error .error-feedback {
+      display: block;
+    }
+    .alert {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.25rem;
+    }
+    .alert-danger {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
+    .alert-success {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
   </style>
 </head>
 <body>
@@ -57,58 +93,122 @@
       <li><a href="/admin/orders"><i class='bx bx-cart'></i> Orders</a></li>
       <li><a href="/admin/coupon"><i class='bx bx-gift'></i> coupon</a></li>
       <li><a href="/admin/sales-report"><i class='bx bx-line-chart'></i> Sales Report</a></li>
-      <li><a href="/admin/banner"><i class='bx bx-image'></i> Banner</a></li>
-      <li><a href="/admin/chat"><i class='bx bx-chat'></i> Chat</a></li>
-      <li><a href="/admin/analytics"><i class='bx bx-bar-chart-alt-2'></i> Analytics</a></li>
-      <li><a href="/admin/notifications"><i class='bx bx-bell'></i> Notifications</a></li>
-      <li><a href="/admin/settings"><i class='bx bx-cog'></i> Settings</a></li>
+   
     </ul>
   </nav>
   <!-- Form Container -->
   <div class="form-container">
+  
     <form id="edit-product-form">
       <div class="form-group">
-        <label for="item">Product Name:</label>
-        <input type="text" id="item" name="item" value="<%= product.name %>" >
+        <label for="name">Product Name:</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          value="<%= product.name %>"
+          pattern="[a-zA-Z0-9\s-]+"
+          minlength="3"
+          maxlength="50"
+          required
+        >
+        <div class="error-feedback" id="name-error"></div>
       </div>
+
       <div class="form-group">
         <label for="category">Category:</label>
-        <select id="category" name="category" >
+        <select id="category" name="category" required>
+          <option value="">Select a category</option>
           <% categories.forEach(category => { %>
             <option value="<%= category._id %>" <%= category._id.equals(product.category) ? 'selected' : '' %>><%= category.name %></option>
           <% }); %>
         </select>
+        <div class="error-feedback" id="category-error"></div>
       </div>
+
       <div class="form-group">
         <label for="price">Price:</label>
-        <input type="number" id="price" name="price" value="<%= product.price %>" >
+        <input 
+          type="number" 
+          id="price" 
+          name="price" 
+          value="<%= product.price %>"
+          min="0.01"
+          step="0.01"
+          required
+        >
+        <div class="error-feedback" id="price-error"></div>
       </div>
+
       <div class="form-group">
         <label for="description">Description:</label>
-        <textarea id="description" name="description" ><%= product.description %></textarea>
+        <textarea 
+          id="description" 
+          name="description"
+          minlength="10"
+          required
+        ><%= product.description %></textarea>
+        <div class="error-feedback" id="description-error"></div>
       </div>
+
       <div class="form-group">
         <label for="stock">Stock:</label>
-        <input type="number" id="stock" name="stock" value="<%= product.stock %>" >
+        <input 
+          type="number" 
+          id="stock" 
+          name="stock" 
+          value="<%= product.stock %>"
+          min="0"
+          required
+        >
+        <div class="error-feedback" id="stock-error"></div>
       </div>
+
       <div class="form-group">
         <label for="discount">Discount:</label>
         <input type="number" id="discount" name="discount" value="<%= product.discount %>">
       </div>
+
       <div class="form-group">
         <label for="image">Image:</label>
-        <input type="file" id="image" name="image" multiple>
+        <input type="file" id="image" name="image" multiple accept="image/*">
         <div class="preview-images" id="preview-images">
-          <% if (product.image) { %>
+          <% if (product.image && product.image.length > 0) { %>
             <% product.image.forEach(image => { %>
-              <img src="<%= image %>" alt="Product Image">
+              <div class="image-wrapper" style="position: relative; display: inline-block; margin: 10px;">
+                <img src="<%= image %>" alt="Product Image">
+                <button type="button" class="delete-image" style="position: absolute; top: 5px; right: 5px; background-color: red; color: white; border: none; cursor: pointer;">X</button>
+              </div>
             <% }); %>
           <% } %>
         </div>
       </div>
-      <button type="submit" class="submit-btn">Submit</button>
+
+      <button type="submit" class="submit-btn">Update Product</button>
       <button type="button" class="cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
+      <div id="error-container"></div>
+    
+      <% if (errorMessage && errorMessage.length > 0) { %>
+        <div class="alert alert-danger">
+          <% if (Array.isArray(errorMessage)) { %>
+            <ul>
+              <% errorMessage.forEach(error => { %>
+                <li><%= error %></li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <%= errorMessage %>
+          <% } %>
+        </div>
+      <% } %>
+  
+      <% if (successMessage && successMessage.length > 0) { %>
+        <div class="alert alert-success">
+          <%= successMessage %>
+        </div>
+      <% } %>
     </form>
+
   </div>
   <!-- Crop Container -->
   <div class="crop-container" id="crop-container">
@@ -259,30 +359,82 @@ document.querySelectorAll('.preview-images img').forEach(img => {
   previewContainer.appendChild(wrapper);
 });
 
-// Handle form submission with PUT method
 document.getElementById('edit-product-form').addEventListener('submit', async function(event) {
-  event.preventDefault();
+      event.preventDefault();
+      
+      // Clear previous errors
+      document.querySelectorAll('.error-feedback').forEach(el => el.textContent = '');
+      document.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
+      document.getElementById('error-container').innerHTML = '';
 
-  const formData = new FormData(this);
-  const productId = '<%= product._id %>';
-  
-  try {
-    const response = await fetch(`/admin/products/edit/${productId}`, {
-      method: 'PUT',
-      body: formData,
+      const formData = new FormData(this);
+      const productId = '<%= product._id %>';
+      
+      try {
+        const response = await fetch(`/admin/products/edit/${productId}`, {
+          method: 'PUT',
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          if (result.success) {
+            window.location.href = '/admin/products';
+          }
+        } else {
+          if (result.errors && Array.isArray(result.errors)) {
+            // Display validation errors
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = `
+              <div class="alert alert-danger">
+                <ul>
+                  ${result.errors.map(error => `<li>${error}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+
+            // Highlight fields with errors
+            result.errors.forEach(error => {
+              if (error.includes('name')) {
+                document.getElementById('name-error').textContent = error;
+                document.getElementById('name').parentElement.classList.add('has-error');
+              }
+              if (error.includes('price')) {
+                document.getElementById('price-error').textContent = error;
+                document.getElementById('price').parentElement.classList.add('has-error');
+              }
+              if (error.includes('stock')) {
+                document.getElementById('stock-error').textContent = error;
+                document.getElementById('stock').parentElement.classList.add('has-error');
+              }
+              if (error.includes('description')) {
+                document.getElementById('description-error').textContent = error;
+                document.getElementById('description').parentElement.classList.add('has-error');
+              }
+              if (error.includes('category')) {
+                document.getElementById('category-error').textContent = error;
+                document.getElementById('category').parentElement.classList.add('has-error');
+              }
+            });
+          } else {
+            // Display general error
+            document.getElementById('error-container').innerHTML = `
+              <div class="alert alert-danger">
+                ${result.message || 'An error occurred while updating the product.'}
+              </div>
+            `;
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('error-container').innerHTML = `
+          <div class="alert alert-danger">
+            An error occurred while updating the product. Please try again.
+          </div>
+        `;
+      }
     });
-
-    if (response.ok) {
-      window.location.href = '/admin/products';
-    } else {
-      alert('Error updating product.');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error updating product.');
-  }
-});
-
 
   </script>
 </body>

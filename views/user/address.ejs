@@ -7,161 +7,161 @@
   <link rel="stylesheet" href="/css/user/address.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  
   <%- include('../partials/header') %>
-
-<div class="profile-container">
-  <div class="profile-header">
-    <h2>Hello, <%= userDatabase.firstName %></h2>
-  </div>
   
-  <nav class="profile-nav">
-    <ul>
-      <li><a href="/auth/profile" >Profile</a></li>
-      <li><a href="/auth/addresses" class="active">Addresses</a></li>
-      <li><a href="/auth/order">Orders</a></li>
-      <li><a href="/auth/wallet">Wallet</a></li>
-      <li><a href="/auth/coupon">Coupons</a></li>
-      <li><a href="/auth/wishlist">Wishlist</a></li>
-      <li><a href="/auth/changePassword">Password</a></li>
-    </ul>
-  </nav>
-
-
-
+  <div class="main-container">
+    <%- include('../partials/sidebar', { currentPath: currentPath }) %>
     
+    <div class="content-area">
+      <div class="profile-content">
+        <h2>My Addresses</h2>
+        
+        <div class="address-container">
+          <% if (addresses && addresses.length > 0) { %>
+            <% addresses.forEach(function(address) { %>
+              <div class="address-card">
+                <h3><%= address.name %></h3>
+                <p><%= address.address %></p>
+                <p><%= address.locality %> - <%= address.pincode %></p>
+                <p><%= address.state %></p>
+                <p><%= address.city %></p>
+                <p>Phone: <%= address.phone %></p>
+                
+                <div class="address-actions">
+                  <a href="javascript:void(0);" class="edit-btn" data-id="<%= address._id %>">
+                    <i class="bx bx-edit"></i>
+                  </a>
+                  
+                  <a href="javascript:void(0);" class="delete-btn" data-id="<%= address._id %>">
+                    <i class="bx bx-trash"></i>
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p>No addresses found.</p>
+          <% } %>
+        </div>
 
+        <button type="button" class=" add-address-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          Add Address
+        </button>
+      </div>
+    </div>
+  </div>
 
-<div id="addresses">
-  <% if (addresses && addresses.length > 0) { %>
-    <% addresses.forEach(function(address) { %>
-      <div class="address-card">
-        <h3><%= address.name %></h3>
-        <p><%= address.address %></p>
-        <p><%= address.locality %> - <%= address.pincode %></p>
-        <p><%= address.state %></p>
-        <p><%= address.city %></p>
-        <p>Phone: <%= address.phone %></p>
-        <div class="address-actions">
-          <a href="javascript:void(0);" class="edit-btn" data-id="<%= address._id %>">
-            <i class="bx bx-edit"></i>
-          </a>
-          
-          <a href="javascript:void(0);" class="delete-btn" data-id="<%= address._id %>">
-            <i class="bx bx-trash"></i> 
-           
-          </a>
-          
+  <!-- Add Address Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New Address</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="add-address-form" action="/auth/addAddress" method="POST">
+            <input type="hidden" name="userId" value="<%= userDatabase._id %>">
+
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="address">Address:</label>
+              <input type="text" id="address" name="address" required>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone:</label>
+              <input type="text" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+              <label for="locality">Locality:</label>
+              <input type="text" id="locality" name="locality" required>
+            </div>
+
+            <div class="form-group">
+              <label for="pincode">Pincode:</label>
+              <input type="text" id="pincode" name="pincode" required>
+            </div>
+
+            <div class="form-group">
+              <label for="state">State:</label>
+              <input type="text" id="state" name="state" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="city">City:</label>
+              <input type="text" id="city" name="city" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Address</button>
+          </form>
         </div>
       </div>
-    <% }) %>
-  <% } else { %>
-    <p>No addresses found.</p>
-  <% } %>
-</div>
-
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="height: 40px; margin-top: 60px; margin-left: 20px; margin-bottom: 20px;width: 150px;background-color: #00FFFF;border-color: #00FFFF ;color: black;">
-  Add address
- </button>
-
-    </div>
-
-
-
-
-
-
-
-
-
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="add-address-form" action="/auth/addAddress" method="POST">
-          <input type="hidden" name="userId" value="<%= userDatabase._id %>">
-
-          <label for="name">Name:</label>
-          <input type="text" id="name" name="name" required>
-
-          <label for="address">Address:</label>
-          <input type="text" id="address" name="address" required>
-
-          <label for="phone">Phone:</label>
-          <input type="text" id="phone" name="phone" required>
-
-          <label for="locality">Locality:</label>
-          <input type="text" id="locality" name="locality" required>
-
-          <label for="pincode">Pincode:</label>
-          <input type="text" id="pincode" name="pincode" required>
-
-          <label for="state">State:</label>
-          <input type="text" id="state" name="state" required>
-
-          
-          <label for="city">city:</label>
-          <input type="text" id="city" name="city" required>
-
-          <button type="submit">Save Address</button>
-          
-        </form>
-      </div>
-
     </div>
   </div>
-</div>
 
+  <!-- Edit Address Modal -->
+  <div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="editAddressModalLabel">Edit Address</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="edit-address-form" action="/auth/editAddress" method="PUT">
+            <input type="hidden" name="addressId" id="addressId">
 
+            <div class="form-group">
+              <label for="editName">Name:</label>
+              <input type="text" id="editName" name="name" required>
+            </div>
 
-<div class="modal fade" id="editAddressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="editAddressModalLabel">Edit Address</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="edit-address-form" action="/auth/editAddress" method="PUT">
-          <input type="hidden" name="addressId" id="addressId">
+            <div class="form-group">
+              <label for="editAddress">Address:</label>
+              <input type="text" id="editAddress" name="address" required>
+            </div>
 
-          <label for="editName">Name:</label>
-          <input type="text" id="editName" name="name" required>
+            <div class="form-group">
+              <label for="editPhone">Phone:</label>
+              <input type="text" id="editPhone" name="phone" required>
+            </div>
 
-          <label for="editAddress">Address:</label>
-          <input type="text" id="editAddress" name="address" required>
+            <div class="form-group">
+              <label for="editLocality">Locality:</label>
+              <input type="text" id="editLocality" name="locality" required>
+            </div>
 
-          <label for="editPhone">Phone:</label>
-          <input type="text" id="editPhone" name="phone" required>
+            <div class="form-group">
+              <label for="editPincode">Pincode:</label>
+              <input type="text" id="editPincode" name="pincode" required>
+            </div>
 
-          <label for="editLocality">Locality:</label>
-          <input type="text" id="editLocality" name="locality" required>
+            <div class="form-group">
+              <label for="editState">State:</label>
+              <input type="text" id="editState" name="state" required>
+            </div>
 
-          <label for="editPincode">Pincode:</label>
-          <input type="text" id="editPincode" name="pincode" required>
+            <div class="form-group">
+              <label for="editCity">City:</label>
+              <input type="text" id="editCity" name="city" required>
+            </div>
 
-          <label for="editState">State:</label>
-          <input type="text" id="editState" name="state" required>
-
-          <label for="editCity">City:</label>
-          <input type="text" id="editCity" name="city" required>
-
-          <button type="submit">Update Address</button>
-        </form>
+            <button type="submit" class="btn btn-primary">Update Address</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-
-<%- include('../partials/footer') %>
+  <%- include('../partials/footer') %>
 
 
 

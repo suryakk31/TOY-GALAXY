@@ -159,25 +159,31 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
   <script>
-    document.querySelectorAll('.quantity-btn').forEach(button => {
-      button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        const change = parseInt(this.getAttribute('data-change'));
+document.querySelectorAll('.quantity-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const productId = this.getAttribute('data-product-id');
+    const change = parseInt(this.getAttribute('data-change'));
+    const quantityInput = this.parentElement.querySelector('input[name="quantity"]');
+    const priceElement = this.closest('.row').querySelector('strong');
+    const summaryElements = {
+      originalTotal: document.querySelector('.list-group-item:nth-child(1) span'),
+      categoryOffer: document.querySelector('.list-group-item:nth-child(2) span'),
+      shipping: document.querySelector('.list-group-item:nth-child(3) span'),
+      total: document.querySelector('.list-group-item:nth-child(4) span strong')
+    };
 
-        updateQuantity(productId, change);
-      });
-    });
+    updateQuantity(productId, change, quantityInput, priceElement, summaryElements);
+  });
+});
 
-    document.querySelectorAll('.remove-btn').forEach(button => {
-      button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        
-        removeItemFromCart(productId);
-      });
-    });
+document.querySelectorAll('.remove-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const productId = this.getAttribute('data-product-id');
+    removeItemFromCart(productId);
+  });
+});
 
-    function updateQuantity(productId, change) {
-
+function updateQuantity(productId, change, quantityInput, priceElement, summaryElements) {
   fetch('/auth/cart', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -186,7 +192,23 @@
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      window.location.reload();
+      // Update quantity input
+      quantityInput.value = data.item.quantity;
+      
+      // Update item price
+      const itemPrice = (data.item.productId.price - (data.item.productId.price * data.item.productId.discount / 100)).toFixed(2);
+      priceElement.textContent = `₹${itemPrice}`;
+      
+      // Update summary section
+      summaryElements.originalTotal.textContent = `₹${data.cart.originalTotal}`;
+      summaryElements.categoryOffer.textContent = `₹${data.cart.categoryOffer}`;
+      summaryElements.shipping.textContent = data.cart.deliveryFeeDisplay;
+      summaryElements.total.textContent = `₹${data.cart.total}`;
+      
+      // Update minus button state based on quantity
+      const minusButton = quantityInput.parentElement.querySelector('[data-change="-1"]');
+      minusButton.disabled = data.item.quantity === 1;
+
     } else if (data.message === 'out_of_stock') {
       Swal.fire({
         icon: 'error',
@@ -214,8 +236,6 @@
   });
 }
 
- 
-
 
     document.querySelectorAll('.remove-btn').forEach(button => {
     button.addEventListener('click', function() {
@@ -239,40 +259,94 @@
       });
     });
   });
-
-    function removeProduct(productId) {
-    fetch('/auth/cart', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        window.location.reload();
-        
-        
-     Swal.fire({
+// Update the removeProduct function in your frontend JavaScript
+function removeProduct(productId) {
+  fetch('/auth/cart', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ productId })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Remove the product row from the DOM
+      const productRow = document.querySelector(`[data-product-id="${productId}"]`).closest('.row');
+      productRow.remove();
+      
+      // Update the cart summary
+      updateCartSummary(data.cart);
+      
+      // Show success message
+      Swal.fire({
         icon: 'success',
         title: 'Removed!',
-        text: 'The product has been removed.',
-        timer: 1000,
+        text: 'The product has been removed from your cart.',
+        timer: 2000,
         timerProgressBar: true,
         showConfirmButton: false
-      }).then(() => {
-        setTimeout(() => {
-          window.location.reload(); 
-        }, 1000); 
       });
+      
+      // Check if cart is empty after removal
+      const remainingItems = document.querySelectorAll('.card-body .row').length;
+      if (remainingItems === 0) {
+        // Replace cart content with empty cart message
+        const cardBody = document.querySelector('.card-body');
+        cardBody.innerHTML = `
+          <div class="empty-cart">
+            <p>Your cart is empty.</p>
+            <a href="/auth/shop" class="btn btn-primary">Shop Now</a>
+          </div>
+        `;
+        
+        // Remove the summary section and payment methods section
+        const summarySection = document.querySelector('.col-md-4');
+        const paymentSection = document.querySelector('.card.mb-4.mb-lg-0');
+        if (summarySection) summarySection.remove();
+        if (paymentSection) paymentSection.remove();
+      }
     } else {
-      Swal.fire('Error!', 'Failed to remove product.', 'error');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: data.message || 'Failed to remove product.',
+        confirmButtonColor: '#9D51FF'
+      });
     }
   })
   .catch(error => {
     console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'An error occurred while removing the product.',
+      confirmButtonColor: '#9D51FF'
+    });
   });
 }
 
+function updateCartSummary(cartData) {
+  if (!cartData) return;
+  
+  const summaryElements = {
+    originalTotal: document.querySelector('.list-group-item:nth-child(1) span'),
+    categoryOffer: document.querySelector('.list-group-item:nth-child(2) span'),
+    shipping: document.querySelector('.list-group-item:nth-child(3) span'),
+    total: document.querySelector('.list-group-item:nth-child(4) span strong')
+  };
+  
+  if (summaryElements.originalTotal) {
+    summaryElements.originalTotal.textContent = `₹${cartData.originalTotal}`;
+  }
+  if (summaryElements.categoryOffer) {
+    summaryElements.categoryOffer.textContent = `₹${cartData.categoryOffer}`;
+  }
+  if (summaryElements.shipping) {
+    summaryElements.shipping.textContent = cartData.deliveryFeeDisplay;
+  }
+  if (summaryElements.total) {
+    summaryElements.total.textContent = `₹${cartData.total}`;
+  }
+}
 
 
   </script>
