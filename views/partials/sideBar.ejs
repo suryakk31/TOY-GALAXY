@@ -16,9 +16,10 @@
         <div class="nav-section">
             <h5>ACCOUNT SETTINGS</h5>
             <ul>
-                <li>
-                    <a href="/auth/profile" class="<%= currentPath === '/auth/profile' ? 'nav-active' : '' %>">
-                        <i class='bx bx-user'></i>Profile Information
+                <li class="<%= currentPath === '/auth/profile' ? 'active' : '' %>">
+                    <a href="/auth/profile">
+                        <i class="fas fa-user"></i>
+                        Profile
                     </a>
                 </li>
                 <li>
