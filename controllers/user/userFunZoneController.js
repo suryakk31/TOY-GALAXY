@@ -5,10 +5,10 @@ const Product = require('../../models/product')
 
 exports.getFun = async (req, res) => {
     try {
-        const isLoggedIn = req.session.email ? true : false;
+        const isLoggedIn = !!req.session.email;
         let userDatabase = null;
 
-        
+     
 
         if (isLoggedIn) {
             userDatabase = await User.findOne({ email: req.session.email });

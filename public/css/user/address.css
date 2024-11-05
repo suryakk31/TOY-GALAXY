@@ -149,12 +149,31 @@
     box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
 }
 
+.footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #8A2BE2;  /* Electric Purple footer */
+    margin-top: -10px;
+    border-top: 2px solid #FFD700; 
+}
+
+.footer p {
+    color: #FFFFFF;  /* White text */
+    font-size: 1rem;
+    text-shadow: 1px 1px 2px rgba(255, 215, 0, 0.5);
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .content-area {
+        margin-top: 50px;
+    }
     .address-container {
         grid-template-columns: 1fr;
+        
     }
 
+   
     .address-actions {
         position: static;
         justify-content: flex-end;

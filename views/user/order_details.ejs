@@ -39,54 +39,6 @@ strong {
     font-weight: 600;
 }
 
-.delivery-status {
-    margin: 20px 0;
-}
-
-.status-bar {
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-.status-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    text-align: center;
-    flex: 1; /* Equal width for all items */
-}
-
-.status-round {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #ccc; /* Default circle color */
-    position: relative;
-    z-index: 1; /* Ensure the circle is above the line */
-}
-
-.line {
-    height: 2px;
-    background-color: #ccc; /* Default line color */
-    flex: 1; /* This will ensure lines stretch to fill space */
-    position: relative;
-    top: 10px; /* Align line with the center of the circle */
-    z-index: 0; /* Ensure line is below the circle */
-}
-
-.status-item.active .status-round {
-    background-color: #4bb8a9; /* Active circle color */
-}
-
-.line.active {
-    background-color: #4caf50; /* Active line color */
-}
-
-/* Optional: Style for text */
-.status-item span {
-    margin-left: 10px;
-}
 
 
 /* Order Note Section */
@@ -328,23 +280,23 @@ strong {
             </div>
             
             <div class="delivery-status">
-              <div class="status-bar" data-item-id="<%= item._id %>">
-                <% const allStatuses = ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered', 'Return Requested', 'returned', 'cancelled']; %>
-                <% allStatuses.forEach(status => { %>
-                  <% if (
-                    (status === 'cancelled' && item.orderStatus !== 'delivered' && item.orderStatus !== 'Out for delivery') ||
-                    (status === 'Return Requested' && item.orderStatus === 'Return Requested') ||
-                    (status === 'returned' && item.orderStatus === 'returned') ||
-                    ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered'].includes(status)
-                  ) { %>
-                    <div class="status-item <%= item.orderStatus === status ? 'active' : '' %>">
-                      <div class="status-round"></div>
-                      <span><%= status.charAt(0).toUpperCase() + status.slice(1) %></span>
-                    </div>
-                  <% } %>
-                <% }) %>
+                <div class="status-bar" data-current-status="<%= item.orderStatus %>">
+                  <% const allStatuses = ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered', 'Return Requested', 'returned', 'cancelled']; %>
+                  <% allStatuses.forEach(status => { %>
+                    <% if (
+                      (status === 'cancelled' && item.orderStatus !== 'delivered' && item.orderStatus !== 'Out for delivery') ||
+                      (status === 'Return Requested' && item.orderStatus === 'Return Requested') ||
+                      (status === 'returned' && item.orderStatus === 'returned') ||
+                      ['pending', 'Order Confirmed', 'Shipped', 'Out for delivery', 'delivered'].includes(status)
+                    ) { %>
+                      <div class="status-item <%= item.orderStatus === status ? 'active' : '' %>" data-status="<%= status %>">
+                        <div class="status-round"></div>
+                        <span><%= status.charAt(0).toUpperCase() + status.slice(1) %></span>
+                      </div>
+                    <% } %>
+                  <% }) %>
+                </div>
               </div>
-            </div>
           </section>
         <% }) %>
       <% }) %>
@@ -418,8 +370,9 @@ strong {
 
 
 
-<%- include('../partials/footer') %>
-
+<div class="footer">
+    <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
+  </div>
 
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

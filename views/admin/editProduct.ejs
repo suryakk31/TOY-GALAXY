@@ -219,223 +219,238 @@
   <!-- Cropper.js Script -->
   <script src="https://unpkg.com/cropperjs"></script>
   <script>
-let cropper;
-let currentFile;
-let imageInput = document.getElementById('image');
-let previewContainer = document.getElementById('preview-images');
-let cropContainer = document.getElementById('crop-container');
-let cropImage = document.getElementById('crop-image');
-let cropBtn = document.getElementById('crop-btn');
-let cancelCropBtn = document.getElementById('cancel-crop-btn');
+    let cropper;
+    let currentFile;
+    const imageInput = document.getElementById('image');
+    const previewContainer = document.getElementById('preview-images');
+    const cropContainer = document.getElementById('crop-container');
+    const cropImage = document.getElementById('crop-image');
+    const cropBtn = document.getElementById('crop-btn');
+    const cancelCropBtn = document.getElementById('cancel-crop-btn');
+    const deletedImages = new Set(); // Track deleted images
 
-// Function to initialize Cropper on the selected image
-function initCropper(imageSrc, file, previewImage) {
-  cropImage.src = imageSrc;
-  cropContainer.style.display = 'block';
-  
-  // Ensure any previous cropper is destroyed before creating a new one
-  if (cropper) {
-    cropper.destroy();
-  }
+    // Initialize Cropper on the selected image
+    function initCropper(imageSrc, file, previewImage) {
+        cropImage.src = imageSrc;
+        cropContainer.style.display = 'block';
 
-  cropper = new Cropper(cropImage, {
-    aspectRatio: 1,
-    viewMode: 1,
-  });
+        if (cropper) cropper.destroy();
 
-  currentFile = file;
+        cropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+        });
 
-  cropBtn.onclick = () => {
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob(blob => {
-      const imgUrl = URL.createObjectURL(blob);
-      
-      // Update the preview image with the cropped image
-      previewImage.src = imgUrl;
+        currentFile = file;
 
-      cropper.destroy();
-      cropContainer.style.display = 'none';
+        cropBtn.onclick = () => {
+            const canvas = cropper.getCroppedCanvas();
+            canvas.toBlob(blob => {
+                const imgUrl = URL.createObjectURL(blob);
+                previewImage.src = imgUrl;
 
-      // Replace the original file with the cropped file in the input's file list
-      const croppedFile = new File([blob], currentFile.name, { type: currentFile.type });
-      updateFileList(croppedFile);
-    });
-  };
-}
+                cropper.destroy();
+                cropContainer.style.display = 'none';
 
-// Update the file input with the cropped file
-function updateFileList(croppedFile) {
-  const dataTransfer = new DataTransfer();
-  Array.from(imageInput.files).forEach(file => {
-    if (file !== currentFile) {
-      dataTransfer.items.add(file);
+                const croppedFile = new File([blob], currentFile.name, { type: currentFile.type });
+                updateFileList(croppedFile);
+            });
+        };
     }
-  });
-  dataTransfer.items.add(croppedFile);
-  imageInput.files = dataTransfer.files;
-}
 
-// Handle file input change
-imageInput.addEventListener('change', function(event) {
-  const files = Array.from(event.target.files);
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      img.style.cursor = 'pointer';
-
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'relative';
-      wrapper.style.display = 'inline-block';
-      wrapper.style.margin = '10px';
-
-      img.addEventListener('click', () => initCropper(e.target.result, file, img));
-      wrapper.appendChild(img);
-
-      // Add delete button
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'X';
-      deleteBtn.style.position = 'absolute';
-      deleteBtn.style.top = '5px';
-      deleteBtn.style.right = '5px';
-      deleteBtn.style.backgroundColor = 'red';
-      deleteBtn.style.color = 'white';
-      deleteBtn.style.border = 'none';
-      deleteBtn.style.cursor = 'pointer';
-      deleteBtn.onclick = () => {
-        wrapper.remove();
+    // Update the file input with the cropped file
+    function updateFileList(croppedFile) {
         const dataTransfer = new DataTransfer();
-        Array.from(imageInput.files).forEach(f => {
-          if (f !== file) {
-            dataTransfer.items.add(f);
-          }
+        Array.from(imageInput.files).forEach(file => {
+            if (file !== currentFile) dataTransfer.items.add(file);
+        });
+        dataTransfer.items.add(croppedFile);
+        imageInput.files = dataTransfer.files;
+    }
+
+    // Handle file input change
+    imageInput.addEventListener('change', function(event) {
+        const files = Array.from(event.target.files);
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cursor = 'pointer';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-wrapper';
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+                wrapper.style.margin = '10px';
+
+                img.addEventListener('click', () => initCropper(e.target.result, file, img));
+                wrapper.appendChild(img);
+
+                addDeleteButton(wrapper, img, file);
+                previewContainer.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Add delete button to the image wrapper
+    function addDeleteButton(wrapper, img, file) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'X';
+        deleteBtn.className = 'delete-image';
+        deleteBtn.style = `
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        `;
+
+        deleteBtn.onclick = (e) => {
+            e.preventDefault();
+            wrapper.remove();
+            if (file) {
+                removeFileFromInput(file);
+            } else {
+              const imageUrl = img.src;
+              deletedImages.add(imageUrl);
+              updateDeletedImagesInput();
+
+            }
+        };
+
+        wrapper.appendChild(deleteBtn);
+    }
+
+    // Update the deleted images hidden input
+    function updateDeletedImagesInput() {
+        let hiddenInput = document.getElementById('deleted-images');
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.id = 'deleted-images';
+            hiddenInput.name = 'deletedImages';
+            document.getElementById('edit-product-form').appendChild(hiddenInput);
+        }
+        hiddenInput.value = JSON.stringify(Array.from(deletedImages));
+    }
+
+    // Remove a specific file from the file input
+    function removeFileFromInput(fileToRemove) {
+        const dataTransfer = new DataTransfer();
+        Array.from(imageInput.files).forEach(file => {
+            if (file !== fileToRemove) {
+                dataTransfer.items.add(file);
+            }
         });
         imageInput.files = dataTransfer.files;
-      };
-      wrapper.appendChild(deleteBtn);
+    }
 
-      previewContainer.appendChild(wrapper);
-    };
-    reader.readAsDataURL(file);
-  });
-});
-
-// Handle cancel crop button click
-cancelCropBtn.addEventListener('click', () => {
-  if (cropper) {
-    cropper.destroy();
-  }
-  cropContainer.style.display = 'none';
-});
-
-// Initialize cropper for existing images (this might be on server-loaded images)
-document.querySelectorAll('.preview-images img').forEach(img => {
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'relative';
-  wrapper.style.display = 'inline-block';
-  wrapper.style.margin = '10px';
-
-  img.style.cursor = 'pointer';
-  img.addEventListener('click', () => initCropper(img.src, null, img));
-  wrapper.appendChild(img);
-
-  // Add delete button for server-loaded images
-  const deleteBtn = document.createElement('button');
-  deleteBtn.textContent = 'X';
-  deleteBtn.style.position = 'absolute';
-  deleteBtn.style.top = '5px';
-  deleteBtn.style.right = '5px';
-  deleteBtn.style.backgroundColor = 'red';
-  deleteBtn.style.color = 'white';
-  deleteBtn.style.border = 'none';
-  deleteBtn.style.cursor = 'pointer';
-  deleteBtn.onclick = () => {
-    wrapper.remove();
-    // Handle the deletion of the image on the server-side if needed
-  };
-  wrapper.appendChild(deleteBtn);
-
-  previewContainer.appendChild(wrapper);
-});
-
-document.getElementById('edit-product-form').addEventListener('submit', async function(event) {
-      event.preventDefault();
-      
-      // Clear previous errors
-      document.querySelectorAll('.error-feedback').forEach(el => el.textContent = '');
-      document.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
-      document.getElementById('error-container').innerHTML = '';
-
-      const formData = new FormData(this);
-      const productId = '<%= product._id %>';
-      
-      try {
-        const response = await fetch(`/admin/products/edit/${productId}`, {
-          method: 'PUT',
-          body: formData,
+    // Initialize delete buttons for existing images
+    document.addEventListener('DOMContentLoaded', () => {
+        const existingImages = document.querySelectorAll('.image-wrapper');
+        existingImages.forEach(wrapper => {
+            const img = wrapper.querySelector('img');
+            const deleteBtn = wrapper.querySelector('.delete-image');
+            if (deleteBtn) {
+                deleteBtn.onclick = (e) => {
+                    e.preventDefault();
+                    wrapper.remove();   
+                    const imageUrl = img.getAttribute('src');
+                    deletedImages.add(imageUrl);
+                    updateDeletedImagesInput();
+                };
+            }
         });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          if (result.success) {
-            window.location.href = '/admin/products';
-          }
-        } else {
-          if (result.errors && Array.isArray(result.errors)) {
-            // Display validation errors
-            const errorContainer = document.getElementById('error-container');
-            errorContainer.innerHTML = `
-              <div class="alert alert-danger">
-                <ul>
-                  ${result.errors.map(error => `<li>${error}</li>`).join('')}
-                </ul>
-              </div>
-            `;
-
-            // Highlight fields with errors
-            result.errors.forEach(error => {
-              if (error.includes('name')) {
-                document.getElementById('name-error').textContent = error;
-                document.getElementById('name').parentElement.classList.add('has-error');
-              }
-              if (error.includes('price')) {
-                document.getElementById('price-error').textContent = error;
-                document.getElementById('price').parentElement.classList.add('has-error');
-              }
-              if (error.includes('stock')) {
-                document.getElementById('stock-error').textContent = error;
-                document.getElementById('stock').parentElement.classList.add('has-error');
-              }
-              if (error.includes('description')) {
-                document.getElementById('description-error').textContent = error;
-                document.getElementById('description').parentElement.classList.add('has-error');
-              }
-              if (error.includes('category')) {
-                document.getElementById('category-error').textContent = error;
-                document.getElementById('category').parentElement.classList.add('has-error');
-              }
-            });
-          } else {
-            // Display general error
-            document.getElementById('error-container').innerHTML = `
-              <div class="alert alert-danger">
-                ${result.message || 'An error occurred while updating the product.'}
-              </div>
-            `;
-          }
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('error-container').innerHTML = `
-          <div class="alert alert-danger">
-            An error occurred while updating the product. Please try again.
-          </div>
-        `;
-      }
     });
 
-  </script>
+    // Handle cancel crop button click
+    cancelCropBtn.addEventListener('click', () => {
+        if (cropper) cropper.destroy();
+        cropContainer.style.display = 'none';
+    });
+
+    // Handle form submission with error handling for deleted images
+    document.getElementById('edit-product-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        clearPreviousErrors();
+
+        const formData = new FormData(this);
+        const productId = '<%= product._id %>';
+
+        // Add deleted images to formData if any
+        if (deletedImages.size > 0) {
+            formData.set('deletedImages', JSON.stringify(Array.from(deletedImages)));
+        }
+
+        try {
+            const response = await fetch(`/admin/products/edit/${productId}`, {
+                method: 'PUT',
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (response.ok && result.success) {
+                window.location.href = '/admin/products';
+            } else {
+                displayErrors(result);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            displayErrorMessage('An error occurred while updating the product. Please try again.');
+        }
+    });
+
+    // Clear previous errors from the form
+    function clearPreviousErrors() {
+        document.querySelectorAll('.error-feedback').forEach(el => el.textContent = '');
+        document.querySelectorAll('.form-group').forEach(el => el.classList.remove('has-error'));
+        document.getElementById('error-container').innerHTML = '';
+    }
+
+    // Display errors in the form
+    function displayErrors(result) {
+        if (result.errors && Array.isArray(result.errors)) {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    <ul>${result.errors.map(error => `<li>${error}</li>`).join('')}</ul>
+                </div>
+            `;
+            highlightErrorFields(result.errors);
+        } else {
+            displayErrorMessage(result.message || 'An error occurred while updating the product.');
+        }
+    }
+
+    // Highlight fields with errors
+    function highlightErrorFields(errors) {
+        errors.forEach(error => {
+            if (error.includes('name')) markFieldAsError('name');
+            if (error.includes('price')) markFieldAsError('price');
+            if (error.includes('stock')) markFieldAsError('stock');
+            if (error.includes('description')) markFieldAsError('description');
+            if (error.includes('category')) markFieldAsError('category');
+        });
+    }
+
+    function markFieldAsError(fieldId) {
+        document.getElementById(`${fieldId}-error`).textContent = error;
+        document.getElementById(fieldId).parentElement.classList.add('has-error');
+    }
+
+    function displayErrorMessage(message) {
+        document.getElementById('error-container').innerHTML = `
+            <div class="alert alert-danger">${message}</div>
+        `;
+    }
+</script>
+
+    
+
 </body>
 </html>

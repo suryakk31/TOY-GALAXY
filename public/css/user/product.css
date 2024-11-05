@@ -153,12 +153,15 @@
 }
 
 
+
+
 /* Existing media queries... */
 
 @media (max-width: 768px) {
   .product-details {
       flex-direction: column;
       align-items: center;
+      margin-top: 150px;
   }
 
   .product-gallery {

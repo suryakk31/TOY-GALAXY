@@ -257,7 +257,7 @@ exports.postCheckout = async (req, res) => {
     const orderItems = itemsWithDiscounts.map((item, index) => {
       const couponDiscountForItem = Math.floor((itemCouponDiscounts[index] || 0) * 100) / 100;
       const finalPricePerUnit = Math.floor(((item.calculatedPrices.totalPriceForQuantity - couponDiscountForItem) / item.quantity) * 100) / 100;
-      console.log('finalPricePerUnit:',finalPricePerUnit)
+     
 
       return {
         productId: item.productId._id,
@@ -359,27 +359,27 @@ exports.postCheckout = async (req, res) => {
         <!-- Order Items Table -->
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
           <thead>
-            <tr style="background-color: #4a90e2; color: #ffffff;">
-              <th style="padding: 12px 15px; text-align: left;">Product</th>
-              <th style="padding: 12px 15px; text-align: center;">Quantity</th>
-              <th style="padding: 12px 15px; text-align: right;">Unit Price</th>
-              <th style="padding: 12px 15px; text-align: right;">Total</th>
-            </tr>
+          <tr style="background-color: #4a90e2; color: #ffffff;">
+        <th style="padding: 12px 15px; text-align: center; width: 40%;">Product</th>
+        <th style="padding: 12px 15px; text-align: center; width: 20%;">Quantity</th>
+        <th style="padding: 12px 15px; text-align: center; width: 20%;">Unit Price</th>
+        <th style="padding: 12px 15px; text-align: center; width: 20%;">Total</th>
+      </tr>
           </thead>
           <tbody>
-            ${orderItems.map(item => `
+          ${orderItems.map(item => `
               <tr>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #eee;">${item.productName}</td>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: right;">₹${item.price.toFixed(2)}</td>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.quantity).toFixed(2)}</td>
+                  <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: center;">${item.productName}</td>
+                  <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+                  <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: center;">₹${item.price.toFixed(2)}</td>
+                  <td style="padding: 12px 15px; border-bottom: 1px solid #eee; text-align: center;">₹${(item.price * item.quantity).toFixed(2)}</td>
               </tr>
-            `).join('')}
-          </tbody>
+          `).join('')}
+      </tbody>
         </table>
     
         <!-- Order Summary -->
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <div style="background-color: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 25px;">
           <div style="text-align: right;">
             <p style="margin: 8px 0;"><strong>Subtotal:</strong> <span style="min-width: 80px; display: inline-block;">₹${(totalPrice - deliveryFee + totalCouponDiscount).toFixed(2)}</span></p>
             <p style="margin: 8px 0;"><strong>Delivery Charge:</strong> <span style="min-width: 80px; display: inline-block;">₹${deliveryFee.toFixed(2)}</span></p>
@@ -404,7 +404,7 @@ exports.postCheckout = async (req, res) => {
     </html>
     `;
 
-    // Send email asynchronously without awaiting
+ 
     if (itemPaymentStatus !== 'failed') {
       transporter.sendMail({
         from: process.env.EMAIL_USER,
@@ -414,7 +414,7 @@ exports.postCheckout = async (req, res) => {
       })
       .then(async () => {
         
-        await Order.updateOne({ _id: newOrder._id }, { emailStatus: 'sent' });
+        await Orders.updateOne({ _id: newOrder._id }, { emailStatus: 'sent' });
       })
       .catch(emailError => {
         console.error('Error sending invoice email:', emailError);

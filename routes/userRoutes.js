@@ -33,6 +33,7 @@ const userfunZoneController = require('../controllers/user/userFunZoneController
 
 router.get('/',userController.getLandingPage)
 router.get('/homepage', userAuth.isAuthenticated, userController.getHomepage)
+router.post('/toy/subscribe' , userController.subscribe)
 router.get('/shop',userAuth.isAuthenticated,shopController.getShopPage)
 router.get('/product/:id',userAuth.isAuthenticated,productController.getProductPage)
 
@@ -55,7 +56,7 @@ router.get('/auth/addresses/:id',userAuth.isAuthenticated,addressController.getu
 router.put('/auth/addresses/:id',addressController.updateAddress)
 router.delete('/auth/addresses/:id', addressController.deleteAddress);
 
-router.get('/auth/cart',userAuth.isAuthenticated,cartController.getCart)
+router.get('/cart',userAuth.isAuthenticated,cartController.getCart)
 router.post('/auth/cart', cartController.addToCart);
 
 router.put('/auth/cart',  cartController.updateCartQuantity);
@@ -87,6 +88,6 @@ router.get('/auth/wishlist',userAuth.isAuthenticated,userwishlistController.getW
 router.post('/wishlist/add',userwishlistController.addToWishlist)
 router.post('/auth/wishlist/remove', userwishlistController.removeFromWishlist);
 
-router.get('/funZone',userfunZoneController.getFun)
+router.get('/funZone',userAuth.isAuthenticated,userfunZoneController.getFun)
 
 module.exports = router;

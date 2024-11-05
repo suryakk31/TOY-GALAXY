@@ -1,4 +1,4 @@
-exports.isAuthenticated = (req, res, next) => {
+exports.isAuthAuthenticated = (req, res, next) => {
     if (req.session.isAdmin) {
         return next();
     } else {

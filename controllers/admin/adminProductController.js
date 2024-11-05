@@ -1,5 +1,8 @@
 const Category = require('../../models/category');
 const Product = require('../../models/product'); 
+const path = require('path');
+const fs = require('fs');
+
 
 exports.getProductpage = async (req, res) => {
   try {
@@ -104,9 +107,15 @@ exports.getEditProductPage = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { name, description, price, category, stock } = req.body;
+    const { name, description, price, category, stock, deletedImages } = req.body;
     
     let errors = [];
+
+
+      const existingProduct = await Product.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
 
 
     if (!name || name.trim().length < 3 || name.trim().length > 50) {
@@ -140,8 +149,8 @@ exports.updateProduct = async (req, res) => {
     }
 
 
-    if (!description || description.trim().length < 10 || description.trim().length > 1000) {
-      errors.push('Description must be between 10 and 1000 characters.');
+    if (!description || description.trim().length < 10 || description.trim().length > 5000) {
+      errors.push('Description must be between 10 and 5000 characters.');
     }
 
     if (!category) {
@@ -152,21 +161,62 @@ exports.updateProduct = async (req, res) => {
       return res.status(400).json({ success: false, errors });
     }
 
- 
+    let updatedImages = [...existingProduct.image];
+
+    // Remove deleted images
+    if (deletedImages) {
+      const imagesToDelete = JSON.parse(deletedImages);
+      updatedImages = updatedImages.filter(img => !imagesToDelete.includes(img));
+      
+      // Delete the actual image files
+      imagesToDelete.forEach(async (imagePath) => {
+        try {
+          // Remove '/uploads/' from the start of the path and clean it
+          const filename = imagePath.split('/').pop(); // Get the last part after the last slash
+          const filePath = path.join(__dirname, '..', '..', 'uploads', filename);
+          
+          console.log('Attempting to delete:', filePath); 
+          
+          if (fs.existsSync(filePath)) {
+            await fs.promises.unlink(filePath);
+            console.log(`Successfully deleted file: ${filePath}`);
+          } else {
+            console.log(`File not found: ${filePath}`);
+          }
+        } catch (err) {
+          console.error('Error deleting image file:', err);
+        }
+      });
+    }
+
+    // Add new images
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(file => `/uploads/${file.filename}`);
+      updatedImages = [...updatedImages, ...newImages];
+    }
+
+    // Check if we have at least one image
+    if (updatedImages.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        errors: ['Product must have at least one image'] 
+      });
+    }
+
     const updates = {
       name: name.trim(),
       description: description.trim(),
-      price: priceNum,
+      price: parseFloat(price),
       category,
-      stock: stockNum
+      stock: parseInt(stock),
+      image: updatedImages
     };
 
-  
-    if (req.files && req.files.length > 0) {
-      updates.image = req.files.map(file => `/uploads/${file.filename}`);
-    }
-
-    const updatedProduct = await Product.findByIdAndUpdate(productId, updates, { new: true });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      updates,
+      { new: true }
+    );
 
     if (updatedProduct) {
       res.status(200).json({ success: true, product: updatedProduct });
@@ -176,9 +226,9 @@ exports.updateProduct = async (req, res) => {
 
   } catch (error) {
     console.error('Error during product update:', error);
-    res.status(500).json({ success: false, message: 'An error occurred while updating the product' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'An error occurred while updating the product' 
+    });
   }
 };
-
-
-

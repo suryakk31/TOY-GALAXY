@@ -30,6 +30,7 @@ h2 {
 
 .delivery-address {
   position: relative;
+  border-color: #8A2BE2;
 }
 
 .section-header {
@@ -64,11 +65,16 @@ h2 {
   margin: 5px 0;
 }
 
+.order-details {
+  border-color: #8A2BE2;
+}
+
 /* Order Details styles */
 .product-details {
   display: flex;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  
 }
 
 .product-image {
@@ -88,8 +94,8 @@ h2 {
 }
 
 .delivery-status {
-  border-top: 1px solid #e0e0e0;
-  padding-top: 15px;
+  margin: 20px 0;
+  padding: 10px;
 }
 
 .delivery-status button {
@@ -113,63 +119,8 @@ h2 {
   color: #2874f0;
   text-decoration: none;
 }
-/* Status Bar styles */
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: nowrap;
-}
 
-.status-step {
-  flex: 1;
-  text-align: center;
-  position: relative;
-  margin-bottom: 10px;
-}
 
-.status-step:before {
-  content: '';
-  height: 2px;
-  background-color: #e0e0e0;
-  position: absolute;
-  top: 15px;
-  left: 0;
-  right: 0;
-  z-index: 1;
-}
-
-.status-step:first-child:before {
-  left: 50%;
-}
-
-.status-step:last-child:before {
-  right: 50%;
-}
-
-.status-dot {
-  width: 30px;
-  height: 30px;
-  background-color: #e0e0e0;
-  border-radius: 50%;
-  display: inline-block;
-  position: relative;
-  z-index: 2;
-}
-
-.status-label {
-  margin-top: 5px;
-  font-size: 12px;
-}
-
-.status-step.active .status-dot {
-  background-color: #2874f0;
-}
-
-.status-step.active:before,
-.status-step.active + .status-step:before {
-  background-color: #2874f0;
-}
 
 
 .cancel-button {
@@ -191,16 +142,18 @@ h2 {
   background-color: #d32f2f;
 }
 
-footer {
+.footer {
   text-align: center;
   padding: 20px 0;
-  background-color: #FF9933;
-  margin-top: 50px;
+  background-color: #8A2BE2;  /* Electric Purple footer */
+  margin-top: -10px;
+  border-top: 2px solid #FFD700; 
 }
 
-footer p {
-  color: white;
+.footer p {
+  color: #FFFFFF;  /* White text */
   font-size: 1rem;
+  text-shadow: 1px 1px 2px rgba(255, 215, 0, 0.5);
 }
 
 /* Media Queries for Responsive Design */
@@ -271,6 +224,9 @@ footer p {
     color: #666;
     margin-top: 5px;
   }
+  .delivery-address {
+    margin-top: 250px;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -289,5 +245,183 @@ footer p {
 
   .status-label {
     font-size: 13px;
+  }
+}
+
+/* Status Bar Colors */
+:root {
+  --status-pending: #FFA500;      /* Orange */
+  --status-confirmed: #4169E1;    /* Royal Blue */
+  --status-shipped: #9370DB;      /* Medium Purple */
+  --status-out-delivery: #20B2AA; /* Light Sea Green */
+  --status-delivered: #32CD32;    /* Lime Green */
+  --status-return-requested: #FF6B6B; /* Salmon Red */
+  --status-returned: #4d14dc;     /* Crimson */
+  --status-cancelled: #ee0e0e;    /* Gray */
+}
+
+.delivery-status {
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 30px 0;
+  max-width: 1000px;
+}
+
+/* Line connecting status points */
+.status-bar::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+/* Progress line */
+.status-bar::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  height: 2px;
+  background: var(--status-pending);
+  z-index: 2;
+  transition: width 0.3s ease;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 3;
+  min-width: 80px;
+}
+
+.status-round {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.status-item span {
+  font-size: 12px;
+  text-align: center;
+  color: #666;
+  max-width: 80px;
+  word-wrap: break-word;
+}
+
+/* Active Status Styles */
+.status-item.active .status-round {
+  border-width: 3px;
+}
+
+.status-item.active span {
+  font-weight: 600;
+}
+
+/* Status-specific colors */
+.status-item[data-status="pending"].active .status-round {
+  border-color: var(--status-pending);
+  background-color: var(--status-pending);
+}
+
+.status-item[data-status="Order Confirmed"].active .status-round {
+  border-color: var(--status-confirmed);
+  background-color: var(--status-confirmed);
+}
+
+.status-item[data-status="Shipped"].active .status-round {
+  border-color: var(--status-shipped);
+  background-color: var(--status-shipped);
+}
+
+.status-item[data-status="Out for delivery"].active .status-round {
+  border-color: var(--status-out-delivery);
+  background-color: var(--status-out-delivery);
+}
+
+.status-item[data-status="delivered"].active .status-round {
+  border-color: var(--status-delivered);
+  background-color: var(--status-delivered);
+}
+
+.status-item[data-status="Return Requested"].active .status-round {
+  border-color: var(--status-return-requested);
+  background-color: var(--status-return-requested);
+}
+
+.status-item[data-status="returned"].active .status-round {
+  border-color: var(--status-returned);
+  background-color: var(--status-returned);
+}
+
+.status-item[data-status="cancelled"].active .status-round {
+  border-color: var(--status-cancelled);
+  background-color: var(--status-cancelled);
+}
+
+/* Progress line colors based on status */
+.status-bar[data-current-status="pending"]::after {
+  background: var(--status-pending);
+}
+
+.status-bar[data-current-status="Order Confirmed"]::after {
+  background: var(--status-confirmed);
+}
+
+.status-bar[data-current-status="Shipped"]::after {
+  background: var(--status-shipped);
+}
+
+.status-bar[data-current-status="Out for delivery"]::after {
+  background: var(--status-out-delivery);
+}
+
+.status-bar[data-current-status="delivered"]::after {
+  background: var(--status-delivered);
+}
+
+.status-bar[data-current-status="Return Requested"]::after {
+  background: var(--status-return-requested);
+}
+
+.status-bar[data-current-status="returned"]::after {
+  background: var(--status-returned);
+}
+
+.status-bar[data-current-status="cancelled"]::after {
+  background: var(--status-cancelled);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .status-bar {
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .status-bar::before,
+  .status-bar::after {
+    display: none;
+  }
+
+  .status-item {
+    min-width: 100px;
   }
 }

@@ -7,6 +7,59 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/user/homePage.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* Custom SweetAlert styles */
+    .swal2-popup {
+        border-radius: 15px;
+        font-family: Arial, sans-serif;
+    }
+    
+    .swal2-title {
+        color: #4a4a4a;
+        font-size: 1.8em;
+    }
+    
+    .swal2-html-container {
+        color: #666;
+    }
+    
+    .swal2-confirm {
+        background-color: #ff6b6b !important;
+        border-radius: 5px !important;
+        padding: 12px 30px !important;
+    }
+    
+    .swal2-confirm:focus {
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3) !important;
+    }
+    
+    /* Loading spinner customization */
+    .swal2-loading {
+        border-color: #ff6b6b transparent #ff6b6b transparent;
+    }
+    
+    /* Success icon customization */
+    .swal2-success-ring {
+        border-color: #4CAF50;
+    }
+    
+    .swal2-success-line-tip,
+    .swal2-success-line-long {
+        background-color: #4CAF50;
+    }
+    
+    /* Error icon customization */
+    .swal2-error {
+        border-color: #d33;
+    }
+    
+    .swal2-x-mark-line-left,
+    .swal2-x-mark-line-right {
+        background-color: #d33;
+    }
+    </style>
 </head>
 <body>
   <%- include('../partials/header') %>
@@ -54,13 +107,7 @@
                 <span class="discount-tag"><%= product.discount %>% off</span>
               </div>
               
-              <div class="product-footer">
-                <% if (product.stock === 0) { %>
-                  <p class="stock-status out-of-stock">Out of Stock</p>
-                <% } else if (product.stock < 5) { %>
-                  <p class="stock-status low-stock">Only <%= product.stock %> left!</p>
-                <% } %>
-              </div>
+            
             </div>
           </article>
         <% }); %>
@@ -102,13 +149,7 @@
                 <span class="discount-tag"><%= product.discount %>% off</span>
               </div>
               
-              <div class="product-footer">
-                <% if (product.stock === 0) { %>
-                  <p class="stock-status out-of-stock">Out of Stock</p>
-                <% } else if (product.stock < 5) { %>
-                  <p class="stock-status low-stock">Only <%= product.stock %> left!</p>
-                <% } %>
-              </div>
+             
             </div>
           </article>
         <% }); %>
@@ -133,5 +174,89 @@
   </main>
 
   <%- include('../partials/footer') %>
+
+  <script>
+   // Frontend JavaScript
+const handleSubscribe = async (event) => {
+    event.preventDefault();
+    const emailInput = event.target.querySelector('input[type="email"]');
+    const email = emailInput.value;
+
+    // Show loading alert
+    Swal.fire({
+        title: 'Subscribing...',
+        html: 'Please wait while we process your subscription',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    try {
+        const response = await fetch('/toy/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Success alert
+            Swal.fire({
+                title: 'Welcome to Toy Galaxy! 🎉',
+                text: 'Check your email for an exclusive welcome gift!',
+                icon: 'success',
+                confirmButtonText: 'Thanks!',
+                confirmButtonColor: '#4CAF50',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+            emailInput.value = ''; // Clear the input
+        } else {
+            // Error alert
+            Swal.fire({
+                title: 'Oops...',
+                text: data.message || 'Something went wrong!',
+                icon: 'error',
+                confirmButtonText: 'Try Again',
+                confirmButtonColor: '#d33'
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        // Network error alert
+        Swal.fire({
+            title: 'Connection Error',
+            text: 'Please check your internet connection and try again.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33'
+        });
+    }
+};
+
+// Event listener for the form
+document.querySelector('.subscribe-container form')
+    .addEventListener('submit', handleSubscribe);
+
+// Input validation with sweet alert
+document.querySelector('input[type="email"]').addEventListener('invalid', (event) => {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#f8bb86'
+    });
+});
+  </script>
 </body>
 </html>
