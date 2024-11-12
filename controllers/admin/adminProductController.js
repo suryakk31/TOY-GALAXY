@@ -20,8 +20,9 @@ exports.getProductpage = async (req, res) => {
     res.render('admin/products', {
       products,
       showDescription: false,
-      current: page,
-      pages: Math.ceil(count / perPage)
+      current: 1,
+      pages: 1
+      
     });
 
   } catch (error) {
