@@ -181,36 +181,7 @@
   
 </div>
 
-<!-- Add new section for recent activity -->
-<div class="recent-activity">
-  <h3>Recent Activity</h3>
-  <div class="activity-grid">
-    <div class="activity-card">
-      <h4>Latest Orders</h4>
-      <ul>
-        <% recentOrders.forEach(order => { %>
-          <li>
-            <span class="order-id">#<%= order._id.toString().slice(-6) %></span>
-            <span class="order-amount">₹ <%= order.totalPrice.toFixed(2) %></span>
-            <span class="order-date"><%= moment(order.orderDate).fromNow() %></span>
-          </li>
-        <% }); %>
-      </ul>
-    </div>
-    
-    <div class="activity-card">
-      <h4>New Users</h4>
-      <ul>
-        <% recentUsers.forEach(user => { %>
-          <li>
-            <span class="user-name"><%= user.firstName %></span>
-            <span class="join-date"><%= moment(user.createdAt).fromNow() %></span>
-          </li>
-        <% }); %>
-      </ul>
-    </div>
-  </div>
-</div>
+
 
 <!-- Add inventory status section -->
 <div class="inventory-status">
