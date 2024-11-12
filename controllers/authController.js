@@ -56,10 +56,10 @@ exports.postSignup = async (req, res) => {
         
         const hash = await bcrypt.hash(password, 10);
         
-        // Generate OTP
+  
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         
-        // Store user data in session instead of database
+   
         req.session.pendingUser = {
             firstName,
             lastName,
@@ -71,7 +71,7 @@ exports.postSignup = async (req, res) => {
             referralCode
         };
         
-        // Send OTP email
+   
         const mailOptions = {
             from: process.env.EMAIL,
             to: email,
@@ -291,9 +291,9 @@ exports.resendOtp = async (req, res) => {
 
         const newOtp = Math.floor(1000 + Math.random() * 9000).toString();
         
-        // Update the pendingUser in the session with the new OTP
+    
         pendingUser.otp = newOtp;
-        pendingUser.otpExpiry = Date.now() + 3600000; // 1 hour expiry
+        pendingUser.otpExpiry = Date.now() + 3600000; 
         req.session.pendingUser = pendingUser;
 
         const mailOptions = {
@@ -305,7 +305,7 @@ exports.resendOtp = async (req, res) => {
                 <html>
                 <head>
                     <meta charset="utf-8">
-                    <title>Your New OTP for Kids Kastle</title>
+                    <title>Your New OTP for Toy Galaxy</title>
                 </head>
                 <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0;">
                     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -325,7 +325,7 @@ exports.resendOtp = async (req, res) => {
                             </div>
                             
                             <p style="font-size: 16px; color: #666666; margin-top: 20px; text-align: center;">
-                                Thank you for your patience. We're excited to have you join Kids Kastle!
+                                Thank you for your patience. We're excited to have you join Toy Galaxy!
                             </p>
                         </div>
                         
@@ -339,11 +339,11 @@ exports.resendOtp = async (req, res) => {
             text: `
                 Hello ${pendingUser.firstName}!
                 
-                Your new OTP for Kids Kastle account verification is: ${newOtp}
+                Your new OTP for TOYS GALAXY account verification is: ${newOtp}
                 
                 This OTP will expire in 1 hour.
                 
-                Thank you for your patience. We're excited to have you join Kids Kastle!
+                Thank you for your patience. We're excited to have you join Toy Galaxy!
             `
         };
 

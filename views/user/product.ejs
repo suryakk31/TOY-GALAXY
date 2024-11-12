@@ -100,7 +100,15 @@
 
       <div class="product-description">
         <h3>Product Details</h3>
-        <p><%= product.description %></p>
+        <ul class="description-points">
+          <% if (product.description) { %>
+            <% product.description.split('\n').forEach(point => { %>
+              <% if (point.trim()) { %>
+                <li><%= point.replace(/^-\s*/, '') %></li>
+              <% } %>
+            <% }); %>
+          <% } %>
+        </ul>
       </div>
     </div>
     </section>
@@ -108,7 +116,9 @@
 
  
 
-  <%- include('../partials/footer') %>
+    <div class="footer">
+      <p>&copy; <%= new Date().getFullYear() %>  kids kastle</p>
+    </footer>
 
   <script>
    

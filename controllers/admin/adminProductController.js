@@ -3,15 +3,30 @@ const Product = require('../../models/product');
 const path = require('path');
 const fs = require('fs');
 
-
 exports.getProductpage = async (req, res) => {
   try {
-    const products = await Product.find().populate('category'); 
-    const showDescription = false;
-    res.render('admin/products', { products, showDescription }); 
-    
+    const perPage = 10;
+    const page = req.query.page || 1;
+
+    const skip = (perPage * page) - perPage;
+    const products = await Product.find()
+    .sort({ createdAt: -1 })
+      .populate('category')
+      .skip(skip)
+      .limit(perPage);
+
+    const count = await Product.countDocuments();
+
+    res.render('admin/products', {
+      products,
+      showDescription: false,
+      current: parseInt(page),
+      pages: Math.ceil(count / perPage)
+    });
+
   } catch (error) {
-    res.status(500).send(error.message); 
+    console.error(error);
+    res.status(500).send('Server error');
   }
 };
 
@@ -163,25 +178,25 @@ exports.updateProduct = async (req, res) => {
 
     let updatedImages = [...existingProduct.image];
 
-    // Remove deleted images
+
     if (deletedImages) {
       const imagesToDelete = JSON.parse(deletedImages);
       updatedImages = updatedImages.filter(img => !imagesToDelete.includes(img));
       
-      // Delete the actual image files
+      
       imagesToDelete.forEach(async (imagePath) => {
         try {
-          // Remove '/uploads/' from the start of the path and clean it
-          const filename = imagePath.split('/').pop(); // Get the last part after the last slash
+         
+          const filename = imagePath.split('/').pop(); 
           const filePath = path.join(__dirname, '..', '..', 'uploads', filename);
           
-          console.log('Attempting to delete:', filePath); 
+         
           
           if (fs.existsSync(filePath)) {
             await fs.promises.unlink(filePath);
-            console.log(`Successfully deleted file: ${filePath}`);
+        
           } else {
-            console.log(`File not found: ${filePath}`);
+           
           }
         } catch (err) {
           console.error('Error deleting image file:', err);
@@ -189,13 +204,13 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    // Add new images
+
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => `/uploads/${file.filename}`);
       updatedImages = [...updatedImages, ...newImages];
     }
 
-    // Check if we have at least one image
+    
     if (updatedImages.length === 0) {
       return res.status(400).json({ 
         success: false, 

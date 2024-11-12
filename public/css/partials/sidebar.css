@@ -12,6 +12,7 @@
     padding: 8px;
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
 }
 
 .mobile-toggle i {
@@ -50,7 +51,7 @@
     z-index: 200;
     transition: all 0.3s ease-in-out;
     margin-left: 30px;
-    /* Add border color here */
+    border: 1px solid #8A2BE2;
     border-radius: 8px; /* Optional: to give rounded corners */
 }
 
@@ -195,3 +196,4 @@
         display: none;
     }
 }
+

@@ -52,6 +52,21 @@
     background-color: #8A2BE2;
     color: #FFFFFF;
 }
+
+.copy-btn {
+      background: #8A2BE2;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .copy-btn:hover {
+      background: #FFD700;
+      color: #8A2BE2;
+    }
     </style>
 </head>
 <body>
@@ -148,7 +163,7 @@
                 
                                      
                                         
-                                            <p style="margin: 5px 0; font-size: 14px;"><span style="text-decoration: line-through; color: gray;"><%= item.productId.originalPrice %>
+                                            <p style="margin: 5px 0; font-size: 14px;"><span style="text-decoration: line-through; color: gray;"><%= item.productId.originalPrice %></span></p>
                                         
                                         </div>
                                        
@@ -267,8 +282,11 @@
                     <% coupon.forEach(coupon => { %>
                     <div class="coupon">
                         <div class="coupon-code">
-                            <i class='bx bx-purchase-tag'></i> <%= coupon.couponCode %>
+                            <i class='bx bx-purchase-tag'></i> 
+                            <span class="code-text"><%= coupon.couponCode %></span>
+                            
                         </div>
+                        <button class="copy-btn">COPY CODE</button>
                         <div class="coupon-title">Get  <%= coupon.discount %> % off</div>
                         <div class="coupon-description"><%= coupon.description %> 
                           <br>
@@ -332,10 +350,8 @@
          
             
         </main>
-    </div>
-       
-    <%- include('../partials/footer') %>
-      
+ 
+ 
       
    
 
@@ -820,6 +836,39 @@ window.addEventListener('beforeunload', clearCheckoutData);
 </script>
 
     
-    
+    <script>
+      // Select all elements with the class '.copy-btn'
+const copyButtons = document.querySelectorAll('.copy-btn');
+
+copyButtons.forEach(btn => {
+  btn.addEventListener('click', function() {
+    // Locate the '.code-text' element within the same parent container
+    const codeElement = this.parentElement.querySelector('.code-text');
+
+    if (codeElement) { // Check if the element exists
+      navigator.clipboard.writeText(codeElement.textContent.trim())
+        .then(() => {
+          // Change button text to indicate success
+          this.textContent = 'COPIED';
+          
+          // Reset button text after 3 seconds
+          setTimeout(() => {
+            this.textContent = 'COPY CODE';
+          }, 3000);
+        })
+        .catch(err => {
+          console.error('Failed to copy:', err);
+          this.textContent = 'COPY FAILED';
+          setTimeout(() => {
+            this.textContent = 'COPY CODE';
+          }, 3000);
+        });
+    } else {
+      console.error('No code element found');
+    }
+  });
+});
+
+    </script>
 </body>
 </html>

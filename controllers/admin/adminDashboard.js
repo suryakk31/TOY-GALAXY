@@ -1,7 +1,7 @@
 const Order = require('../../models/order');
 const User = require('../../models/user');
 const Product = require('../../models/product');
-const Category = require('../../models/category');
+
 const moment = require('moment');
 
 exports.getAdminDashboard = async (req, res) => {
@@ -291,6 +291,90 @@ exports.getAdminDashboard = async (req, res) => {
         }, {});
 
 
+        const lastMonth = moment().subtract(1, 'months').startOf('month');
+        const twoMonthsAgo = moment().subtract(2, 'months').startOf('month');
+        
+        const [lastMonthSales, previousMonthSales] = await Promise.all([
+            Order.aggregate([
+                {
+                    $match: {
+                        orderDate: {
+                            $gte: lastMonth.toDate(),
+                            $lt: moment().startOf('month').toDate()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: "$totalPrice" }
+                    }
+                }
+            ]),
+            Order.aggregate([
+                {
+                    $match: {
+                        orderDate: {
+                            $gte: twoMonthsAgo.toDate(),
+                            $lt: lastMonth.toDate()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: "$totalPrice" }
+                    }
+                }
+            ])
+        ]);
+
+        const monthlyGrowth = lastMonthSales[0] && previousMonthSales[0]
+            ? ((lastMonthSales[0].total - previousMonthSales[0].total) / previousMonthSales[0].total) * 100
+            : 0;
+
+        const averageOrderValue = totalOrders > 0 ? (totalSales[0]?.total || 0) / totalOrders : 0;
+
+      
+        const recentOrders = await Order.find()
+            .sort({ orderDate: -1 })
+            .limit(5);
+
+   
+        const recentUsers = await User.find()
+            .sort({ createdAt: -1 })
+            .limit(5);
+
+      
+        const lowStockThreshold = 10; 
+        const lowStockItems = await Product.find({ stock: { $lte: lowStockThreshold } })
+            .select('name stock')
+            .limit(5);
+        
+        const lowStockCount = await Product.countDocuments({ stock: { $lte: lowStockThreshold } });
+
+       
+        const categoryPerformance = await Order.aggregate([
+            { $unwind: "$items" },
+            { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } },
+            { $unwind: "$product" },
+            { $group: {
+                _id: "$product.category",
+                revenue: { $sum: { $multiply: ["$items.quantity", "$items.price"] } },
+                sales: { $sum: "$items.quantity" }
+            }},
+            { $lookup: { from: "categories", localField: "_id", foreignField: "_id", as: "category" } },
+            { $unwind: "$category" },
+            { $project: {
+                name: "$category.name",
+                revenue: 1,
+                sales: 1
+            }},
+            { $sort: { revenue: -1 } },
+            { $limit: 5 }
+        ]);
+
+
 
 
         res.render('admin/adminDashboard', {
@@ -306,7 +390,15 @@ exports.getAdminDashboard = async (req, res) => {
             topProducts,
             topCategories,
             orderItemStatuses,
-            orderItemStatusCounts
+            orderItemStatusCounts,
+            monthlyGrowth,
+            averageOrderValue,
+            recentOrders,
+            recentUsers,
+            lowStockItems,
+            lowStockCount,
+            categoryPerformance,
+            moment
             
         });
     } catch (error) {
@@ -314,3 +406,4 @@ exports.getAdminDashboard = async (req, res) => {
         res.status(500).send('An error occurred while loading the dashboard');
     }
 };
+

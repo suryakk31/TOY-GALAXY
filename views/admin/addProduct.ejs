@@ -94,6 +94,134 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 0;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+.modal-header {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.close-modal {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.modal textarea:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Add these button styles if not already present */
+.modal .submit-btn,
+.modal .cancel-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.modal .submit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal .submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.modal .cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.modal .cancel-btn:hover {
+  background-color: #545b62;
+}
+
 
 
   </style>
@@ -147,11 +275,14 @@ input[type=number]::-webkit-outer-spin-button {
         <input type="number" id="price" name="price">
         <div id="price-error-message" class="error-message" style="display: none;">Please enter a valid price.</div>
       </div>
-      <div class="form-group">
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea>
-        <div id="description-error-message" class="error-message" style="display: none;">Description must be at least 10 characters long.</div>
-      </div>
+    <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea id="description" name="description"></textarea>
+    <button type="button" onclick="addPoint()">Add Point</button>
+    <div id="description-error-message" class="error-message" style="display: none;">
+        Description must be at least 10 characters long.
+    </div>
+</div>
       <div class="form-group">
         <label for="stock">Stock:</label>
         <input type="number" id="stock" name="stock">
@@ -191,6 +322,26 @@ input[type=number]::-webkit-outer-spin-button {
     <button id="crop-btn">Crop</button>
     <button id="cancel-crop-btn">Cancel</button>
   </div>
+
+  <!-- Add this modal HTML right before the closing body tag -->
+<div id="pointModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add Description Point</h2>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="pointInput">Enter Point:</label>
+        <textarea id="pointInput" rows="3" placeholder="Enter your description point here..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" id="addPointBtn" class="submit-btn">Add Point</button>
+      <button type="button" id="cancelPointBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
  
   <script src="https://unpkg.com/cropperjs"></script>
   <script>
@@ -268,52 +419,142 @@ input[type=number]::-webkit-outer-spin-button {
   }
   
   function handleFileChange(event) {
-    const files = event.target.files;
-    const validFiles = Array.from(files).filter(file => {
-      const fileType = file.type.toLowerCase();
-      return fileType === 'image/jpeg' || fileType === 'image/jpg' || fileType === 'image/png';
-    });
+  const files = event.target.files;
+  const maxFileSize = 5 * 1024 * 1024; // 5MB max file size
   
-    if (validFiles.length !== files.length) {
-      alert('Only JPEG, JPG, and PNG images are allowed.');
-    }
-  
-    imageQueue = [...imageQueue, ...validFiles];
-  
-    validFiles.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const imgContainer = document.createElement('div');
-        imgContainer.className = 'img-container';
-        imgContainer.style.position = 'relative';
-        imgContainer.style.display = 'inline-block';
-        
-        const imgElement = document.createElement('img');
-        imgElement.src = e.target.result;
-        imgElement.className = 'preview-image';
-        imgElement.style.cursor = 'pointer';
-        imgElement.setAttribute('data-file', file.name);
-  
-        const deleteIcon = document.createElement('span');
-        deleteIcon.className = 'delete-icon';
-        deleteIcon.innerHTML = '&#10005;';
-        deleteIcon.onclick = (e) => {
-          e.stopPropagation();
-          deletedImages.add(file.name);
-          imgContainer.remove();
-        };
-  
-        imgElement.onclick = () => {
-          initiateCrop(imgElement, file);
-        };
-  
-        imgContainer.appendChild(imgElement);
-        imgContainer.appendChild(deleteIcon);
-        previewContainer.appendChild(imgContainer);
-      };
-      reader.readAsDataURL(file);
-    });
+  // Create or get the messages container
+  let messagesContainer = document.getElementById('image-validation-messages');
+  if (!messagesContainer) {
+    messagesContainer = document.createElement('div');
+    messagesContainer.id = 'image-validation-messages';
+    document.querySelector('.form-group:has(#image)').appendChild(messagesContainer);
   }
+  
+  // Clear previous messages
+  messagesContainer.innerHTML = '';
+  
+  // Arrays to store different types of messages
+  let errorMessages = [];
+  let successMessages = [];
+  
+  const validFiles = Array.from(files).filter(file => {
+    // Get lowercase file type
+    const fileType = file.type.toLowerCase();
+    
+    // Check if it's an allowed image type
+    const isAllowedType = fileType === 'image/jpeg' || 
+                         fileType === 'image/jpg' || 
+                         fileType === 'image/png';
+    
+    // Check if it's a forbidden file type
+    const isForbiddenType = fileType.startsWith('video/') || 
+                           fileType.startsWith('audio/') || 
+                           fileType === 'application/pdf';
+    
+    // Check file size
+    const isValidSize = file.size <= maxFileSize;
+    
+    // If it's a forbidden type, add error message
+    if (isForbiddenType) {
+      errorMessages.push(`"${file.name}" is not allowed. Only image files (JPEG, JPG, PNG) are permitted.`);
+      return false;
+    }
+    
+    // If it's not an allowed image type, add error message
+    if (!isAllowedType) {
+      errorMessages.push(`"${file.name}" is not a valid image format. Please use JPEG, JPG, or PNG files only.`);
+      return false;
+    }
+    
+    // If file is too large, add error message
+    if (!isValidSize) {
+      errorMessages.push(`"${file.name}" exceeds the maximum file size of 5MB.`);
+      return false;
+    }
+    
+    // Add success message for valid files
+    successMessages.push(`"${file.name}" is valid and ready to upload.`);
+    return true;
+  });
+
+  // Display messages
+  if (errorMessages.length > 0) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-messages';
+    errorDiv.innerHTML = errorMessages.map(msg => `
+      <div class="message error">
+        <i class='bx bx-x-circle'></i>
+        ${msg}
+      </div>
+    `).join('');
+    messagesContainer.appendChild(errorDiv);
+  }
+
+  if (successMessages.length > 0) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-messages';
+    successDiv.innerHTML = successMessages.map(msg => `
+      <div class="message success">
+        <i class='bx bx-check-circle'></i>
+        ${msg}
+      </div>
+    `).join('');
+    messagesContainer.appendChild(successDiv);
+  }
+
+  // Clear the file input if no valid files are selected
+  if (validFiles.length === 0) {
+    event.target.value = '';
+    return;
+  }
+
+  imageQueue = [...imageQueue, ...validFiles];
+
+  validFiles.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const imgContainer = document.createElement('div');
+      imgContainer.className = 'img-container';
+      imgContainer.style.position = 'relative';
+      imgContainer.style.display = 'inline-block';
+      
+      const imgElement = document.createElement('img');
+      imgElement.src = e.target.result;
+      imgElement.className = 'preview-image';
+      imgElement.style.cursor = 'pointer';
+      imgElement.setAttribute('data-file', file.name);
+
+      // Verify that the loaded file is actually an image
+      imgElement.onload = function() {
+        if (this.width === 0 || this.height === 0) {
+          errorMessages.push(`"${file.name}" appears to be corrupted or not a valid image.`);
+          updateMessages();
+          imgContainer.remove();
+          imageQueue = imageQueue.filter(f => f.name !== file.name);
+          return;
+        }
+      };
+
+      const deleteIcon = document.createElement('span');
+      deleteIcon.className = 'delete-icon';
+      deleteIcon.innerHTML = '&#10005;';
+      deleteIcon.onclick = (e) => {
+        e.stopPropagation();
+        deletedImages.add(file.name);
+        imgContainer.remove();
+      };
+
+      imgElement.onclick = () => {
+        initiateCrop(imgElement, file);
+      };
+
+      imgContainer.appendChild(imgElement);
+      imgContainer.appendChild(deleteIcon);
+      previewContainer.appendChild(imgContainer);
+    };
+    reader.readAsDataURL(file);
+  });
+}
   
   function initiateCrop(imgElement, file) {
     currentImgElement = imgElement;
@@ -373,6 +614,78 @@ input[type=number]::-webkit-outer-spin-button {
   imageInput.addEventListener('change', handleFileChange);
 
 
+</script>
+
+<script>
+// Replace the existing addPoint function with this new version
+function addPoint() {
+    const modal = document.getElementById('pointModal');
+    const closeBtn = document.querySelector('.close-modal');
+    const addPointBtn = document.getElementById('addPointBtn');
+    const cancelPointBtn = document.getElementById('cancelPointBtn');
+    const pointInput = document.getElementById('pointInput');
+    const descriptionBox = document.getElementById('description');
+
+    // Show modal
+    modal.style.display = 'block';
+    pointInput.value = ''; // Clear any previous input
+    pointInput.focus(); // Focus the input field
+
+    // Function to close modal
+    function closeModal() {
+        modal.style.display = 'none';
+        pointInput.value = '';
+    }
+
+    // Function to add point to description
+    function addPointToDescription() {
+        const point = pointInput.value.trim();
+        if (point) {
+            if (descriptionBox.value) {
+                descriptionBox.value += `\n- ${point}`;
+            } else {
+                descriptionBox.value = `- ${point}`;
+            }
+            closeModal();
+        }
+    }
+
+    // Close modal when clicking the close button
+    closeBtn.onclick = closeModal;
+
+    // Close modal when clicking cancel button
+    cancelPointBtn.onclick = closeModal;
+
+    // Add point when clicking add button
+    addPointBtn.onclick = addPointToDescription;
+
+    // Handle Enter key in textarea
+    pointInput.onkeydown = function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addPointToDescription();
+        }
+    };
+
+    // Close modal when clicking outside
+    window.onclick = function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    };
+}
+
+// Initialize modal close button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.querySelector('.close-modal');
+    const modal = document.getElementById('pointModal');
+    
+    if (closeBtn && modal) {
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+    }
+});
 </script>
   
 </body>

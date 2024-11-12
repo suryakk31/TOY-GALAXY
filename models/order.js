@@ -41,6 +41,7 @@ const OrderSchema = new Schema({
             type: Number, 
             default: 0 
         },
+    
         couponDiscountPrice: {
             type: Number,
             default: 0
@@ -78,6 +79,13 @@ const OrderSchema = new Schema({
         min: 0,
         default: 0 
     },
+
+    couponCode: {
+        type: String,
+        trim: true,
+        uppercase: true
+    },
+
     address: {
         name: { 
             type: String, 

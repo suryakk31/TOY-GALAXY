@@ -51,7 +51,7 @@
                   <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
                     <p><strong><%= item.productId.name %></strong></p>
                     <p>Category: <%= item.productId.category.name %></p>
-                    <p>Description: <%= item.productId.description %></p>
+
                     <button type="button" class="btn btn-primary btn-sm me-1 mb-2 remove-btn" data-product-id="<%= item.productId._id %>" data-mdb-tooltip-init title="Remove item" >
                       <i class="fas fa-trash"></i>
                     </button>
@@ -67,9 +67,7 @@
                         <i class="fas fa-plus"></i>
                       </button>
                     </div>
-                    <p class="text-start text-md-center">
-                      <strong>₹<%= (item.productId.price - (item.productId.price * item.productId.discount / 100)).toFixed(2) %></strong>
-                    </p>
+                 
                   </div>
                 </div>
                 <hr class="my-4" />
@@ -178,12 +176,6 @@ document.querySelectorAll('.quantity-btn').forEach(button => {
   });
 });
 
-document.querySelectorAll('.remove-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const productId = this.getAttribute('data-product-id');
-    removeItemFromCart(productId);
-  });
-});
 
 function updateQuantity(productId, change, quantityInput, priceElement, summaryElements) {
   fetch('/auth/cart', {
@@ -239,30 +231,22 @@ function updateQuantity(productId, change, quantityInput, priceElement, summaryE
 }
 
 
-    document.querySelectorAll('.remove-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const productId = this.getAttribute('data-product-id');
-
-
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You want to remove the product from the cart",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, remove it!',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
-        
-          removeProduct(productId);
-        }
-      });
-    });
+document.querySelectorAll('.remove-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const productId = this.getAttribute('data-product-id');
+    const priceElement = this.closest('.row').querySelector('strong');
+    const summaryElements = {
+      originalTotal: document.querySelector('.list-group-item:nth-child(1) span'),
+      categoryOffer: document.querySelector('.list-group-item:nth-child(2) span'),
+      shipping: document.querySelector('.list-group-item:nth-child(3) span'),
+      total: document.querySelector('.list-group-item:nth-child(4) span strong')
+    };
+    const cartItemRow = this.closest('.row');
+    removeProduct(productId, priceElement, summaryElements, cartItemRow);
   });
-// Update the removeProduct function in your frontend JavaScript
-function removeProduct(productId) {
+});
+
+function removeProduct(productId, priceElement, summaryElements, cartItemRow) {
   fetch('/auth/cart', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
@@ -272,21 +256,13 @@ function removeProduct(productId) {
   .then(data => {
     if (data.success) {
       // Remove the product row from the DOM
-      const productRow = document.querySelector(`[data-product-id="${productId}"]`).closest('.row');
-      productRow.remove();
+      cartItemRow.remove();
       
-      // Update the cart summary
-      updateCartSummary(data.cart);
-      
-      // Show success message
-      Swal.fire({
-        icon: 'success',
-        title: 'Removed!',
-        text: 'The product has been removed from your cart.',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false
-      });
+      // Update the summary elements
+      summaryElements.originalTotal.textContent = `₹${data.cart.originalTotal}`;
+      summaryElements.categoryOffer.textContent = `₹${data.cart.categoryOffer}`;
+      summaryElements.shipping.textContent = data.cart.deliveryFeeDisplay;
+      summaryElements.total.textContent = `₹${data.cart.total}`;
       
       // Check if cart is empty after removal
       const remainingItems = document.querySelectorAll('.card-body .row').length;
@@ -306,6 +282,16 @@ function removeProduct(productId) {
         if (summarySection) summarySection.remove();
         if (paymentSection) paymentSection.remove();
       }
+      
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Removed!',
+        text: 'The product has been removed from your cart.',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
     } else {
       Swal.fire({
         icon: 'error',

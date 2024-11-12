@@ -229,6 +229,30 @@
     const cancelCropBtn = document.getElementById('cancel-crop-btn');
     const deletedImages = new Set(); // Track deleted images
 
+
+    const ALLOWED_FILE_TYPES = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp'
+    ];
+
+    
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+    function validateFile(file) {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        throw new Error(`File type "${file.type}" is not supported. Please upload only images (JPEG, PNG, GIF, WebP).`);
+    }
+    
+    if (file.size > MAX_FILE_SIZE) {
+        throw new Error(`File size exceeds 5MB limit. Please choose a smaller file.`);
+    }
+    
+    return true;
+}
+
     // Initialize Cropper on the selected image
     function initCropper(imageSrc, file, previewImage) {
         cropImage.src = imageSrc;
@@ -271,29 +295,37 @@
     // Handle file input change
     imageInput.addEventListener('change', function(event) {
         const files = Array.from(event.target.files);
+        clearPreviousErrors();
         files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.cursor = 'pointer';
+        try {
+            if (validateFile(file)) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cursor = 'pointer';
 
-                const wrapper = document.createElement('div');
-                wrapper.className = 'image-wrapper';
-                wrapper.style.position = 'relative';
-                wrapper.style.display = 'inline-block';
-                wrapper.style.margin = '10px';
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'image-wrapper';
+                    wrapper.style.position = 'relative';
+                    wrapper.style.display = 'inline-block';
+                    wrapper.style.margin = '10px';
 
-                img.addEventListener('click', () => initCropper(e.target.result, file, img));
-                wrapper.appendChild(img);
+                    img.addEventListener('click', () => initCropper(e.target.result, file, img));
+                    wrapper.appendChild(img);
 
-                addDeleteButton(wrapper, img, file);
-                previewContainer.appendChild(wrapper);
-            };
-            reader.readAsDataURL(file);
-        });
+                    addDeleteButton(wrapper, img, file);
+                    previewContainer.appendChild(wrapper);
+                };
+                reader.readAsDataURL(file);
+            }
+        } catch (error) {
+            displayErrorMessage(error.message);
+            // Remove invalid file from input
+            removeFileFromInput(file);
+        }
     });
-
+});
     // Add delete button to the image wrapper
     function addDeleteButton(wrapper, img, file) {
         const deleteBtn = document.createElement('button');

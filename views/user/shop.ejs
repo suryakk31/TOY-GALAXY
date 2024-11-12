@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Shop our latest products">
-  <title>Shop - Kids kastle</title>
+  <title>Shop - Toy Galaxy</title>
   <link rel="stylesheet" href="/css/user/shop.css">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -13,53 +13,32 @@
 
 
 
-  <style>
-    .wishlist-btn .bxs-heart {
-  color: #FF6600;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin: 50px 0;
-  }
-
-  .pagination a {
-    display: inline-block;
-    padding: 10px 15px;
-    margin: 0 5px;
-    text-decoration: none;
-    color: #007bff;
-    border: 1px solid #007bff;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .pagination a.active {
-    background-color: #007bff;
-    color: white;
-    border: 1px solid #007bff;
-  }
-
-  .pagination a:hover {
-    background-color: #e9ecef;
-  }
-
-  .pagination a:focus {
-    outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
-  }
-  </style>
+ 
   
 </head>
 <body>
+  
   <%- include('../partials/header') %>
 
   <main class="shop-container">
-    <aside class="filters">
+    <button id="filterMenuToggle" class="filter-menu-toggle">
+      <i class='bx bx-filter-alt'></i>
+      Filters
+    </button>
+    <div class="filter-overlay" id="filterOverlay"></div>
+
+    <aside class="filters" id="filterMenu">
+      <div class="filter-header">
+     
+       
+      </div>
+  
       <div class="filter-section">
         <div class="filter-heading">
-          <span>Filters</span>
+          <h2><span>FILTERS</span></h2>
+          <button class="close-filter" id="closeFilter">
+            <i class='bx bx-x'></i>
+          </button>
           <button id="clearAllFilters" class="clear-filters">Clear All</button>
         </div>
       </div>
@@ -183,8 +162,9 @@
             
             <div class="product-price">
               <span class="original-price">₹<%= product.price %></span>
+            
               <span class="discounted-price">₹<%= discountedPrice.toFixed(2) %></span>
-              <span class="discount-tag"><%= product.discount %>% off</span>
+             
             </div>
             
            
@@ -218,26 +198,39 @@
   </div>
   
 
+<div id="noProductsModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <div style="background-color: white; padding: 30px; border-radius: 8px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; max-width: 400px; width: 90%;">
+
+        <!-- Large Icon and Header Text -->
+        <h3 style="margin-bottom: 15px; color: #333; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class='bx bxs-planet' style="font-size: 50px; margin-right: 10px; color: #8A2BE2;"></i>
+            No Products Found
+        </h3>
+
+        <!-- Message Text -->
+        <p style="margin-bottom: 20px; color: #666;">Sorry, we couldn't find any products matching your search criteria.</p>
+
+        <!-- Return Button -->
+        <button onclick="resetFilters()" style="background-color: #8A2BE2; color: #FFD700; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: all 0.3s ease;">
+            Return to ToyGalaxy Shop
+        </button>
+    </div>
+</div>
 
   <%- include('../partials/footer') %>
 
 
-
   <script>
-  
-
-
-
-function showLoading() {
-  document.body.classList.add('loading');
+    // Loading Functions
+    function showLoading() {
+      document.body.classList.add('loading');
       document.querySelector('.shop-container').classList.add('blur-content');
       const loadingIndicator = document.createElement('div');
       loadingIndicator.id = 'loadingIndicator';
       loadingIndicator.innerHTML = '<div class="loader"></div>';
       document.body.appendChild(loadingIndicator);
     }
-
-   
+    
     function hideLoading() {
       const loadingIndicator = document.getElementById('loadingIndicator');
       if (loadingIndicator) {
@@ -246,27 +239,30 @@ function showLoading() {
       document.body.classList.remove('loading');
       document.querySelector('.shop-container').classList.remove('blur-content');
     }
-
-
-async function updateProducts(url) {
-  showLoading();
-  try {
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
-    const response = await fetch(url);
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const newProductsGrid = doc.querySelector('.products-grid');
-    document.querySelector('.products-grid').innerHTML = newProductsGrid.innerHTML;
-  } catch (error) {
-    console.error('Error updating products:', error);
-  } finally {
-    hideLoading();
-  }
-}
-
-
-async function applyFilters() {
+    
+    // Update Products Function
+    async function updateProducts(url) {
+      showLoading();
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await fetch(url);
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newProductsGrid = doc.querySelector('.products-grid');
+        document.querySelector('.products-grid').innerHTML = newProductsGrid.innerHTML;
+        
+        // Reattach wishlist event listeners to new products
+        attachWishlistListeners();
+      } catch (error) {
+        console.error('Error updating products:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // Filter Application Function
+    async function applyFilters() {
       showLoading();
       try {
         const categories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
@@ -303,115 +299,154 @@ async function applyFilters() {
         const newUrl = `/shop?${searchParams.toString()}`;
         await updateProducts(newUrl);
         
-
         history.pushState(null, '', newUrl);
       } finally {
         hideLoading();
+        
+        // Close mobile filter menu after applying filters
+        if (window.innerWidth <= 768) {
+          closeFilterMenu();
+        }
       }
     }
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const categoryId = urlParams.get('category');
-
-  if (categoryId) {
-
-    const checkbox = document.querySelector(`#category${categoryId}`);
-    if (checkbox) {
-   
-      checkbox.checked = true;
-      
-
-      applyFilters();
-      
-
-      const productsSection = document.querySelector('.products-grid');
-      if (productsSection) {
-        productsSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  }
-});
-
-
-async function clearAllFilters() {
+    
+    // Clear Filters Function
+    async function clearAllFilters() {
       showLoading();
       try {
         document.querySelectorAll('.category-checkbox, .price-checkbox').forEach(checkbox => {
           checkbox.checked = false;
         });
-
+    
         document.querySelectorAll('input[name="sort"]').forEach(radio => {
           radio.checked = false;
         });
-
+    
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
           searchInput.value = '';
         }
-
+    
         await applyFilters();
       } finally {
         hideLoading();
       }
     }
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const clearAllButton = document.getElementById('clearAllFilters');
-  if (clearAllButton) {
-    clearAllButton.addEventListener('click', clearAllFilters);
-  }
-
-  document.querySelectorAll('.category-checkbox, .price-checkbox, input[name="sort"]').forEach(input => {
-    input.addEventListener('change', applyFilters);
-  });
-
-  const searchInput = document.getElementById('search-input');
-  if (searchInput) {
-    searchInput.addEventListener('input', debounce(applyFilters, 300));
-  }
-});
-
-
-function debounce(func, delay) {
-  let debounceTimer;
-  return function() {
-    const context = this;
-    const args = arguments;
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => func.apply(context, args), delay);
-  }
-}
-
-  </script>
-
-<script>
-document.querySelectorAll('.wishlist-btn').forEach(button => {
-  button.addEventListener('click', async function(e) {
-    e.preventDefault();
-    const productId = this.dataset.productId;
-    try {
-      const response = await fetch('/wishlist/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId }),
+    
+    // Wishlist Functions
+    function attachWishlistListeners() {
+      document.querySelectorAll('.wishlist-btn').forEach(button => {
+        button.addEventListener('click', async function(e) {
+          e.preventDefault();
+          const productId = this.dataset.productId;
+          try {
+            const response = await fetch('/wishlist/add', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ productId }),
+            });
+            const data = await response.json();
+            if (data.added) {
+              this.querySelector('i').classList.replace('bx-heart', 'bxs-heart');
+            } else {
+              this.querySelector('i').classList.replace('bxs-heart', 'bx-heart');
+            }
+          } catch (error) {
+            console.error('Error updating wishlist:', error);
+          }
+        });
       });
-      const data = await response.json();
-      if (data.added) {
-        this.querySelector('i').classList.replace('bx-heart', 'bxs-heart');
-      } else {
-        this.querySelector('i').classList.replace('bxs-heart', 'bx-heart');
-      }
-    } catch (error) {
-      console.error('Error updating wishlist:', error);
     }
-  });
-});
-</script>
+    
+    // Mobile Menu Functions
+    function openFilterMenu() {
+      document.getElementById('filterMenu').classList.add('active');
+      document.getElementById('filterOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeFilterMenu() {
+      document.getElementById('filterMenu').classList.remove('active');
+      document.getElementById('filterOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    // Debounce Function
+    function debounce(func, delay) {
+      let debounceTimer;
+      return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func.apply(context, args), delay);
+      }
+    }
+    
+    // Document Ready Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu event listeners
+      const filterMenuToggle = document.getElementById('filterMenuToggle');
+      const closeFilter = document.getElementById('closeFilter');
+      const filterOverlay = document.getElementById('filterOverlay');
+    
+      filterMenuToggle.addEventListener('click', openFilterMenu);
+      closeFilter.addEventListener('click', closeFilterMenu);
+      filterOverlay.addEventListener('click', closeFilterMenu);
+    
+      // Window resize handler
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && document.getElementById('filterMenu').classList.contains('active')) {
+          closeFilterMenu();
+        }
+      });
+    
+      // Filter event listeners
+      const clearAllButton = document.getElementById('clearAllFilters');
+      if (clearAllButton) {
+        clearAllButton.addEventListener('click', clearAllFilters);
+      }
+    
+      document.querySelectorAll('.category-checkbox, .price-checkbox, input[name="sort"]').forEach(input => {
+        input.addEventListener('change', applyFilters);
+      });
+    
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', debounce(applyFilters, 300));
+      }
+    
+      // Check URL parameters for category
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryId = urlParams.get('category');
+      if (categoryId) {
+        const checkbox = document.querySelector(`#category${categoryId}`);
+        if (checkbox) {
+          checkbox.checked = true;
+          applyFilters();
+          const productsSection = document.querySelector('.products-grid');
+          if (productsSection) {
+            productsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      }
+    
+      // Initial wishlist setup
+      attachWishlistListeners();
+    
+      // Show modal if no products found
+      const noProductsFound = <%= locals.noProductsFound ? 'true' : 'false' %>;
+      if (noProductsFound) {
+        document.getElementById('noProductsModal').style.display = 'block';
+      }
+    });
+    
+    // Reset filters function for no products modal
+    function resetFilters() {
+      window.location.href = '/shop';
+    }
+    </script>
+
 </body>
 </html>

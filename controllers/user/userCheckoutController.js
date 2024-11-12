@@ -81,12 +81,27 @@ exports.getCheckout = async (req, res) => {
       return res.redirect("/auth/homepage");
     }
 
+    const userOrders = await Orders.find({
+      userId: userDatabase._id,
+      couponCode: { $exists: true, $ne: null }
+    }, 'couponCode');
+
+    // Extract all coupon codes used by the user in orders
+    const usedCouponCodes = userOrders.map(order => order.couponCode);
+
+    // Find available coupons (not used in orders and not in usedBy array)
+    const coupon = await Coupon.find({
+      $and: [
+        { usedBy: { $ne: req.session.email } },
+        { couponCode: { $nin: usedCouponCodes } }
+      ]
+    }).sort({ createdAt: -1 });
+
+
     const categories = await Category.find();
     let wallet = await Wallet.findOne({ userId: userDatabase._id });  
     const addresses = await Address.find({ userId: userDatabase._id });
-    const coupon = await Coupon.find({
-      usedBy: { $ne: req.session.email } // Exclude coupons used by the current user
-    }).sort({ createdAt: -1 }); // 
+
 
     const originalTotal = cart.items.reduce((sum, item) => {
       const itemTotal =
@@ -183,19 +198,19 @@ exports.postCheckout = async (req, res) => {
 
     const itemsWithDiscounts = cart.items.map(item => {
       const originalPrice = Math.floor(item.productId.price * 100) / 100;
-      console.log('originalPrice:',originalPrice)
+     
       const quantity = item.quantity;
       
       const productDiscountAmount = Math.floor((originalPrice * item.productId.discount) / 100 * 100) / 100;
-      console.log('productDiscountAmount:',productDiscountAmount)
+  
       const priceAfterProductDiscount = Math.floor((originalPrice - productDiscountAmount) * 100) / 100;
-      console.log('priceAfterProductDiscount:',priceAfterProductDiscount)
+    
       const categoryDiscountAmount = item.productId.category && item.productId.category.offer
         ? Math.floor((priceAfterProductDiscount * item.productId.category.offer) / 100 * 100) / 100
         : 0;
-     console.log('categoryDiscountAmount:',categoryDiscountAmount)
+
       const priceAfterAllDiscounts = Math.floor((priceAfterProductDiscount - categoryDiscountAmount) * 100) / 100;
-      console.log('priceAfterAllDiscounts:',priceAfterAllDiscounts)
+
     
       return {
         ...item.toObject(),
@@ -213,19 +228,22 @@ exports.postCheckout = async (req, res) => {
       (sum, item) => sum + item.calculatedPrices.totalPriceForQuantity,
       0
     ) * 100) / 100;
-    console.log('subtotalBeforeDelivery:',subtotalBeforeDelivery)
+  
 
     const deliveryFee = subtotalBeforeDelivery > 500 ? 0 : 50;
     const subtotalBeforeCoupon = Math.floor((subtotalBeforeDelivery + deliveryFee) * 100) / 100;
 
     let totalCouponDiscount = 0;
     let itemCouponDiscounts = [];
-
+    let validCouponCode = null;
+    let appliedCoupon = null;
     if (couponCode) {
       const coupon = await Coupon.findOne({ couponCode });
       
       if (coupon && new Date() < new Date(coupon.expiryDate)) {
         if (subtotalBeforeCoupon >= coupon.minAmount && subtotalBeforeCoupon <= coupon.maxAmount) {
+          validCouponCode = couponCode;
+          appliedCoupon = coupon;
           totalCouponDiscount = Math.floor(Math.min(
             (coupon.discount / 100) * subtotalBeforeCoupon,
             coupon.maxAmount - coupon.minAmount
@@ -244,7 +262,7 @@ exports.postCheckout = async (req, res) => {
       }
     }
 
-    // Determine payment status for each item based on payment method
+
     let itemPaymentStatus;
     if (paymentMethod === 'COD') {
       itemPaymentStatus = 'pending';
@@ -268,15 +286,17 @@ exports.postCheckout = async (req, res) => {
         quantity: item.quantity,
         price: Math.floor(finalPricePerUnit * 100) / 100,
         discountPrice: Math.floor((item.calculatedPrices.productDiscountAmount + item.calculatedPrices.categoryDiscountAmount) * 100) / 100,
+        couponCode: validCouponCode,
         couponDiscountPrice: couponDiscountForItem,
+        couponCode: validCouponCode, 
         orderStatus: 'pending',
-        paymentStatus: itemPaymentStatus,  // Add payment status for each item
+        paymentStatus: itemPaymentStatus,  
         reason: ""
       };
     });
 
     const totalPrice = Math.floor((subtotalBeforeCoupon - totalCouponDiscount) * 100) / 100;
-    console.log('totalPrice:',totalPrice)
+  
     const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
    
@@ -298,6 +318,7 @@ exports.postCheckout = async (req, res) => {
       totalPrice,
       deliveryCharge: deliveryFee,
       couponDiscount: totalCouponDiscount,
+      couponCode: validCouponCode, 
       address: {
         name: address.name,
         address: address.address,

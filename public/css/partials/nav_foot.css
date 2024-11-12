@@ -30,9 +30,10 @@
     left: 0;
     width: 100%;
     z-index: 1000;
+    height: 80px;
 }
 
-.logo {
+.logos {
     display: flex;
     align-items: center;
     font-size: 2rem;
@@ -41,19 +42,23 @@
     text-shadow: 2px 2px 4px rgba(135, 206, 235, 0.5);
 }
 
-.logo .rotating-planet {
+.logos .rotating-planet {
     font-size: 2.5rem;
     margin-right: 0.5rem;
     animation: rotate 10s linear infinite;
     color: #87CEEB;  /* Sky Blue for the planet */
 }
 
-.logo i {
+.logos i {
     margin-right: 0.3rem;
     font-size: 2rem;
     animation: 
         bounce-and-spin 3s infinite ease-in-out,
         color-shift 5s infinite;
+}
+
+.logos h1 {
+    font-size: 36px;
 }
 
 .search-container {
@@ -312,6 +317,81 @@ footer p {
 }
 
 
+@media screen and (max-width: 539px) {
+   
+
+    .logos {
+        width: 35%;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .logos h1 {
+        font-size: 24px;
+    }
+
+    .search-container {
+        width: 100%;
+        order: 2;
+        margin: 1rem 0;
+        margin-left: 1000px;
+    }
+
+    .search-container input {
+        min-width: 100%;
+    }
+
+    .nav-menu {
+        display: none;
+        width: 100%;
+        order: 3;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 0;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-item {
+        margin: 0.5rem 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .dropdown-content {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+    }
+
+    .user-dropdown-content {
+        position: static;
+        width: 100%;
+    }
+
+    .hamburger {
+        display: block;
+        position: absolute;
+        top: 1.5rem;
+        right: 1rem;
+    }
+
+    .hamburger.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+}
+
+
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
@@ -404,6 +484,101 @@ footer p {
     }
 
    
+}
+
+@media(max-width : 1224px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .logo {
+        margin-bottom: 0.5rem;
+        margin-left: 50px;
+    }
+
+    .search-container {
+        order: 2;
+        max-width: 40%;
+        margin: 0.5rem 0;
+    }
+
+    .dropdown-content, .user-dropdown-content {
+        position: static;
+        display: none;
+        background-color: #8A2BE2;
+        box-shadow: none;
+    }
+
+    .dropdown:hover .dropdown-content,
+    .user-dropdown:hover .user-dropdown-content {
+        display: none;
+     
+    }
+
+    .dropdown.active .dropdown-content,
+    .user-dropdown.active .user-dropdown-content {
+        display: block;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .hamburger.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .nav-menu {
+        position: fixed;
+        right: -100%;
+        top: 0;
+        flex-direction: column;
+        background-color: #8A2BE2;
+        width: 80%;
+        max-width: 400px;
+        height: 100vh;
+        z-index: 999;
+        padding-top: 4rem;
+        transition: 0.3s;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-overlay.active {
+        display: block;
+    }
+
+    .nav-item {
+        margin: 1.5rem 0;
+    }
+
+    .nav-link {
+        font-size: 1.2rem;
+    }
+
+    .nav-link i {
+        font-size: 1.2rem;
+    }
+
+    .footer-content {
+        flex-direction: column;
+    }
+
+  
+
 }
 
 

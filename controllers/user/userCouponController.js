@@ -1,6 +1,7 @@
 const User = require('../../models/user');
 const Category = require('../../models/category');
 const Coupon = require('../../models/coupon')
+const Orders = require('../../models/order');
 
 exports.getCoupon = async(req,res) => {
   const isLoggedIn = req.session.email ? true : false;
@@ -14,13 +15,26 @@ exports.getCoupon = async(req,res) => {
               errorMessage: 'Your account has been blocked. Please contact support.' 
           });
       }
-      // Only show coupons that haven't been used by this user, sorted by newest first
-      coupon = await Coupon.find({
-          usedBy: { $ne: req.session.email }
-      }).sort({ createdAt: -1 }); // Added sort here
-  } else {
-      coupon = await Coupon.find().sort({ createdAt: -1 }); // Added sort here
-  }
+      
+      const userOrders = await Orders.find({
+        userId: userDatabase._id,
+        couponCode: { $exists: true, $ne: null }
+    }, 'couponCode');
+
+   
+    const usedCouponCodes = userOrders.map(order => order.couponCode);
+
+
+    coupon = await Coupon.find({
+        $and: [
+            { usedBy: { $ne: req.session.email } },
+            { couponCode: { $nin: usedCouponCodes } }
+        ]
+    }).sort({ createdAt: -1 });
+} else {
+    coupon = await Coupon.find().sort({ createdAt: -1 });
+}
+
   const categories = await Category.find();
   
   res.render('user/coupon', {
@@ -38,7 +52,7 @@ exports.applyCoupon = async (req, res) => {
   try {
       const coupon = await Coupon.findOne({ 
           couponCode: couponCode,
-          usedBy: { $ne: req.session.email } // Check if user hasn't used this coupon
+          usedBy: { $ne: req.session.email } 
       });
       
       if (!coupon || new Date() >= new Date(coupon.expiryDate)) {
@@ -66,7 +80,7 @@ exports.applyCoupon = async (req, res) => {
 
       const discountAmount = Math.min((discount / 100) * totalAmount, maxAmount - minAmount);
       
-      // Add user's email to the coupon's usedBy array
+
       if (req.session.email) {
           await Coupon.findByIdAndUpdate(
               coupon._id,

@@ -182,3 +182,9 @@
         font-size: 16px; /* Better for mobile input */
     }
 }
+
+@media (max-width: 1224px) {
+ .main-container{
+    margin-top: 150px;
+ }  
+}

@@ -11,10 +11,7 @@ exports.getShopPage = async (req, res) => {
     let userWishlist = [];
 
     const ITEMS_PER_PAGE = 12;
-
-
     const page = parseInt(req.query.page) || 1;
-  
   
     if (isLoggedIn) {
       userDatabase = await User.findOne({ email: req.session.email });
@@ -26,7 +23,6 @@ exports.getShopPage = async (req, res) => {
       const wishlist = await Wishlist.findOne({ userId: userDatabase._id });
       userWishlist = wishlist ? wishlist.items : [];
     }
-
 
     const categories = await Category.find({ isBlocked: false });
 
@@ -43,16 +39,10 @@ exports.getShopPage = async (req, res) => {
 
     if (categoryIds.length > 0) {
       const validCategoryIds = categoryIds.filter(id => mongoose.Types.ObjectId.isValid(id));
-
-      
-      if (validCategoryIds.length === 0) {
-        return res.render('404')
+      if (validCategoryIds.length > 0) {
+        filterCriteria.category = { $in: validCategoryIds };
       }
-
-      filterCriteria.category = { $in: validCategoryIds };
     }
-
-    
 
     if (priceRanges.length > 0) {
       let priceCriteria = [];
@@ -70,7 +60,6 @@ exports.getShopPage = async (req, res) => {
       }
     }
 
-
     let sortCriteria = {};
     switch (sort) {
       case 'popularity':
@@ -86,33 +75,54 @@ exports.getShopPage = async (req, res) => {
         sortCriteria.createdAt = -1;
         break;
       default:
-        sortCriteria.createdAt = -1; 
+        sortCriteria.createdAt = -1;
         break;
     }
 
+ 
     const totalProducts = await Product.countDocuments(filterCriteria);
     
-    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
 
-    if (page < 1 || page > totalPages) {
-      return res.render('404');
+    if (totalProducts === 0) {
+      return res.render('user/shop', {
+        products: [],
+        userDatabase,
+        categories,
+        isLoggedIn,
+        userWishlist,
+        currentPage: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+        nextPage: 1,
+        prevPage: 1,
+        lastPage: 1,
+        noProductsFound: true,
+        appliedFilters: {
+          search,
+          categoryIds,
+          priceRanges,
+          sort,
+        }
+      });
     }
 
-    const skip = (page - 1) * ITEMS_PER_PAGE;
-
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+   
+    const validatedPage = page < 1 ? 1 : (page > totalPages ? totalPages : page);
+    const skip = (validatedPage - 1) * ITEMS_PER_PAGE;
 
     const products = await Product.find(filterCriteria)
-    .sort(sortCriteria)
-    .populate('category')
-    .skip(skip)
-    .limit(ITEMS_PER_PAGE);
-
+      .sort(sortCriteria)
+      .populate('category')
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE);
 
     const productsWithDiscounts = products.map(product => {
       const discountedPrice = product.price - (product.price * (product.discount || 0) / 100);
       return {
         ...product.toObject(),
-        discountedPrice: Math.round(discountedPrice * 100) / 100  
+        discountedPrice: Math.round(discountedPrice * 100) / 100
       };
     });
 
@@ -122,22 +132,22 @@ exports.getShopPage = async (req, res) => {
       categories,
       isLoggedIn,
       userWishlist,
-      currentPage: page,
+      currentPage: validatedPage,
       totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
-      nextPage: page + 1,
-      prevPage: page - 1,
+      hasNextPage: validatedPage < totalPages,
+      hasPrevPage: validatedPage > 1,
+      nextPage: validatedPage + 1,
+      prevPage: validatedPage - 1,
       lastPage: totalPages,
+      noProductsFound: false,
       appliedFilters: {
         search,
         categoryIds,
         priceRanges,
         sort,
-      },
+      }
     });
   } catch (error) {
-   
-    res.render('500')
+    res.render('500');
   }
 };

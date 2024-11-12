@@ -65,8 +65,11 @@
           <th>Address</th>
           <th>Product Name</th>
           <th>Quantity</th>
-          <th>Price</th>
+          <th>Discount Offer</th>
+          <th>Coupon Discount</th>
+          <th>Total Price</th>
           <th>Payment Method</th>
+    
           <th>Order Date</th>
        
         </tr>
@@ -83,7 +86,11 @@
               </td>
               <td><%= item.productName %></td>
               <td><%= item.quantity %></td>
+              <td>₹<%= item.discountPrice %></td>
+          
+              <td>₹<%= item.couponDiscountPrice %></td>
               <td>₹<%= order.totalPrice.toFixed(2) %></td>
+       
               <td><%= order.paymentMethod %></td>
               <td><%= order.orderDate ? order.orderDate.toDateString() : 'N/A' %></td>
              

@@ -3,9 +3,9 @@
 <div class="nav-overlay"></div>
 
 <nav class="navbar">
-  <div class="logo">
+  <div class="logos">
       <i class='bx bxs-planet rotating-planet'></i>
-      <h1>Toy Galaxy</h1>
+      <h1 >Toy Galaxy</h1>
   </div>
   <div class="search-container">
     <form action="/shop" method="get" id="searchForm">
@@ -73,6 +73,8 @@
       <span class="bar"></span>
   </div>
 </nav>
+
+
 
 
 
@@ -207,9 +209,77 @@ document.addEventListener('DOMContentLoaded', () => {
         sortInput.value = currentFilters.sort;
     }
 
-    // Show/hide close button based on search input
-    searchInput.addEventListener('input', () => {
-        closeSearch.style.display = searchInput.value ? 'block' : 'none';
+    // Function to redirect to shop with current filters
+    function redirectToShop(includeSearch = false) {
+        const currentFilters = getCurrentFilters();
+        const params = new URLSearchParams();
+
+        // Add non-empty filters
+        if (currentFilters.categories) params.append('categories', currentFilters.categories);
+        if (currentFilters.price) params.append('price', currentFilters.price);
+        if (currentFilters.sort) params.append('sort', currentFilters.sort);
+
+        // Add search term if requested and not empty
+        if (includeSearch) {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                params.append('search', searchTerm);
+            }
+        }
+
+        // Reset to page 1
+        params.append('page', '1');
+
+        // Navigate to filtered URL
+        window.location.href = `/shop?${params.toString()}`;
+    }
+
+    // Validate search input to allow only alphabets with controlled spaces
+    searchInput.addEventListener('input', (e) => {
+        // Get the current cursor position
+        const cursorPosition = e.target.selectionStart;
+        
+        // Remove multiple consecutive spaces and trim
+        let value = e.target.value;
+        value = value.replace(/\s+/g, ' ').trim();
+        
+        // Remove any non-alphabet characters (except single spaces)
+        const sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
+        
+        // Prevent starting with space
+        if (sanitizedValue.startsWith(' ')) {
+            value = sanitizedValue.trimStart();
+        } else {
+            value = sanitizedValue;
+        }
+        
+        // Update input value if it was changed
+        if (e.target.value !== value) {
+            e.target.value = value;
+            // Adjust cursor position if content was modified
+            e.target.setSelectionRange(cursorPosition, cursorPosition);
+        }
+
+        // Show/hide close button based on sanitized input
+        closeSearch.style.display = value ? 'block' : 'none';
+
+        // If the input is empty after backspace, show all products
+        if (!value && e.inputType === 'deleteContentBackward') {
+            redirectToShop(false);
+        }
+    });
+
+    // Handle keyboard events for space and backspace
+    searchInput.addEventListener('keydown', (e) => {
+        // Prevent space at the beginning
+        if (e.key === ' ' && e.target.selectionStart === 0) {
+            e.preventDefault();
+        }
+        
+        // Prevent multiple consecutive spaces
+        if (e.key === ' ' && e.target.value.charAt(e.target.selectionStart - 1) === ' ') {
+            e.preventDefault();
+        }
     });
 
     // Handle form submission
@@ -217,8 +287,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const searchTerm = searchInput.value.trim();
         
-        // Preserve existing filters
-        setFilterInputs();
+        // Validate search term contains only alphabets and single spaces
+        if (!/^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/.test(searchTerm)) {
+            alert('Please enter only alphabetical characters with single spaces between words');
+            return;
+        }
 
         // Remove empty parameters
         const formData = new FormData(searchForm);
@@ -236,19 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset search while maintaining other filters
     closeSearch.addEventListener('click', () => {
-        const currentFilters = getCurrentFilters();
-        const params = new URLSearchParams();
-
-        // Add non-empty filters
-        if (currentFilters.categories) params.append('categories', currentFilters.categories);
-        if (currentFilters.price) params.append('price', currentFilters.price);
-        if (currentFilters.sort) params.append('sort', currentFilters.sort);
-
-        // Reset to page 1
-        params.append('page', '1');
-
-        // Navigate to filtered URL without search
-        window.location.href = `/shop?${params.toString()}`;
+        searchInput.value = '';
+        closeSearch.style.display = 'none';
+        redirectToShop(false);
     });
 
     // Initialize the search container
@@ -257,8 +320,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const searchParam = urlParams.get('search');
         if (searchParam) {
-            searchInput.value = searchParam;
-            closeSearch.style.display = 'block';
+            // Validate and sanitize the search parameter
+            const sanitizedSearch = searchParam
+                .replace(/[^a-zA-Z\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+            searchInput.value = sanitizedSearch;
+            closeSearch.style.display = sanitizedSearch ? 'block' : 'none';
         }
     })();
 });

@@ -160,183 +160,211 @@ exports.addToCart = async (req, res) => {
       res.status(500).json({ success: false, message: 'Server error' });
     }
   };
+
   exports.updateCartQuantity = async (req, res) => {
     try {
-        const { productId, change } = req.body;
-        const userDatabase = await User.findOne({ email: req.session.email });
-
-        if (!userDatabase) {
-            return res.status(401).json({ success: false, message: 'User not found' });
-        }
-
-        const cart = await Cart.findOne({ userId: userDatabase._id })
-            .populate({
-                path: 'items.productId',
-                populate: {
-                    path: 'category'
-                }
-            });
-
-        if (!cart) {
-            return res.status(404).json({ success: false, message: 'Cart not found' });
-        }
-
-        const item = cart.items.find(item => item.productId._id.toString() === productId);
-
-        if (item) {
-            const product = await Product.findById(productId);
-            
-            if (!product) {
-                return res.status(404).json({ success: false, message: 'Product not found' });
-            }
-
-            const newQuantity = item.quantity + change;
-
-            if (newQuantity > product.stock) {
-                return res.status(400).json({ success: false, message: 'out_of_stock' });
-            }
-
-            if (newQuantity < 1) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: 'Cannot decrease quantity below 1' 
-                });
-            }
-
-            item.quantity = newQuantity;
-
-            let originalTotal = 0;
-            let categoryOffer = 0;
-            let deliveryFee = 0;
-
-            cart.items.forEach(cartItem => {
-                const itemPrice = cartItem.productId.price;
-                const itemDiscount = cartItem.productId.discount;
-                const itemQuantity = cartItem === item ? newQuantity : cartItem.quantity;
-                
-              
-                const originalPrice = itemPrice * itemQuantity;
-                originalTotal += originalPrice;
-
-            
-                if (cartItem.productId.category && cartItem.productId.category.discount) {
-                    const categoryDiscountAmount = (originalPrice * cartItem.productId.category.discount) / 100;
-                    categoryOffer += categoryDiscountAmount;
-                }
-            });
-
-        
-            if (originalTotal < 1000) {
-                deliveryFee = 40;
-            }
-
-         
-            const total = originalTotal - categoryOffer + deliveryFee;
-
-            await cart.save();
-
-          
-            return res.json({
-                success: true,
-                item: {
-                    quantity: newQuantity,
-                    productId: {
-                        price: item.productId.price,
-                        discount: item.productId.discount
-                    }
-                },
-                cart: {
-                    originalTotal: originalTotal.toFixed(2),
-                    categoryOffer: categoryOffer.toFixed(2),
-                    deliveryFeeDisplay: deliveryFee === 0 ? 'Free' : `₹${deliveryFee.toFixed(2)}`,
-                    total: total.toFixed(2)
-                }
-            });
-
-        } else {
-            return res.status(404).json({ success: false, message: 'Item not found in cart' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-};
-exports.removeProductFromCart = async (req, res) => {
-  try {
-    const { productId } = req.body;
-    const userDatabase = await User.findOne({ email: req.session.email });
-    
-    if (!userDatabase) {
-      return res.status(401).json({ success: false, message: 'User not found' });
-    }
-
-    const cart = await Cart.findOne({ userId: userDatabase._id })
-      .populate({
-        path: 'items.productId',
-        populate: {
-          path: 'category'
-        }
-      });
-
-    if (!cart) {
-      return res.status(404).json({ success: false, message: 'Cart not found' });
-    }
-
-    const item = cart.items.find(item => item.productId._id.toString() === productId);
-    if (item) {
-      const product = await Product.findById(productId);
-      
+      const { productId, change } = req.body;
+      const userDatabase = await User.findOne({ email: req.session.email });
   
-      product.stock += item.quantity;
-      await product.save();
-
-      cart.items.pull({ productId });
-      
-   
-      let originalTotal = 0;
-      let categoryOffer = 0;
-      let deliveryFee = 0;
-
-      cart.items.forEach(cartItem => {
-        const itemPrice = cartItem.productId.price;
-        const itemQuantity = cartItem.quantity;
-        
-
-        const originalPrice = itemPrice * itemQuantity;
-        originalTotal += originalPrice;
-
-  
-        if (cartItem.productId.category && cartItem.productId.category.discount) {
-          const categoryDiscountAmount = (originalPrice * cartItem.productId.category.discount) / 100;
-          categoryOffer += categoryDiscountAmount;
-        }
-      });
-
- 
-      if (originalTotal < 1000) {
-        deliveryFee = 40;
+      if (!userDatabase) {
+        return res.status(401).json({ success: false, message: 'User not found' });
       }
-
-
-      const total = originalTotal - categoryOffer + deliveryFee;
-
-      await cart.save();
-
-      return res.json({
-        success: true,
-        cart: {
-          originalTotal: originalTotal.toFixed(2),
-          categoryOffer: categoryOffer.toFixed(2),
-          deliveryFeeDisplay: deliveryFee === 0 ? 'Free' : `₹${deliveryFee.toFixed(2)}`,
-          total: total.toFixed(2)
-        }
-      });
-    } else {
-      return res.status(404).json({ success: false, message: 'Item not found in cart' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-};
   
+      const cart = await Cart.findOne({ userId: userDatabase._id })
+        .populate({
+          path: 'items.productId',
+          populate: {
+            path: 'category'
+          }
+        });
+  
+      if (!cart) {
+        return res.status(404).json({ success: false, message: 'Cart not found' });
+      }
+  
+      const item = cart.items.find(item => item.productId._id.toString() === productId);
+  
+      if (item) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+          return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+  
+        const newQuantity = item.quantity + change;
+  
+        if (newQuantity > product.stock) {
+          return res.status(400).json({ success: false, message: 'out_of_stock' });
+        }
+  
+        if (newQuantity < 1) {
+          return res.status(400).json({ 
+            success: false, 
+            message: 'Cannot decrease quantity below 1' 
+          });
+        }
+  
+        item.quantity = newQuantity;
+  
+        const validCartItems = cart.items
+          .filter(item => item.productId != null)
+          .map(item => ({
+            ...item.toObject(),
+            productId: {
+              _id: item.productId._id,
+              name: item.productId.name || 'Product Unavailable',
+              price: Number(item.productId.price) || 0,
+              discount: Number(item.productId.discount) || 0,
+              description: item.productId.description || 'No description available',
+              image: Array.isArray(item.productId.image) ? item.productId.image : [],
+              category: item.productId.category ? {
+                _id: item.productId.category._id,
+                name: item.productId.category.name || 'Uncategorized',
+                offer: Number(item.productId.category.offer) || 0
+              } : { name: 'Uncategorized', offer: 0 }
+            }
+          }));
+  
+        const originalTotal = validCartItems.reduce((sum, item) => {
+          const price = Number(item.productId.price) || 0;
+          const discount = Number(item.productId.discount) || 0;
+          const quantity = Number(item.quantity) || 0;
+          const itemTotal = (price - (price * discount / 100)) * quantity;
+          return sum + itemTotal;
+        }, 0);
+  
+        const categoryOffer = validCartItems.reduce((sum, item) => {
+          const price = Number(item.productId.price) || 0;
+          const discount = Number(item.productId.discount) || 0;
+          const quantity = Number(item.quantity) || 0;
+          const categoryOffer = Number(item.productId.category?.offer) || 0;
+          const productPriceAfterDiscount = (price - (price * discount / 100)) * quantity;
+          return sum + (productPriceAfterDiscount * categoryOffer / 100);
+        }, 0);
+  
+        const deliveryFee = originalTotal > 500 ? 0 : 50;
+        const total = Math.max(0, originalTotal - categoryOffer + deliveryFee);
+  
+        await cart.save();
+  
+        return res.json({
+          success: true,
+          item: {
+            quantity: newQuantity,
+            productId: {
+              price: item.productId.price,
+              discount: item.productId.discount
+            }
+          },
+          cart: {
+            items: validCartItems,
+            originalTotal: originalTotal.toFixed(2),
+            categoryOffer: categoryOffer.toFixed(2),
+            deliveryFee,
+            deliveryFeeDisplay: deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`,
+            total: total.toFixed(2)
+          }
+        });
+  
+      } else {
+        return res.status(404).json({ success: false, message: 'Item not found in cart' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  };
+
+  exports.removeProductFromCart = async (req, res) => {
+    try {
+      const { productId } = req.body;
+      const userDatabase = await User.findOne({ email: req.session.email });
+      
+      if (!userDatabase) {
+        return res.status(401).json({ success: false, message: 'User not found' });
+      }
+  
+      const cart = await Cart.findOne({ userId: userDatabase._id })
+        .populate({
+          path: 'items.productId',
+          populate: {
+            path: 'category'
+          }
+        });
+  
+      if (!cart) {
+        return res.status(404).json({ success: false, message: 'Cart not found' });
+      }
+  
+      const item = cart.items.find(item => item.productId._id.toString() === productId);
+      if (item) {
+        const product = await Product.findById(productId);
+        
+        // Update the product stock
+        product.stock += item.quantity;
+        await product.save();
+  
+        // Remove the item from the cart
+        cart.items.pull({ productId });
+  
+        // Recalculate the cart totals
+        const validCartItems = cart.items
+          .filter(item => item.productId != null)
+          .map(item => ({
+            ...item.toObject(),
+            productId: {
+              _id: item.productId._id,
+              name: item.productId.name || 'Product Unavailable',
+              price: Number(item.productId.price) || 0,
+              discount: Number(item.productId.discount) || 0,
+              description: item.productId.description || 'No description available',
+              image: Array.isArray(item.productId.image) ? item.productId.image : [],
+              category: item.productId.category ? {
+                _id: item.productId.category._id,
+                name: item.productId.category.name || 'Uncategorized',
+                offer: Number(item.productId.category.offer) || 0
+              } : { name: 'Uncategorized', offer: 0 }
+            }
+          }));
+  
+        const originalTotal = validCartItems.reduce((sum, item) => {
+          const price = Number(item.productId.price) || 0;
+          const discount = Number(item.productId.discount) || 0;
+          const quantity = Number(item.quantity) || 0;
+          const itemTotal = (price - (price * discount / 100)) * quantity;
+          return sum + itemTotal;
+        }, 0);
+  
+        const categoryOffer = validCartItems.reduce((sum, item) => {
+          const price = Number(item.productId.price) || 0;
+          const discount = Number(item.productId.discount) || 0;
+          const quantity = Number(item.quantity) || 0;
+          const categoryOffer = Number(item.productId.category?.offer) || 0;
+          const productPriceAfterDiscount = (price - (price * discount / 100)) * quantity;
+          return sum + (productPriceAfterDiscount * categoryOffer / 100);
+        }, 0);
+  
+        const deliveryFee = originalTotal > 500 ? 0 : 50;
+        const total = Math.max(0, originalTotal - categoryOffer + deliveryFee);
+  
+        await cart.save();
+  
+        return res.json({
+          success: true,
+          cart: {
+            items: validCartItems,
+            originalTotal: originalTotal.toFixed(2),
+            categoryOffer: categoryOffer.toFixed(2),
+            deliveryFee,
+            deliveryFeeDisplay: deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`,
+            total: total.toFixed(2)
+          }
+        });
+      } else {
+        return res.status(404).json({ success: false, message: 'Item not found in cart' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  };

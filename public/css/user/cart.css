@@ -202,3 +202,8 @@ input[type="number"] {
     }
 }
 
+@media (max-width: 1224px) {
+    .h-100 {
+        margin-top: 200px;
+    }
+}

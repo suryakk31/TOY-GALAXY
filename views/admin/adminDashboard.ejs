@@ -8,6 +8,75 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <title> Admin Dashboard</title>
 
+  <style>
+    .growth-metric .big-number {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .growth-metric .positive {
+    color: #4CAF50;
+  }
+
+  .growth-metric .negative {
+    color: #F44336;
+  }
+
+  .recent-activity {
+    margin-top: 2rem;
+  }
+
+  .activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .activity-card {
+    background: #333;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .activity-card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .activity-card li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .inventory-status {
+    margin-top: 2rem;
+  }
+
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .mini-table {
+    width: 100%;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .mini-table th,
+  .mini-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  </style>
  
 </head>
 <body>
@@ -99,9 +168,6 @@
       </div>
     </div>
 
-
- 
-
   <!-- New Order Status Chart -->
   <div class="charts-container">
     <div class="charts">
@@ -109,6 +175,86 @@
       <canvas id="orderStatusChart"></canvas>
     </div>
   </div>
+
+  <div class="card growth-metric">
+    <h3>Revenue Growth</h3>
+    <p class="big-number <%= monthlyGrowth >= 0 ? 'positive' : 'negative' %>">
+      <%= monthlyGrowth >= 0 ? '+' : '' %><%= monthlyGrowth.toFixed(1) %>%
+    </p>
+    <span class="label">vs last month</span>
+  </div>
+  
+  <div class="card growth-metric">
+    <h3>Average Order Value</h3>
+    <p class="big-number">₹ <%= averageOrderValue.toFixed(2) %></p>
+    <span class="label">per order</span>
+  </div>
+</div>
+
+<!-- Add new section for recent activity -->
+<div class="recent-activity">
+  <h3>Recent Activity</h3>
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Latest Orders</h4>
+      <ul>
+        <% recentOrders.forEach(order => { %>
+          <li>
+            <span class="order-id">#<%= order._id.toString().slice(-6) %></span>
+            <span class="order-amount">₹ <%= order.totalPrice.toFixed(2) %></span>
+            <span class="order-date"><%= moment(order.orderDate).fromNow() %></span>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+    
+    <div class="activity-card">
+      <h4>New Users</h4>
+      <ul>
+        <% recentUsers.forEach(user => { %>
+          <li>
+            <span class="user-name"><%= user.firstName %></span>
+            <span class="join-date"><%= moment(user.createdAt).fromNow() %></span>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Add inventory status section -->
+<div class="inventory-status">
+  <h3>Inventory Status</h3>
+  <div class="inventory-grid">
+    <div class="card">
+      <h4>Low Stock Items</h4>
+      <p class="big-number"><%= lowStockCount %></p>
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% lowStockItems.forEach(item => { %>
+            <tr>
+              <td><%= item.name %></td>
+              <td><%= item.stock %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="card">
+      <h4>Top Performing Categories</h4>
+      <canvas id="categoryPerformanceChart"></canvas>
+    </div>
+  </div>
+</div>
+
+
 
   
     <div class="table-container">
@@ -134,6 +280,8 @@
         </tbody>
       </table>
     </div>
+
+  
 
     <div class="table-container">
       <h3>Top 10 Best Selling Categories</h3>
@@ -196,7 +344,7 @@
               beginAtZero: true,
               ticks: {
                 callback: function(value, index, values) {
-                  return '$' + value.toLocaleString();
+                  return '₹' + value.toLocaleString();
                 }
               }
             }
@@ -257,6 +405,42 @@
         }
       }
     });
+
+    const categoryPerformanceCtx = document.getElementById('categoryPerformanceChart').getContext('2d');
+  new Chart(categoryPerformanceCtx, {
+    type: 'horizontalBar',
+    data: {
+      labels: <%- JSON.stringify(topCategories.map(cat => cat.name)) %>,
+      datasets: [{
+        label: 'Revenue',
+        data: <%- JSON.stringify(topCategories.map(cat => cat.revenue)) %>,
+        backgroundColor: 'rgba(255, 94, 0, 0.7)',
+        borderColor: 'rgba(255, 94, 0, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Category Performance'
+        }
+      }
+    }
+  });
+
+  // Add trend indicators to growth metrics
+  document.querySelectorAll('.growth-metric').forEach(metric => {
+    const value = parseFloat(metric.querySelector('.big-number').textContent);
+    const indicator = document.createElement('i');
+    indicator.className = `bx ${value >= 0 ? 'bx-trending-up' : 'bx-trending-down'}`;
+    metric.querySelector('.big-number').appendChild(indicator);
+  });
   </script>
   
 </body>

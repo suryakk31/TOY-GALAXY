@@ -255,8 +255,30 @@
     }
   }
 
+  @media (max-width: 993px) {
+    .products-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .product-card {
+      height: 250px;
+      width: 100%;
+    }
+  }
 
 
+  @media (max-width: 769px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+     
+    }
+    
+    .product-card {
+      height: 250px;
+   
+      width: 100%;
+    }
+  }
 
 
 

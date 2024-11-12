@@ -373,3 +373,34 @@ body.modal-open {
 .hideDescription {
   display: none;
 }
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination a {
+  color: #ff4500;
+  padding: 10px 20px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  margin: 0 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination a:hover {
+  background-color: #f1f1f1;
+}
+
+.pagination a.prev::before {
+  content: '←';
+  margin-right: 5px;
+}
+
+.pagination a.next::after {
+  content: '→';
+  margin-left: 5px;
+}

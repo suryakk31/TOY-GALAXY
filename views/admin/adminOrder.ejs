@@ -13,6 +13,9 @@
 
 
   <style>
+    body.modal-open {
+  overflow: hidden; /* Disable body scroll when modal is open */
+}
 
 .modal {
   display: none; /* Hidden by default */
@@ -27,21 +30,22 @@
 }
 
 .modal-content {
-  background-color: #fefefe; /* White background */
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px; /* Padding */
-  border: 1px solid #888; /* Gray border */
-  width: 80%; /* Could be more or less, depending on screen size */
-  max-width: 600px; /* Max width */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  position: relative;
+  margin: 10% auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%; /* Adjust as needed */
+  max-width: 600px; /* Optional: Max width for large screens */
 }
 
 .close {
-  color: #aaa; /* Gray color */
-  float: right; /* Float right */
-  font-size: 28px; /* Font size */
-  font-weight: bold; /* Bold text */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .close:hover,
@@ -287,12 +291,32 @@ button:hover {
                     <div class="modal-content">
                       <span class="close" onclick="closeModal('<%= item._id %>')">&times;</span>
                       <h2>Billing Details</h2> 
-                      <h5>Product name: <%= item.productName %></h5>
+                      <% if(item.productId && item.productId.image && item.productId.image.length > 0) { %>
+                        <img src="<%= item.productId.image[0] %>" alt="Product Image" style="width: 100px; height: 100px; border: 2px solid #f17704; border-radius: 5px;">
+                      <% } else { %>
+                        <span>No Image Available</span>
+                      <% } %>
+                      
+
                       <h5><strong>Name:</strong> <% if (order.userId && order.userId.firstName) { %> <%= order.userId.firstName %> <% } else { %> User not available <% } %></h5>
                       <h5><strong>Phone no:</strong> <% if (order.address && order.address.phone) { %> <%= order.address.phone %> <% } else { %> N/A <% } %></h5>
                       <h5><strong>Address:</strong> <%= order.address.name %>, <%= order.address.locality %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></h5>
-                      <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
+                      <h5>Product name: <%= item.productName %></h5>
+                      <p><strong>Number of orders:</strong> <%= order.items.length %></p>
                       <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                      <p><strong>Product price:</strong>₹<%= item.price %></p>
+                      <p><strong>Discount offer:</strong> <%= item.discountPrice %></p>
+                     
+                      <p><strong>Coupon discount:</strong> <%= item.couponDiscountPrice %></p>
+                      <p><strong>Payment method:</strong> <%= order.paymentMethod %></p>
+                      <p><strong>Delivery charge:</strong> <%= order.deliveryCharge === 0 ? 'Free' : order.deliveryCharge %></p>
+                      <p><strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleString() %></p>
+
+                    
+      
+
+                      <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
+                    
                       <button id="downloadPdf" onclick="downloadPDF('<%= item.productName %>', '<%= order.userId ? order.userId.firstName : 'User not available' %>', '<%= order.userId ? order.userId.phone : 'N/A' %>', '<%= order.address.name %>', '<%= order.address.locality %>', '<%= order.address.city %>', '<%= order.address.state %>', '<%= order.address.pincode %>', <%= order.totalPrice %>, <%= item.quantity %>)">Download PDF</button>
                     </div>
                   </div>
@@ -349,14 +373,15 @@ button:hover {
 
 <script>
 
-  function openModal(itemId) {
+function openModal(itemId) {
     document.getElementById('orderDetailsModal-' + itemId).style.display = 'flex';
-  }
-  
+    document.body.classList.add('modal-open'); // Disable body scroll
+}
 
-  function closeModal(itemId) {
+function closeModal(itemId) {
     document.getElementById('orderDetailsModal-' + itemId).style.display = 'none';
-  }
+    document.body.classList.remove('modal-open'); // Enable body scroll
+}
 
   function openReturnModal(itemId) {
   document.getElementById(`returnModal-${itemId}`).style.display = "block";
@@ -392,7 +417,7 @@ document.querySelectorAll('select[name="status"]').forEach(select => {
 
 
 <script>
-  function downloadPDF(productName, firstName, phone, addressName, locality, city, state, pincode, totalPrice, quantity) {
+  function downloadPDF(firstName, phone, addressName, locality, city, state, pincode,productName, totalPrice, quantity) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -401,7 +426,7 @@ document.querySelectorAll('select[name="status"]').forEach(select => {
     doc.text(`Name: ${firstName}`, 20, 40);
     doc.text(`Phone No: ${phone}`, 20, 50);
     doc.text(`Address: ${addressName}, ${locality}, ${city}, ${state} - ${pincode}`, 20, 60);
-    doc.text(`Total Price: ₹${totalPrice}`, 20, 70);
+    doc.text(`Total Price: RS ${totalPrice}`, 20, 70);
     doc.text(`Quantity: ${quantity}`, 20, 80);
 
     doc.save(`${productName}_Billing_Details.pdf`);

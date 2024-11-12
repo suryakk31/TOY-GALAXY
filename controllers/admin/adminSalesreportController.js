@@ -96,7 +96,7 @@ exports.adminSales = async (req, res) => {
 
 exports.downloadSalesPDF = async (req, res) => {
     try {
-        // Apply the same filters as in adminSales
+        
         let query = {
             'items': {
                 $elemMatch: {
@@ -105,7 +105,7 @@ exports.downloadSalesPDF = async (req, res) => {
             }
         };
 
-        // Handle date filtering
+      
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -162,28 +162,29 @@ exports.downloadSalesPDF = async (req, res) => {
 
      
         const tableData = {
-            headers: ['Name', 'Phone Number', 'Address', 'Product Name', 'Quantity', 'Price', 'Payment Method', 'Order Date'],
+            headers: ['Name', 'Phone Number', 'Address', 'Product Name', 'Quantity', 'Original Price', 'Discount', 'Coupon Discount', 'Final Price', 'Payment Method', 'Order Date'],
             rows: []
-        };
-
-        orders.forEach(order => {
+         };
+         
+         orders.forEach(order => {
             order.items.forEach(item => {
                 if (item.orderStatus === 'delivered') {
                     tableData.rows.push([
                         order.address?.name || 'Unknown',
                         order.address?.phone || 'Unknown',
-                        `${order.address?.name}, ${order.address?.locality}, ${order.address?.city}, ${order.address?.state} - ${order.address?.pincode}`,
+                        `${order.address?.name || ''}, ${order.address?.locality || ''}, ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.pincode || ''}`,
                         item.productName,
                         item.quantity.toString(),
-                        `₹${order.totalPrice.toFixed(2)}`,
+                        `RS.${item.price?.toFixed(2)}`, // Original price
+                        `RS.${(item.price - item.discountPrice).toFixed(2)}`, // Discount amount
+                        `RS.${item.couponDiscountPrice || '0'}`, // Coupon discount
+                        `RS.${(item.discountPrice - (item.couponDiscountPrice || 0)).toFixed(2)}`, // Final price after all discounts
                         order.paymentMethod,
                         order.orderDate ? order.orderDate.toDateString() : 'N/A'
                     ]);
                 }
             });
-        });
-
-
+         });
         await doc.table(tableData, {
             prepareHeader: () => doc.fontSize(10),
             prepareRow: () => doc.fontSize(10)
@@ -201,7 +202,6 @@ exports.downloadSalesPDF = async (req, res) => {
 
 exports.downloadSalesExcel = async (req, res) => {
     try {
-    
         let query = {
             'items': {
                 $elemMatch: {
@@ -209,11 +209,10 @@ exports.downloadSalesExcel = async (req, res) => {
                 }
             }
         };
-
-
+ 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
+ 
         switch (req.query.dateFilter) {
             case 'daily':
                 query.orderDate = {
@@ -246,55 +245,76 @@ exports.downloadSalesExcel = async (req, res) => {
                 }
                 break;
         }
-
+ 
         const orders = await Order.find(query).sort({ orderDate: -1 });
-
-     
+ 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Sales Report');
-
-  
+ 
         worksheet.columns = [
             { header: 'Name', key: 'name', width: 20 },
             { header: 'Phone Number', key: 'phone', width: 15 },
             { header: 'Address', key: 'address', width: 40 },
             { header: 'Product Name', key: 'product', width: 20 },
             { header: 'Quantity', key: 'quantity', width: 10 },
-            { header: 'Price', key: 'price', width: 15 },
+            { header: 'Original Price', key: 'originalPrice', width: 15 },
+            { header: 'Discount', key: 'discount', width: 15 },
+            { header: 'Coupon Discount', key: 'couponDiscount', width: 15 },
+            { header: 'Final Price', key: 'finalPrice', width: 15 },
             { header: 'Payment Method', key: 'payment', width: 15 },
             { header: 'Order Date', key: 'date', width: 15 }
         ];
-
-      
+ 
+   
         worksheet.getRow(1).font = { bold: true };
-
-     
+ 
+      
         orders.forEach(order => {
             order.items.forEach(item => {
                 if (item.orderStatus === 'delivered') {
+                    const originalPrice = item.price || 0;
+                    const discountAmount = item.price - item.discountPrice || 0;
+                    const couponDiscount = item.couponDiscountPrice || 0;
+                    const finalPrice = item.discountPrice - couponDiscount;
+ 
                     worksheet.addRow({
                         name: order.address?.name || 'Unknown',
                         phone: order.address?.phone || 'Unknown',
-                        address: `${order.address?.name}, ${order.address?.locality}, ${order.address?.city}, ${order.address?.state} - ${order.address?.pincode}`,
+                        address: `${order.address?.name || ''}, ${order.address?.locality || ''}, ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.pincode || ''}`,
                         product: item.productName,
                         quantity: item.quantity,
-                        price: `₹${order.totalPrice.toFixed(2)}`,
+                        originalPrice: `Rs. ${originalPrice.toFixed(2)}`,
+                        discount: `Rs. ${discountAmount.toFixed(2)}`,
+                        couponDiscount: `Rs. ${couponDiscount.toFixed(2)}`,
+                        finalPrice: `Rs. ${finalPrice.toFixed(2)}`,
                         payment: order.paymentMethod,
                         date: order.orderDate ? order.orderDate.toDateString() : 'N/A'
                     });
                 }
             });
         });
-
+ 
+        worksheet.eachRow((row, rowNumber) => {
+            row.eachCell((cell) => {
+                cell.alignment = { vertical: 'middle', horizontal: 'left' };
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+            });
+        });
+ 
+    
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=toy_galaxy_sales_report.xlsx');
-
-
+ 
         await workbook.xlsx.write(res);
         res.end();
-
+ 
     } catch (error) {
         console.error('Error generating Excel:', error);
         res.status(500).send('Error generating Excel report');
     }
-};
+ };
