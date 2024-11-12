@@ -184,36 +184,7 @@
 
 
 <!-- Add inventory status section -->
-<div class="inventory-status">
-  <h3>Inventory Status</h3>
-  <div class="inventory-grid">
-    <div class="card">
-      <h4>Low Stock Items</h4>
-      <p class="big-number"><%= lowStockCount %></p>
-      <table class="mini-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Stock</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% lowStockItems.forEach(item => { %>
-            <tr>
-              <td><%= item.name %></td>
-              <td><%= item.stock %></td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
-    
-    <div class="card">
-      <h4>Top Performing Categories</h4>
-      <canvas id="categoryPerformanceChart"></canvas>
-    </div>
-  </div>
-</div>
+
 
 
 
