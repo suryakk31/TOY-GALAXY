@@ -6,23 +6,30 @@ const fs = require('fs');
 exports.getProductpage = async (req, res) => {
   try {
     const perPage = 10;
-    const page = req.query.page || 1;
+    const page = parseInt(req.query.page) || 1;
 
     const skip = (perPage * page) - perPage;
+    
+
     const products = await Product.find()
-    .sort({ createdAt: -1 })
+      .sort({ createdAt: -1 })
       .populate('category')
       .skip(skip)
       .limit(perPage);
 
+
     const count = await Product.countDocuments();
+
+    
+    const pages = Math.ceil(count / perPage);
 
     res.render('admin/products', {
       products,
       showDescription: false,
-      current: 1,
-      pages: 1
-      
+      current: page, 
+      pages: pages,  
+      perPage: perPage,
+      total: count
     });
 
   } catch (error) {
@@ -30,7 +37,6 @@ exports.getProductpage = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-
 
 exports.addProductpage = async (req, res) => {
   try {
