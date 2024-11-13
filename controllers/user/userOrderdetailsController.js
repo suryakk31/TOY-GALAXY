@@ -130,8 +130,8 @@ exports.updatePaymentStatus = async (req, res) => {
               product.stock -= item.quantity;
               await product.save();
               stockUpdated = true;
-              emailToSend = true;  // Set flag to send email
-              paymentItem = item;  // Assign the completed item to paymentItem
+              emailToSend = true;  
+              paymentItem = item; 
             } else {
               console.error(`Insufficient stock for product ${item.productId}`);
               return res.status(400).json({ error: `Insufficient stock for product ${item.productId}` });
@@ -386,7 +386,7 @@ exports.returnOrder = async (req, res) => {
 
       item.orderStatus = 'Return Requested';
       item.reason = reason;
-      // Set payment status to refund pending initially
+    
       item.paymentStatus = 'refund pending';
 
       const product = await Products.findById(item.productId).populate('category');
@@ -400,18 +400,18 @@ exports.returnOrder = async (req, res) => {
 
       await order.save();
 
-      // Return appropriate message based on payment method
+    
       if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
           return res.status(200).json({
               success: true,
               message: 'Return request submitted successfully. Refund will be processed after admin approval.',
-              refundAmount: refundAmount // Optionally inform user of expected refund amount
+              refundAmount: refundAmount 
           });
       } else if (order.paymentMethod === 'COD') {
           return res.status(200).json({
               success: true,
               message: 'Return request submitted successfully. Refund will be processed after admin approval.',
-              refundAmount: refundAmount // Optionally inform user of expected refund amount
+              refundAmount: refundAmount
           });
       }
 
