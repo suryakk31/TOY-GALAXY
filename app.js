@@ -20,16 +20,22 @@ const app = express();
 app.use(express.urlencoded({ extended: true })); 
 
 // mongodb://surya3112:Surya123@@undefined/?replicaSet=atlas-xn77ia-shard-0&ssl=true&authSource=admin
-//   // mongoose.connect('mongodb://localhost/Kids_Kastle', {
+//   mongoose.connect('mongodb://localhost/Kids_Kastle', {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true
+//   });
+
+
+//   // mongoose.connect('mongodb+srv://surya3112:Surya123%40@cluster0.ngrtu.mongodb.net/?retryWrites=true&w=majority', {
 //   //     useNewUrlParser: true,
 //   //     useUnifiedTopology: true
 //   // });
 
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
-  mongoose.connect('mongodb+srv://surya3112:Surya123%40@cluster0.ngrtu.mongodb.net/?retryWrites=true&w=majority', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-  });
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -85,5 +91,5 @@ app.use(flash())
 
 
 app.listen(3000, () => {
-    console.log('https://localhost:3000');
+    console.log('http://localhost:3000');
 });
