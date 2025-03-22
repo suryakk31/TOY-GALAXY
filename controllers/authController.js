@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
 exports.getSignupPage = (req, res) => {
     
     if (req.session.email) {
@@ -58,6 +59,7 @@ exports.postSignup = async (req, res) => {
         
   
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        console.log(otp)
         
    
         req.session.pendingUser = {
@@ -124,6 +126,7 @@ exports.postSignup = async (req, res) => {
                 Thank you for joining Kids Kastle! We're excited to have you with us.
             `
         };
+       
         
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {

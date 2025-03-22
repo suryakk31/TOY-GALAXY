@@ -231,7 +231,7 @@ exports.subscribe = async(req,res) => {
                     </div>
 
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="[Your-Store-URL]" 
+                        <a href="http://localhost:3000" 
                            style="background-color: #ff6b6b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                             Start Shopping Now 🛍️
                         </a>
